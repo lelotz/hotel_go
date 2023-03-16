@@ -36,8 +36,8 @@
         - CREATE INPUT FORMS & VALIDATION
         - IMPLEMENT TABLE VIEW PAGING
         - CALCULATE DEBT ACROSS DATE-RANGE && SESSIONS || EMPLOYEE
-        RANGED AVAILABILITY
-        TABLES -> Models
+        - RANGED AVAILABILITY
+       TABLES  -> Models
         DONE    - REMOVED USERS -> EXISTS
         DONE    - PASSWORDS     -> (userId,passWord)
         DONE    - BOOKINGS & CONFERENCE     -> MODEL ({"id":"",bookingDatetime":"","bookingExpiryDateTime":"","name":"","phone":"","peopleCount":0,"roomNumber":0,"type":"","invoiceNo":"","advancePayment":""})
@@ -47,6 +47,7 @@
         DONE    - SessionHandover -> (newEmpId,OldEmpId,oldSessionId,)
         DONE    - IMPLEMENT SESSION MANAGEMENT
         DONE    - STORE CURRENT SESSION
+        DONE    -
 
 
         DONE : 0. CREATE GLOBAL NAVIGATION BUTTONS

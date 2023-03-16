@@ -56,7 +56,7 @@ class SqlDatabase{
   }
 
 
-
+  /// Creates an sql Table by using an Sql Script
   Future<void> createTable(Database db, int version, String sqlScript)async
     {
     try {
@@ -65,16 +65,25 @@ class SqlDatabase{
       logger.e({'title':'CREATE-DB-ERROR','data':sqlScript},e.toString());
     }
   }
-
+  /// Runs when the database is initially created
+  ///
+  /// This is where all the tables are created
   Future _onCreate(Database db, int version)async
     {
     for(final sqlScript in dbTablesSql){
       createTable(db, version, sqlScript);
     }
-
+    /// Adds Initial Data required to use the system
     loadInitData(initRoomData, initRoomStatus, initAdminUsers);
   }
 
+  /// Safely creates or inserts a row in an sql table
+  /// This function will return a null value when an exception is caught
+  ///
+  /// [tableName] Refers to the table name. This value cannot be null
+  ///
+  /// [row] Refers to a Map object to be inserted in the table. This Map
+  /// needs to have keys that match the table [tableName]'s column Names.
   Future<int?> create(String tableName,Map<String,dynamic> row)async
     {
     int? rowNumber;
@@ -88,7 +97,19 @@ class SqlDatabase{
 
     return rowNumber;
   }
-
+  /// Safely queries data in an sql table [tableName]
+  ///
+  /// This function returns a future list of Map<String,dynamic> objects
+  /// It will return a null value when an exception is caught
+  ///
+  /// [tableName] Refers to the table name. This value cannot be null
+  ///
+  /// [row] Refers to a Map object to be inserted in the table. This Map
+  /// needs to have keys that match the table [tableName]'s column names.
+  ///
+  /// [where] Refers to the sql query parameters and conditions
+  ///
+  /// [whereArgs] Refers to the values of query parameters
   Future<List<Map<String, dynamic>>?> read({
     String? tableName, String? where, List<Object?>? whereArgs,
     bool readAll = false,String? orderBy})async
@@ -106,7 +127,8 @@ class SqlDatabase{
 
     return result;
   }
-
+  /// This function was found to be redundant and is therefore deprecated.
+  /// DO NOT USE
   Future<List<Map<String, dynamic>>?> readMultipleRows({
     String? tableName, String? where, List<Object?>? whereArgs,
     bool readAll = false,String? orderBy})async
@@ -123,6 +145,19 @@ class SqlDatabase{
     return result;
   }
 
+  /// Safely updates data in an sql table [tableName]
+  ///
+  /// This function returns an int representing the row number of the updated [row]
+  /// It will return a null value when an exception is caught
+  ///
+  /// [tableName] Refers to the table name. This value cannot be null
+  ///
+  /// [row] Refers to a Map object to be updated in the table. This Map
+  /// needs to have keys that match the table [tableName]'s column names.
+  ///
+  /// [where] Refers to the sql query parameters and conditions
+  ///
+  /// [whereArgs] Refers to the values of query parameters
   Future<int?> update({
     required String tableName, required Map<String, Object?> row,
     required String where,required List<Object?> whereArgs})async
@@ -139,6 +174,16 @@ class SqlDatabase{
     return result;
   }
 
+  /// Safely deletes data in an sql table [tableName]
+  ///
+  /// This function returns an int value representing the row number of the deleted row
+  /// It will return a null value when an exception is caught
+  ///
+  /// [tableName] Refers to the table name. This value cannot be null
+  ///
+  /// [where] Refers to the sql query parameters and conditions
+  ///
+  /// [whereArgs] Refers to the values of query parameters
   Future<int?> delete({required String tableName,
     required String where,required List<Object?> whereArgs})async
     {
@@ -154,6 +199,18 @@ class SqlDatabase{
     return result;
   }
 
+  /// This function helps define whereArgs values in an sql string
+  ///
+  /// It is especially helpful when the amount of queries is unknown at runtime
+  /// This scenario might happen when a user applies a number of filters in a search operation
+  ///
+  /// The function will create [n] amount of '?' symbols that represent an item in the [whereArgs]
+  /// The '?' symbols are separated with [separator] which is ',' by default
+  ///
+  /// This function returns a string of [n] '?' separated with [separator]
+  ///
+  /// Example: '?,?,?' = buildNQuestionMarks(3,separator = ',')
+
   String buildNQuestionMarks(int n,{String separator = ','}){
     String whereString = '';
     String currentString = '?$separator';
@@ -164,6 +221,11 @@ class SqlDatabase{
     return whereString;
   }
 
+  /// This function return a list of Object which is the base class of all Objects
+  ///
+  /// This function is useful if one of the [whereArgs] in query is a list
+  /// Since the [whereArgs] of a query cannot contain a List as one of its values, this function allows you to
+  /// deflate the list and have a whereArgs list of non-iterable values
   List<Object> buildWhereArgsFromList(List<Object> list){
     List<Object> whereArgs = [];
     for(Object arg in list){

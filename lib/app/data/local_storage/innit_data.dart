@@ -11,7 +11,12 @@ import '../models_n/encrypted_data_model.dart';
 import '../models_n/room_data_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_status_model.dart';
 
-
+/// This function Creates initial data necessary to run the system
+///
+/// This data includes the
+/// [AdminUser]
+/// [RoomData] and
+/// [RoomStatusModel]
 loadInitData(List<RoomData> roomData, List<RoomStatusModel> roomStatus,List<AdminUser> adminUsers)async{
 
   for(AdminUser element in adminUsers){

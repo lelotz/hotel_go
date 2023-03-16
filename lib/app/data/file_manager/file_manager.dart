@@ -47,9 +47,7 @@ class FileManager{
     try{
       if(dir.path.isNotEmpty) {
         directory.create();
-      } else {
-
-      }
+      } else {}
     }catch(e){
       logger.e(e);
     }

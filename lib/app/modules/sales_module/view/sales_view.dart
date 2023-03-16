@@ -8,6 +8,7 @@ import '../../../../widgets/app_bars/global_app_bar.dart';
 import '../../../../widgets/text/small_text.dart';
 import '../widgets/filterbox_widget.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+
 class SalesView extends GetView<SalesController> {
   SalesView({Key? key}) : super(key: key);
   final GlobalKey<SfDataGridState> _key = GlobalKey<SfDataGridState>();
