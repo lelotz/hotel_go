@@ -1,0 +1,60 @@
+
+
+/// TODO:
+  UI:
+
+          CREATE USER MANAGEMENT PAGE
+            DONE - Add employee -> Form
+            DONE - View employees -> Table
+            - Remove employee -> Dialog Form
+            - View employees session data summary - Container(title,data)
+                - Rooms Sold,Room Services, Cash Collected, Debt Allowed
+
+          BOOKING PAGE
+            DONE - BOOKING FORM
+            - BOOKING STATUS (Add status support in dashboard card)
+            - REMOVE BOOKING
+
+
+          CREATE PAGED TABLE - WIDGET
+          CREATE REPORTS PAGE - PAGE
+          CREATE REPORT FORMS - (HANDOVER,)
+
+
+          DONE   - CREATE REPOSITORY SYSTEM FOR MODEL DB CALLS
+          DONE : CREATE CONFERENCE FORM
+          DONE : CREATE BOOKED SERVICES CALENDER PAGE
+          DONE CONFERENCE PAGE
+  LOGIC:
+
+
+        TABLES -> Models
+        - STATUS MANAGER - ({"id":"","status":"","type":""})
+        - ADD BOOKED STATUS TO ROOM DATA.STATUS
+        - BOOKING STATUS (Add status support in dashboard card)
+        - IMPLEMENT DATA FETCH LIMIT
+        - CREATE INPUT FORMS & VALIDATION
+        - IMPLEMENT TABLE VIEW PAGING
+        - CALCULATE DEBT ACROSS DATE-RANGE && SESSIONS || EMPLOYEE
+        RANGED AVAILABILITY
+        TABLES -> Models
+        DONE    - REMOVED USERS -> EXISTS
+        DONE    - PASSWORDS     -> (userId,passWord)
+        DONE    - BOOKINGS & CONFERENCE     -> MODEL ({"id":"",bookingDatetime":"","bookingExpiryDateTime":"","name":"","phone":"","peopleCount":0,"roomNumber":0,"type":"","invoiceNo":"","advancePayment":""})
+        DONE    - PETTY CASH    -> MODEL(employeeId,availablePettyCash,used,id)
+        DONE    - INTERNAL_TRANSACTIONS -> (id,employeeId,beneficiaryName,beneficiaryId,description,dateTime)
+        DONE    - Issues[BROKEN-ITEMS,CLIENT COMPLAINTS] -> (id,roomNumber,dateTime,itemDescription,stepsTaken,itemStatus,issueType)
+        DONE    - SessionHandover -> (newEmpId,OldEmpId,oldSessionId,)
+        DONE    - IMPLEMENT SESSION MANAGEMENT
+        DONE    - STORE CURRENT SESSION
+
+
+        DONE : 0. CREATE GLOBAL NAVIGATION BUTTONS
+        DONE : 1. CREATE SALES PAGE API
+        DONE : 3. RESEARCH SQL FILTERS
+        DONE : 4. IMPLEMENT SQL FILTERS
+        DONE : 5. REPLACE SIZING FUNCTIONS
+        DONE : 1. Move files/folders to final positions
+
+
+

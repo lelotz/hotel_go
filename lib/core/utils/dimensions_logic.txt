@@ -1,0 +1,29 @@
+
+max height = 720
+max width = 1080
+
+given height = 40
+
+given height / max height = default_factor
+
+given_height / default_factor = dynamic_height?
+
+max_height_a = 720
+given height = 40
+default_factor = 0.05556
+dynamic_height = 719.999
+
+notes:
+
+given_height is 6% of max_height
+therefore the given_height should always be 6% of current max_height
+
+max_height_a = 600
+given height = 40
+default_factor = 0.05556
+dynamic_height = 719.999
+
+
+
+
+
