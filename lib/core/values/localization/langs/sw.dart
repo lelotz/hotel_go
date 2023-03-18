@@ -3,6 +3,7 @@ import '../local_keys.dart';
 Map<String, String> sw = {
   /// Login
   LocalKeys.kLogin : 'Ingia',
+  LocalKeys.kLogOut : 'Maliza Shift',
   LocalKeys.kPassword : 'Neno la siri',
   LocalKeys.kSuccess : 'Umethibitishwa',
   LocalKeys.kInvalidCredentials : 'Account hii Haipo',
@@ -28,7 +29,10 @@ Map<String, String> sw = {
   LocalKeys.kLaundryForm : "Fomu ya Kufua Nguo",
   LocalKeys.kGuestInformation : "Taarifa za Mteja",
 
-
+  /// Global Navigation Buttons
+  LocalKeys.kReports : "Ripoti",
+  LocalKeys.kBookService: "Fanya Booking",
+  LocalKeys.kUserManagement : "Panga Watumiaji",
 
   /// Form Names
   LocalKeys.kCheckout : "Check-Out",
@@ -50,7 +54,13 @@ Map<String, String> sw = {
 
 
   /// General
+  //LocalKeys.kSelectSearchCategory :"",
+  LocalKeys.kFilters: 'Vichujio',
+  LocalKeys.kClearFilters : 'Toa vichujio',
+  LocalKeys.kSearchBy : 'Tafuta kwa',
+  LocalKeys.kSearch : 'Tafuta',
   LocalKeys.kDetails : 'Maelezo',
+  //LocakKeys.kClient : "Mteja";
   LocalKeys.kForms : 'Fomu',
   LocalKeys.kRooms : 'Vyumba',
   LocalKeys.kRoom : 'Chumba',
@@ -58,7 +68,9 @@ Map<String, String> sw = {
   LocalKeys.kSales : 'Mauzo',
   LocalKeys.kEmployee : "Mfanyakazi",
   LocalKeys.kToday : "Leo",
-  LocalKeys.kCollected : "Yaliokusanywa",
+  LocalKeys.kCollected : "Iliokusanywa",
+
+  LocalKeys.kPayMethod : 'Aina ya Malipo',
   LocalKeys.kStarting : "Kuanzia",
   LocalKeys.kRoomSales : "Mauzo ya Vyumba",
   LocalKeys.kActivity : "Vitendo",
@@ -81,6 +93,7 @@ Map<String, String> sw = {
   LocalKeys.kBillType : "Huduma",
   LocalKeys.kAll : "Zote",
   LocalKeys.kClothesGiven : "Idadi ya Nguo",
+  LocalKeys.kClient : 'Mteja',
   LocalKeys.kCost : "Gharama",
   LocalKeys.kCheckIn : "Check-In",
   LocalKeys.kAction : "Kitendo",

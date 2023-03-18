@@ -26,7 +26,7 @@ class FiltersBox extends GetView<SalesController> {
         child: Column(
           children: [
             ExpandablePanel(
-              header: const BigText(text: "Filters",),
+              header:  BigText(text: LocalKeys.kFilters.tr,),
                 collapsed:  Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -43,7 +43,7 @@ class FiltersBox extends GetView<SalesController> {
                             userBorder: false,
                             menuItems:  controller.searchCategories,
                             callback: controller.setSearchCategory,
-                            initialItem: "Search by",
+                            initialItem: LocalKeys.kSearchBy.tr,
                             resetButton: controller.categoryDropdownIsReset.value,
                           ),),
                           ConstrainedBox(
@@ -58,7 +58,7 @@ class FiltersBox extends GetView<SalesController> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         inputFieldHeight: 120,
                                         textEditingController: controller.searchCtrl,
-                                        hintText: controller.searchCategory.value,
+                                        hintText: controller.searchCategory.value.tr,
                                         textInputType: TextInputType.text,
                                         validation: controller.validateSearchCategory,
                                       )),
@@ -132,7 +132,7 @@ class FiltersBox extends GetView<SalesController> {
                           ),
                           ConstrainedBox(
                               constraints: BoxConstraints.loose(const Size.fromWidth(125)),
-                              child: MyOutlinedButton(text: "Clear Filters", onClick: controller.clearFilters,
+                              child: MyOutlinedButton(text: LocalKeys.kClearFilters.tr, onClick: controller.clearFilters,
                                 width: 120,height: 40,backgroundColor: ColorsManager.primary,
                                 textColor: ColorsManager.grey1,borderColor: ColorsManager.primary,
                               )),
@@ -156,9 +156,9 @@ class FiltersBox extends GetView<SalesController> {
                         children: [
                           Row(
                             children: [
-                            buildFilterBoxItem("Room Number",TextFieldInput(
+                            buildFilterBoxItem(LocalKeys.kRoomNumber.tr,TextFieldInput(
                                 textEditingController: controller.roomNumberCtrl,
-                                hintText: "Enter Room Number",
+                                hintText: '${LocalKeys.kEnter.tr} ${LocalKeys.kRoomNumber.tr}',
                                 textInputType: TextInputType.text,
                                 hintTextColor: ColorsManager.white,
                                 ),
@@ -168,9 +168,9 @@ class FiltersBox extends GetView<SalesController> {
 
                           Row(
                             children: [
-                              buildFilterBoxItem("Guest Name",TextFieldInput(
+                              buildFilterBoxItem(LocalKeys.kClient.tr,TextFieldInput(
                                 textEditingController: controller.guestNameCtrl,
-                                hintText: "Enter Guest Name",
+                                hintText: '${LocalKeys.kEnter.tr} ${LocalKeys.kClient.tr}',
                                 textInputType: TextInputType.text,
                                 hintTextColor: ColorsManager.white,
                               ),
@@ -183,7 +183,7 @@ class FiltersBox extends GetView<SalesController> {
                       /// Select Employee and Service
                       Column(
                         children: [
-                          buildFilterBoxItem("Employee ",Obx(() => GeneralDropdownMenu(
+                          buildFilterBoxItem(LocalKeys.kEmployee.tr,Obx(() => GeneralDropdownMenu(
                             menuItems: controller.employees.value,
                             callback: controller.setEmployeeFilterValue,
                             initialItem: "select",
@@ -192,7 +192,7 @@ class FiltersBox extends GetView<SalesController> {
                           )),
                         ),
 
-                          buildFilterBoxItem("Service",
+                          buildFilterBoxItem(LocalKeys.kService.tr,
                               GeneralDropdownMenu(
                                   menuItems: const [LocalKeys.kRoom,LocalKeys.kRoomService,LocalKeys.kLaundry],
                                   callback: controller.setServiceFilterValue,
@@ -207,7 +207,7 @@ class FiltersBox extends GetView<SalesController> {
                       /// Select Pay Method and Date Range
                       Column(
                         children: [
-                          buildFilterBoxItem("Pay Method",GeneralDropdownMenu(
+                          buildFilterBoxItem(LocalKeys.kPayMethod.tr,GeneralDropdownMenu(
                             menuItems: const ["CASH", "MOBILE MONEY","CARD"],
                             callback: controller.setPayMethodFilterValue,
                             initialItem: "select",
@@ -216,7 +216,7 @@ class FiltersBox extends GetView<SalesController> {
                           ),
                           ),
 
-                          buildFilterBoxItem("Date Range",Row(
+                          buildFilterBoxItem(LocalKeys.kDate.tr,Row(
                             children: [
                               Obx(() => LabeledText(
                                 iconTitle: Icons.calendar_month_rounded,
@@ -264,12 +264,12 @@ class FiltersBox extends GetView<SalesController> {
                       Column(
                         children: [
                           buildFilterBoxItem("",
-                            MyOutlinedButton(text: "Search", onClick: controller.filterCollectedPayments,width: 70,height: 60,
+                            MyOutlinedButton(text: LocalKeys.kSearch.tr, onClick: controller.filterCollectedPayments,width: 70,height: 60,
                               backgroundColor: ColorsManager.primary,textColor: ColorsManager.grey1,borderColor: ColorsManager.primary,), width: 250),
 
 
                           buildFilterBoxItem("",
-                            MyOutlinedButton(text: "Clear Filters", onClick: controller.clearFilters,width: 70,height: 40,
+                            MyOutlinedButton(text: LocalKeys.kClearFilters.tr, onClick: controller.clearFilters,width: 70,height: 40,
                               backgroundColor: ColorsManager.white,textColor: ColorsManager.darkGrey,borderColor: ColorsManager.primary,),
                             width: 250
 

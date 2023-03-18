@@ -75,7 +75,7 @@ class CheckInView extends GetView<CheckInFormController> {
                                 ),
 
                                 controller.selectedRoomData.value.roomStatus == null ? loadingAnimation() : DecoratedTextButton(
-                                    buttonLabel: controller.selectedRoomData.value.roomStatus!.description.toString(),
+                                    buttonLabel: controller.selectedRoomData.value.roomStatus!.description.toString().tr,
                                     backgroundColor: AppConstants.roomStatusColor[controller.selectedRoomData.value.roomStatus!.code]!,
                                     textColor: Colors.white,
                                     onPressed: (){}
@@ -254,7 +254,7 @@ class CheckInView extends GetView<CheckInFormController> {
               ),
             ),
 
-            /// Cost Summary Row
+            /// Cost Summary Bottom Row
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(

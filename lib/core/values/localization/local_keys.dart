@@ -5,6 +5,7 @@ class LocalKeys {
 
   /// Login
   static const String kLogin = "Login";
+  static const String kLogOut = "Log out";
   static const String kLoggedInAs = "Logged-In as";
   static const String kPassword = "Password";
   static const String kEmployeeId = "Employee ID";
@@ -56,8 +57,16 @@ class LocalKeys {
   /// Transaction types
   static const String kConferenceBooking= "ConferenceBooking";
 
+  /// Global Navigation Buttons
+  static const String kReports = "Reports";
+  static const String kBookService = "Book Service";
+  static const String kUserManagement = "User Management";
 
   /// General
+  static const String kFilters = "Filters";
+  static const String kClearFilters = "Clear Filters";
+  static const String kSearchBy = "Search by";
+  static const String kSearch = "Search";
   static const String kRooms = "Rooms";
   static const String kTitle = "Title";
   static const String kValue = "Value";
@@ -69,6 +78,7 @@ class LocalKeys {
   static const String kEmployee = "Employee";
   static const String kToday = "Today";
   static const String kCollected = "Collected";
+  //static const String kGuestName = "Guest Name";
   static const String kStarting = "Start";
   static const String kRoomSales = "Room Sales";
   static const String kActivity = "Activity";
@@ -123,6 +133,7 @@ class LocalKeys {
   static const String kTotal = "Total";
   static const String kSubmitKey = "Submit Key";
   static const String kRetrieveKey = "Retrieve Key";
+  static const String kClient = "Client";
 
 
   /// Room Status

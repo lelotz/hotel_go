@@ -1,6 +1,12 @@
 
 
 /// TODO:
+  REFACTORING:
+    Complete Localization
+    Automate Test and Push
+    Create Unit Tests
+    Add comments to level services (Repositories,Controllers)
+
   UI:
 
           CREATE USER MANAGEMENT PAGE
@@ -36,7 +42,7 @@
         - CREATE INPUT FORMS & VALIDATION
         - IMPLEMENT TABLE VIEW PAGING
         - CALCULATE DEBT ACROSS DATE-RANGE && SESSIONS || EMPLOYEE
-        - RANGED AVAILABILITY
+        - *** RANGED ROOM AVAILABILITY ***
        TABLES  -> Models
         DONE    - REMOVED USERS -> EXISTS
         DONE    - PASSWORDS     -> (userId,passWord)

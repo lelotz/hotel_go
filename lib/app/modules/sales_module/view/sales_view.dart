@@ -4,6 +4,7 @@ import 'package:hotel_pms/app/modules/sales_module/controller/sales_controller.d
 import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import '../../../../core/resourses/size_manager.dart';
 import '../../../../core/services/table_services.dart';
+import '../../../../core/values/localization/local_keys.dart';
 import '../../../../widgets/app_bars/global_app_bar.dart';
 import '../../../../widgets/text/small_text.dart';
 import '../widgets/filterbox_widget.dart';
@@ -19,7 +20,7 @@ class SalesView extends GetView<SalesController> {
     return GetBuilder<SalesController>(
       init: SalesController(),
         builder: (controller)=>Scaffold(
-          appBar: buildGlobalAppBar(context,appBarTitle: 'Sales',onTitleTap: controller.onReady),
+          appBar: buildGlobalAppBar(context,appBarTitle: LocalKeys.kSales.tr,onTitleTap: controller.onReady),
           body: Obx(() => controller.isLoadingData.value ? loadingAnimation() : Padding(
             padding:  const EdgeInsets.all(AppPadding.padding40),
             child: SingleChildScrollView(
@@ -72,49 +73,49 @@ class SalesView extends GetView<SalesController> {
                             label: Container(
                                 padding: const EdgeInsets.all(8.0),
                                 alignment: Alignment.center,
-                                child: const SmallText(text:'ROOM NUMBER'))),
+                                child: SmallText(text:LocalKeys.kRoomNumber.tr.toUpperCase()))),
                         GridColumn(
                             columnName: 'DATE',
                             label: Container(
                                 padding: const EdgeInsets.all(8.0),
                                 alignment: Alignment.center,
-                                child: const SmallText(text: 'DATE'))),
+                                child: SmallText(text: LocalKeys.kDate.tr.toUpperCase()))),
                         GridColumn(
                             columnName: 'TIME',
                             label: Container(
                                 padding: const EdgeInsets.all(8.0),
                                 alignment: Alignment.center,
-                                child: const SmallText(text:'TIME'))),
+                                child: SmallText(text:LocalKeys.kTime.tr.toUpperCase()))),
                         GridColumn(
                             columnName: 'EMPLOYEE',
                             label: Container(
                                 padding: const EdgeInsets.all(8.0),
                                 alignment: Alignment.center,
-                                child: const SmallText(text:'EMPLOYEE'))),
+                                child: SmallText(text:LocalKeys.kEmployee.tr.toUpperCase()))),
                         GridColumn(
                             columnName: 'CLIENT',
                             label: Container(
                                 padding: const EdgeInsets.all(8.0),
                                 alignment: Alignment.center,
-                                child: const SmallText(text:'CLIENT'))),
+                                child: SmallText(text:LocalKeys.kClient.tr.toUpperCase()))),
                         GridColumn(
                             columnName: 'SERVICE',
                             label: Container(
                                 padding: const EdgeInsets.all(8.0),
                                 alignment: Alignment.center,
-                                child: const SmallText(text:'SERVICE'))),
+                                child: SmallText(text:LocalKeys.kService.tr.toUpperCase()))),
                         GridColumn(
                             columnName: 'COLLECTED',
                             label: Container(
                                 padding: const EdgeInsets.all(8.0),
                                 alignment: Alignment.center,
-                                child: const SmallText(text:'COLLECTED'))),
+                                child: SmallText(text:LocalKeys.kCollected.tr.toUpperCase()))),
                         GridColumn(
                             columnName: 'PAY METHOD',
                             label: Container(
                                 padding: const EdgeInsets.all(8.0),
                                 alignment: Alignment.center,
-                                child: const SmallText(text:'PAY METHOD'))),
+                                child:  SmallText(text:LocalKeys.kPayMethod.tr.toUpperCase()))),
                       ],
                     ),
                   ) : loadingAnimation()

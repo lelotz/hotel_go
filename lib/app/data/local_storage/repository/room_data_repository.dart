@@ -32,7 +32,6 @@ class RoomDataRepository extends SqlDatabase{
           RoomData currentRoom = RoomData.fromJson(room);
           await RoomStatusRepository().getRoomsStatus( currentRoom.roomNumber ?? 0).then((value) {
             if(value != null && value.isNotEmpty) {
-              logger.wtf({'Check-In RoomStatus': value[0]});
               currentRoom.roomStatus = RoomStatusModel.fromJson(value[0]);
               roomData.add(currentRoom);
             }
@@ -56,7 +55,6 @@ class RoomDataRepository extends SqlDatabase{
         room = RoomData.fromJson(value[0]);
         await RoomStatusRepository().getRoomsStatus(room.roomNumber ?? 0).then((value) {
           if(value != null && value.isNotEmpty) {
-            logger.wtf({'Check-In RoomStatus': value[0]});
             room.roomStatus = RoomStatusModel.fromJson(value[0]);
           }
         });
