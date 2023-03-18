@@ -1,16 +1,33 @@
 # hotel_pms
 
-A new Flutter project.
+Platform Support
+    - Windows
 
-## Getting Started
+This is a Hotel Property Management System(PMS). 
 
-This project is a starting point for a Flutter application.
+This system allows an employee to record operations data such as 
+    Check-in, Check-out, Bookings,Room service,Laundry and Package storage
+and export daily reports in Excel
 
-A few resources to get you started if this is your first Flutter project:
+It also allows the hotel Admin Users (Owners,Managers) to create Users,query and view reports
+from any time range 
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Features:
+DONE:
+    Check-In & Check-Out
+    Laundry Manager
+    Room Service Manager
+    Package Storage Manager 
+    Payments Manager
+    Service Booking Manager
+    Service Booking Calender
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+FUTURE:
+    Room Status Range
+    Graphical Analytics
+    
+    
+    
+    
+
+    

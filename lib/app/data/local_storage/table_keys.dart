@@ -17,6 +17,7 @@ import 'package:hotel_pms/app/data/local_storage/repository/shift_handover_repo.
 import 'package:hotel_pms/app/data/local_storage/repository/status_manager_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/user_activity_repo.dart';
 
+/// This List of String contains the SQL scripts for creating SQL Tables
 List<String> dbTablesSql = [
   AdminUsersTable().sql,
   ClientTable().sql,

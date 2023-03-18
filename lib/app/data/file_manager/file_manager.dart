@@ -23,33 +23,23 @@ class FileManager{
     try{
       // defining directory for file
       directory = await getApplicationDocumentsDirectory();
+      directory = Directory('${directory.path}\\$defaultStoragePath');
     }catch(e){
-      logger.e({'Documents Director Error'},e);
+      logger.e({'Documents Directory Error'},e);
     }
-
-
     return directory;
 
   }
 
-  // defining path for jsonFile
-  Future<File> get _jsonFile async{
-    const path = "E:/Projects/tbd_company_name_projects/Whitemark Hotels/HotelPMS/hotel_pms/lib/mock_data";
-
-
-    return File('$path/names.json');
-  }
 
   createFolder(String path)async{
 
-    Directory? dir  = await directoryPath;
-    Directory directory = Directory('${dir!.path}\\$defaultStoragePath\\$path');
+    Directory? appDir  = await directoryPath;
+    Directory directory = Directory('${appDir!.path}\\$path');
     try{
-      if(dir.path.isNotEmpty) {
+      if(appDir.path.isNotEmpty && await appDir.exists() == false) {
         directory.create();
-      } else {
-
-      }
+      } else {}
     }catch(e){
       logger.e(e);
     }
@@ -68,14 +58,31 @@ class FileManager{
     return file;
   }
 
+  Future<String> getAppStorageDirectory()async{
+    Directory? directory;
+    directory = await directoryPath;
+    return '${directory!.path}\\' ?? '';
+  }
+
+  File? getNewFile(String path){
+    File? file;
+    try{
+      file = File(path);
+    }catch (e){
+      logger.e('',e);
+    }
+    return file;
+  }
 
 
 
-  Future<Map<String, dynamic>> readJsonFile() async {
+
+  Future<Map<String, dynamic>> readJsonFile(String filePath) async {
     String? fileContent;
 
+    String appDirectory = await getAppStorageDirectory();
     // Creating a file
-    File file = await _jsonFile;
+    File file = File(appDirectory + filePath);
 
     //check if file exists
     if (await file.exists()) {
@@ -91,10 +98,10 @@ class FileManager{
     return json.decode(fileContent!);
   }
 
-  dynamic writeJsonFile(dynamic gate) async {
-    File file = await _jsonFile;
-    await file.writeAsString(json.encode(gate));
-    return gate;
+  dynamic writeJsonFile(dynamic data,String path) async {
+    File file = File(path);
+    await file.writeAsString(json.encode(data));
+    return data;
   }
 
 }

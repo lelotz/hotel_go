@@ -5,6 +5,8 @@ import '../app/data/file_manager/file_manager.dart';
 import '../core/logs/logger_instance.dart';
 
 int mockDataCount = 499;
+String mockDataDirector = 'mock_data\\';
+String mockDataJsonFileName = 'names.json';
 
 
 List<String> mockNames = ["Dereck Olomi"];
@@ -20,14 +22,21 @@ Logger logger = AppLogger.instance.logger;
 
 
 
-void saveDataToFile(){
+void saveDataToFile()async{
   FileManager fileManager = FileManager();
+  String path = '';
+  await fileManager.directoryPath.then((value) {
+    path = '${value!.path}\\$mockDataDirector$mockDataJsonFileName';
+  });
+
   Map<String,dynamic> data = {'names': mockNames,'countries':mockCountries};
-  fileManager.writeJsonFile(data);
+  fileManager.writeJsonFile(data,path);
 }
 Future<void> loadMockNamesAndCountries()async{
   FileManager fileManager = FileManager();
-  await fileManager.readJsonFile().then((value) {
+
+  fileManager.createFolder('mock_data');
+  await fileManager.readJsonFile('mock_data\\names.json').then((value) {
     for(dynamic element in value['names']){
      mockNames.add(element.toString());
     }

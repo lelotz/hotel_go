@@ -42,23 +42,23 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
             ElevatedButton(
                 style:style,
                 onPressed: (){Get.to(transition: Transition.noTransition,duration: const Duration(milliseconds: 500), ()=> SalesView());},
-                child: const SmallText(text: LocalKeys.kSales,color: ColorsManager.grey1,)),
+                child:  SmallText(text: LocalKeys.kSales.tr,color: ColorsManager.grey1,)),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             ElevatedButton(
                 style:style,
                 onPressed: (){Get.to(()=>const ReportsView());},
-                child: const SmallText(text: "Reports",color: ColorsManager.grey1,)
+                child:  SmallText(text: LocalKeys.kReports.tr,color: ColorsManager.grey1,)
             ),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             ElevatedButton(
                 style:style,
                 onPressed: (){Get.to(()=>const BookServiceView());},
-                child: const SmallText(text: "Book Service",color: ColorsManager.grey1,)),
+                child: SmallText(text: LocalKeys.kBookService.tr,color: ColorsManager.grey1,)),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             ElevatedButton(
                 style:style,
                 onPressed: (){Get.to(()=> const UserManagementView());},
-                child: const SmallText(text: "User Management",color: ColorsManager.grey1,)),
+                child: SmallText(text: LocalKeys.kUserManagement.tr,color: ColorsManager.grey1,)),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             const FormSelector(),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),

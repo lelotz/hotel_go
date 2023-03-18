@@ -8,7 +8,7 @@ import 'size_manager.dart';
 ThemeData getApplicationTheme() {
   return ThemeData(
       //main colors of the app
-      scaffoldBackgroundColor: Color.fromARGB(255, 247, 245, 245),
+      scaffoldBackgroundColor: const Color.fromARGB(255, 247, 245, 245),
       primaryColor: ColorsManager.primary,
       primaryColorLight: ColorsManager.primary.withOpacity(.7),
       disabledColor: ColorsManager.grey,

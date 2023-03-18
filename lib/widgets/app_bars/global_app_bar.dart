@@ -17,7 +17,7 @@ import 'package:get/get.dart';
 
 PreferredSizeWidget buildGlobalAppBar(BuildContext context,{String appBarTitle = "Whitemark Hotels",Color statusColor = ColorsManager.primaryAccent,void Function()? onTitleTap}){
   LocalizationController langController = Get.find<LocalizationController>();
-  HomepageController homepageController = Get.find<HomepageController>();
+  //HomepageController homepageController = Get.find<HomepageController>();
   AuthController authController = Get.find<AuthController>();
   return AppBar(
     toolbarHeight: 85 ,
