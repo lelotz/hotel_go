@@ -7,27 +7,23 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
+import 'package:hotel_pms/app/modules/login_screen/tests/session_manager_unit_test.dart';
+import 'package:hotel_pms/core/logs/logger_instance.dart';
+import 'package:hotel_pms/core/session_management/session_manager.dart';
 
 import 'package:hotel_pms/main.dart';
 import 'package:hotel_pms/widgets/text/big_text.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+class TestObject{
+  String? hello;
+  TestObject({required this.hello});
 
+  set setHello (String str){str=hello!;}
+}
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    //await tester.pumpWidget(const MyApp());
-    await tester.pumpWidget(const BigText(text: "text"));
+  WidgetsFlutterBinding.ensureInitialized();
+  sqfliteFfiInit();
+  sessionManagerUnitTest();
 
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
-  });
 }
