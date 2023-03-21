@@ -19,7 +19,6 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AuthController authController = Get.put(AuthController(),permanent: true);
-   // CreateUserController createUserController = Get.put(CreateUserController());
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

@@ -10,10 +10,11 @@ import '../logs/logger_instance.dart';
 class SessionManager extends GetxController{
   Logger logger = AppLogger.instance.logger;
   Rx<SessionTracker> currentSession = Rx<SessionTracker>(SessionTracker());
+  //Rx<bool> sessionExists = false.obs;
   Rx<bool> sessionExists = false.obs;
 
-  createNewSession(Map<String,dynamic> element)async{
 
+  Future<bool> createNewSession(Map<String,dynamic> element)async{
 
     /// Search for existing session
     sessionExists.value = await getExistingOpenSession(element);
@@ -21,18 +22,19 @@ class SessionManager extends GetxController{
 
     if(sessionExists.value == false){
       /// Create currentSession
-      logger.w({'title':'No session found', 'actions': 'Creating new session'});
-      SessionManagementRepository().createNewSessionTracker(element).then((value) {
+      //logger.w({'title':'No session found', 'actions': 'Creating new session'});
+      await SessionManagementRepository().createNewSessionTracker(element).then((value) {
         if (value != null) {
           currentSession.value = SessionTracker.fromJson(element);
         }
       });
-      SessionManagementRepository().createNewSessionTracker(element,currentSession: true).then((value) {
+      await SessionManagementRepository().createNewSessionTracker(element,currentSession: true).then((value) {
         if (value != null) {
           currentSession.value = SessionTracker.fromJson(element);
         }
       });
     }
+    return sessionExists.value;
 
   }
 
@@ -44,17 +46,16 @@ class SessionManager extends GetxController{
           currentSession: true).then((value) async {
         if (value != null && value.length == 1) {
           currentSession.value = SessionTracker.fromJson(value[0]);
-          logger.i({
-            "title": "Found existing session with today's date",
-            "data": value[0]
-          });
+          // logger.i({
+          //   "title": "Found existing session with today's date",
+          //   "data": value[0]
+          // });
           sessionExists = true;
         } else if (value != null && value.length > 1) {
-          logger.w({
-            'title': 'More than one session was found which means the last session was not logged out',
-            'actions': ''
-          });
-          sessionExists = false;
+          // logger.wtf({
+          //   'title': 'More than one session was found which means the last session was not logged out',
+          //   'actions': ''
+          // });
         }
       });
 
@@ -65,7 +66,7 @@ class SessionManager extends GetxController{
   updateSessionTracker()async{
     currentSession.value.dateEnded = DateTime.now().toIso8601String();
     await SessionManagementRepository().updateSessionTracker(currentSession.value.toJson()).then((value) {
-      if(value != null) logger.i("Session Updated");
+      //if(value != null) logger.i("Session Updated");
     });
   }
 

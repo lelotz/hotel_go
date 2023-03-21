@@ -81,12 +81,14 @@ class RoomsTable{
   static const String id = "roomNumber";
   static const String isVIP = "isVIP";
   static const String currentTransactionId = "currentTransactionId";
+  static const String nextAvailableDate = "nextAvailableDate";
   String sql =
   '''
       CREATE TABLE IF NOT EXISTS $tableName(
         $id INT PRIMARY KEY,
         $isVIP  INT NOT NULL,
-        $currentTransactionId TEXT )
+        $currentTransactionId TEXT,
+        $nextAvailableDate DATETIME )
       ''';
 }
 

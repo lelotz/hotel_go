@@ -20,12 +20,16 @@ class FileManager{
 
   Future<Directory?> get directoryPath async{
     Directory? directory = Directory('');
+    String appDirectory = '';
     try{
       // defining directory for file
       directory = await getApplicationDocumentsDirectory();
-      directory = Directory('${directory.path}\\$defaultStoragePath');
+      appDirectory = '${directory.path}\\$defaultStoragePath';
+      directory = Directory(appDirectory);
     }catch(e){
-      logger.e({'Documents Directory Error'},e);
+      appDirectory = "C:\\Users\\Dereck\\Documents\\$defaultStoragePath";
+      directory = Directory(appDirectory);
+      if(appDirectory != directory.path) logger.e({'error':'Failed to get app directory','defaultDirectory': appDirectory},e);
     }
     return directory;
 

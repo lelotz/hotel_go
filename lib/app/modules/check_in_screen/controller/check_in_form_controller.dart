@@ -198,6 +198,7 @@ class CheckInFormController extends GetxController{
     selectedRoomData.value.currentTransactionId = transactionId;
     selectedRoomData.value.roomStatus!.description = LocalKeys.kOccupied;
     selectedRoomData.value.roomStatus!.code =  LocalKeys.kStatusCode200.toString();
+    selectedRoomData.value.nextAvailableDate = checkOutDate.value.toIso8601String();
     await RoomDataRepository().updateRoom(selectedRoomData.value.toJson()).then((value) async {
       showSnackBar("Updated RoomsData", Get.context!);
       await RoomStatusRepository().updateRoomStatus(selectedRoomData.value.roomStatus!.toJson());

@@ -28,7 +28,8 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,{String appBarTitle =
         Get.back();
       }
     },),
-    title: Obx(() => buildAppBarTitle(appBarTitle,onTitleTap: onTitleTap,statusColor: authController.sessionController.sessionExists.value ? statusColor : ColorsManager.success),),
+    title: Obx(() => buildAppBarTitle(appBarTitle,onTitleTap: onTitleTap,
+        statusColor: getAppBarStatusColor(sessionExists : authController.sessionController.sessionExists.value)),),
     actions: [
       FittedBox(
         child: Row(
@@ -73,3 +74,12 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,{String appBarTitle =
     );
 }
 double getTitleAccentColorWidth(int titleLength) => titleLength/0.5;
+
+Color getAppBarStatusColor({bool? sessionExists}){
+  switch (sessionExists){
+    case null : return ColorsManager.error;
+    case true : return ColorsManager.primaryAccent;
+    case false : return ColorsManager.success;
+    default : return ColorsManager.error;
+  }
+}

@@ -33,6 +33,8 @@ class AuthController extends GetxController{
   Rx<bool> isLoggedOut = false.obs;
   Rx<bool> hasInitiatedLogout = false.obs;
   Rx<bool> displayLogOutError = false.obs;
+  final int randomUserIndex = random(0, initAdminUsers.length);
+  Rx<SessionTracker> sessionTracker = Rx<SessionTracker>(SessionTracker());
 
   Logger logger = AppLogger.instance.logger;
 
@@ -43,7 +45,8 @@ class AuthController extends GetxController{
 
   @override
   void onInit() {
-    int randomUserIndex = random(0, initAdminUsers.length);
+    super.onInit();
+    //randomUserIndex = random(0, initAdminUsers.length);
     // TODO: implement onInit
     fullNameCtrl.text = initAdminUsers[randomUserIndex].fullName!;
     adminUserPasswordCtrl.text = initAdminUsers[randomUserIndex].appId!;
@@ -70,7 +73,11 @@ class AuthController extends GetxController{
       ]);
     }
   }
-
+  /// Authentication has 3 main steps
+  ///
+  /// 1. Fetch [AdminUser] by Name TODO: Change to by appId
+  /// 2. User [AdminUser.appId] to match appId to encrypted password
+  /// 3. Create new session [SessionTracker] if the last session is not logged out
   Future<bool> authenticateAdminUser()async{
     bool isAuthenticated = false;
     isLoading.value = true;
@@ -78,39 +85,39 @@ class AuthController extends GetxController{
     await AdminUserRepository().getAdminUserByName(fullNameCtrl.text).then((value) {
       if (value != null) {
         adminUser.value = AdminUser.fromJson(value[0]);
-        logger.i({'title': adminUser.value.toJson()});
+        //logger.i({'title': adminUser.value.toJson()});
         adminUser.refresh();
 
       }
     }).catchError((onError) {
-      logger.e('error getting user by id',onError);
+      logger.e('error getting user by name',onError);
       return Future(() => null);
     }
       ).then((value) async{
-        await EncryptedDataRepository().getEncryptedDataByUserId(adminUser.value.appId!).then((value) {
+        await EncryptedDataRepository().getEncryptedDataByUserId(adminUser.value.appId!).then((value) async{
           if(value != null && value.length == 1){
             //adminUser.value = AdminUser.fromJson(value[0]);
-            logger.i({'password': value[0]});
+            //logger.i({'password': value[0]});
             authResult.value = LocalKeys.kSuccess;
             isAuthenticated = true;
-
-            sessionController.createNewSession(
-                SessionTracker(
-                  id: const Uuid().v1(),
-                  employeeId: value[0]['userId'],
-                  dateCreated: DateTime.now().toIso8601String(),
-                ).toJson());
-            showSnackBar(authResult.value, Get.context!);
-            logger.v("SUCCESS : Log in");
+            sessionTracker.value = SessionTracker.fromJson(SessionTracker(
+              id: const Uuid().v1(),
+              employeeId: value[0]['userId'],
+              dateCreated: DateTime.now().toIso8601String(),
+            ).toJson());
+            await sessionController.createNewSession(sessionTracker.toJson());
+            if(sessionController.sessionExists.value) sessionTracker.value = SessionTracker.fromJson(sessionController.currentSession.value.toJson());
+            //showSnackBar(authResult.value, Get.context!);
+            //logger.v("SUCCESS : Log in");
 
             // await loadMockNamesAndCountries();
             // await CheckInFormGenerator().prepDataForCheckIn();
-            Get.to(()=>HomePageView());
+            //Get.to(()=>HomePageView());
           }else if(value != null && value.isEmpty){
             authResult.value = LocalKeys.kInvalidCredentials;
-            showSnackBar('${authResult.value} ${adminUser.value.appId}', Get.context!);
+            //showSnackBar('${authResult.value} ${adminUser.value.appId}', Get.context!);
           }else{
-            showSnackBar(authResult.value, Get.context!);
+            //showSnackBar(authResult.value, Get.context!);
           }
           isLoading.value = false;
         });

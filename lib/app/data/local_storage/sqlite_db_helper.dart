@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/room_data_repository.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
 import 'package:logger/logger.dart';
 import 'package:sqflite_common/sqlite_api.dart';
@@ -90,7 +91,7 @@ class SqlDatabase{
     Database? db = await instance.database;
     try{
       rowNumber = await db?.insert(tableName, row,conflictAlgorithm: ConflictAlgorithm.replace);
-      logger.i({'title': 'WRITE DB','data':row,'tableName': tableName});
+      //if(tableName == SessionTrackerTable.tableName) logger.i({'title': 'WRITE DB','data':row,'tableName': tableName});
     }catch(e){
       logger.e({'title': 'WRITE DB','data':row,'tableName': tableName},e.toString());
     }
@@ -166,7 +167,7 @@ class SqlDatabase{
     Database? db = await instance.database;
     try{
       result = await db?.update(tableName,row,where: where,whereArgs: whereArgs);
-      logger.i({'title': 'UPDATE DB','where':where,'whereArgs':whereArgs,'date': row,'response':result});
+      //logger.i({'title': 'UPDATE DB','where':where,'whereArgs':whereArgs,'date': row,'response':result});
     }catch(e){
       logger.e({'title': 'UPDATE','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
     }

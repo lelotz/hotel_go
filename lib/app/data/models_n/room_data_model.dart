@@ -5,22 +5,25 @@ class RoomData {
   int? roomNumber;
   int? isVIP;
   String? currentTransactionId;
+  String? nextAvailableDate;
   RoomStatusModel? roomStatus;
 
-  RoomData({this.roomNumber, this.isVIP, this.currentTransactionId,this.roomStatus});
+  RoomData({this.roomNumber, this.isVIP, this.currentTransactionId,this.roomStatus,this.nextAvailableDate});
 
   RoomData.fromJson(Map<String, dynamic> json) {
     roomNumber = json['roomNumber'];
     isVIP = json['isVIP'];
     currentTransactionId = json['currentTransactionId'];
+    nextAvailableDate = json['nextAvailableDate'];
     //roomStatus = json['roomStatus'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['roomNumber'] = roomNumber;
     data['isVIP'] = isVIP;
     data['currentTransactionId'] = currentTransactionId;
+    data['nextAvailableDate'] = nextAvailableDate;
     //data['roomStatus'] = roomStatus;
     return data;
   }
