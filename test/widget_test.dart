@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
+import 'package:hotel_pms/app/modules/login_screen/tests/auth_controller_unit_tests.dart';
 import 'package:hotel_pms/app/modules/login_screen/tests/session_manager_unit_test.dart';
 import 'package:hotel_pms/core/logs/logger_instance.dart';
 import 'package:hotel_pms/core/session_management/session_manager.dart';
@@ -25,5 +26,6 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
   sessionManagerUnitTest();
+  authControllerUnitTest();
 
 }
