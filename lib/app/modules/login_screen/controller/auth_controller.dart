@@ -22,7 +22,7 @@ import '../../homepage_screen/views/homepage_view.dart';
 
 
 class AuthController extends GetxController{
-  SessionManager sessionController = Get.put(SessionManager(),permanent: true);
+  SessionManager sessionController = Get.put(SessionManager(isTest: true),permanent: true);
   TextEditingController adminUserPasswordCtrl = TextEditingController();
   TextEditingController fullNameCtrl = TextEditingController();
   Rx<AdminUser> adminUser = Rx<AdminUser>(AdminUser());
@@ -33,15 +33,16 @@ class AuthController extends GetxController{
   Rx<bool> isLoggedOut = false.obs;
   Rx<bool> hasInitiatedLogout = false.obs;
   Rx<bool> displayLogOutError = false.obs;
-  final int randomUserIndex = random(0, initAdminUsers.length);
+  int randomUserIndex = random(0, initAdminUsers.length);
   Rx<SessionTracker> sessionTracker = Rx<SessionTracker>(SessionTracker());
-
+  bool? isTest = false;
   Logger logger = AppLogger.instance.logger;
 
 
   List<String> routes = [
 
   ];
+  AuthController({this.isTest});
 
   @override
   void onInit() {
@@ -78,6 +79,10 @@ class AuthController extends GetxController{
   /// 1. Fetch [AdminUser] by Name TODO: Change to by appId
   /// 2. User [AdminUser.appId] to match appId to encrypted password
   /// 3. Create new session [SessionTracker] if the last session is not logged out
+  ///
+  /// Recommendations from Testing
+  /// 1. Create [UserActivity] for login attempt
+  /// 2. Ensure [CurrentSessionTable] is empty before creating a new session.
   Future<bool> authenticateAdminUser()async{
     bool isAuthenticated = false;
     isLoading.value = true;
@@ -85,34 +90,27 @@ class AuthController extends GetxController{
     await AdminUserRepository().getAdminUserByName(fullNameCtrl.text).then((value) {
       if (value != null) {
         adminUser.value = AdminUser.fromJson(value[0]);
-        //logger.i({'title': adminUser.value.toJson()});
         adminUser.refresh();
-
       }
-    }).catchError((onError) {
-      logger.e('error getting user by name',onError);
-      return Future(() => null);
-    }
-      ).then((value) async{
+    }).then((value) async{
         await EncryptedDataRepository().getEncryptedDataByUserId(adminUser.value.appId!).then((value) async{
           if(value != null && value.length == 1){
-            //adminUser.value = AdminUser.fromJson(value[0]);
             //logger.i({'password': value[0]});
             authResult.value = LocalKeys.kSuccess;
             isAuthenticated = true;
-            sessionTracker.value = SessionTracker.fromJson(SessionTracker(
+
+            sessionTracker.value = SessionTracker(
               id: const Uuid().v1(),
               employeeId: value[0]['userId'],
               dateCreated: DateTime.now().toIso8601String(),
-            ).toJson());
+            );
+
             await sessionController.createNewSession(sessionTracker.toJson());
-            if(sessionController.sessionExists.value) sessionTracker.value = SessionTracker.fromJson(sessionController.currentSession.value.toJson());
+
+            if(sessionController.sessionExists.value) sessionTracker.value = sessionController.currentSession.value;
             //showSnackBar(authResult.value, Get.context!);
             //logger.v("SUCCESS : Log in");
-
-            // await loadMockNamesAndCountries();
-            // await CheckInFormGenerator().prepDataForCheckIn();
-            //Get.to(()=>HomePageView());
+            if(isTest == false) Get.to(()=>HomePageView());
           }else if(value != null && value.isEmpty){
             authResult.value = LocalKeys.kInvalidCredentials;
             //showSnackBar('${authResult.value} ${adminUser.value.appId}', Get.context!);
@@ -122,6 +120,7 @@ class AuthController extends GetxController{
           isLoading.value = false;
         });
       });
+    await createLoginAttemptActivity(adminUser.value, isAuthenticated);
 
       return isAuthenticated;
     }
@@ -131,31 +130,49 @@ class AuthController extends GetxController{
     hasInitiatedLogout.value = true;
     int? activityStatus = -1;
     int? clearSessionStatus = -1;
-    clearSessionStatus = await createLogOutUserActivity();
-    activityStatus = await clearUserSession();
-    if(activityStatus != null && clearSessionStatus != null && activityStatus > 0 && clearSessionStatus > 0) {
-      sessionController.updateSessionTracker();
-      adminUser.value = AdminUser();
-      isLoggedOut.value = true;
-      hasInitiatedLogout.value = false;
-      onInit();
-      Get.to(() => const LandingPage());
 
-    } else {
+    /// Set the log-off date
+    await sessionController.updateSessionTracker();
+
+    activityStatus = await createLogOutUserActivity();
+
+    /// Delete current session
+    clearSessionStatus = await clearUserSession();
+
+    adminUser.value = AdminUser();
+    isLoggedOut.value = true;
+    hasInitiatedLogout.value = false;
+
+    if(adminUser.value != AdminUser()) {
       logOutResult.value = "Error logging out";
-        displayLogOutError.value = true;
-
-        isLoggedOut.value = false;
-      }
+      displayLogOutError.value = true;
+      isLoggedOut.value = true;
+    }
+    if(isTest == false) Get.to(() => const LandingPage());
 
   }
 
-
-  Future<int?> clearUserSession()async{
-   return await SessionManagementRepository().deleteCurrentSession(adminUser.value.appId!);
+  createLoginAttemptActivity(AdminUser adminUser,bool wasSuccess)async{
+    UserActivityRepository().createUserActivity(UserActivity(
+      activityId: const Uuid().v1(),
+      activityStatus: wasSuccess ? 'SUCCESSFUL' : 'ERROR',
+      activityValue: 0,
+      employeeId: adminUser.appId,
+      employeeFullName:adminUser.fullName ,
+      description: 'logInAttempt',
+      dateTime: DateTime.now().toIso8601String(),
+      guestId: '',
+      unit: ''
+    ).toJson());
   }
 
-  Future<int?> createLogOutUserActivity()async{
+
+  Future<int> clearUserSession()async{
+    //sessionController.dispose();
+   return await SessionManagementRepository().deleteCurrentSession();
+  }
+
+  Future<int> createLogOutUserActivity()async{
     return await UserActivityRepository().createUserActivity(UserActivity(
       activityId: const Uuid().v1(),
       employeeId: adminUser.value.appId,

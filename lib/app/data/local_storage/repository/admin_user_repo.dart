@@ -71,9 +71,6 @@ class AdminUsersTable{
         $status TEXT,
         $roomsSold INT )
       ''';
-  String get _tableName {
-    String tableName = _tableName;
-    return tableName;
-  }
+
 }
 

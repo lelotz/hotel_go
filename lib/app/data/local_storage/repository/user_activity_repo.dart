@@ -8,8 +8,8 @@ class UserActivityRepository extends SqlDatabase{
   UserActivityRepository();
 
   /// User Activity
-  Future<int?> createUserActivity(Map<String,dynamic> row,{String? tableName = UserActivityTable.tableName})async{
-    int? rowNumber = await create(tableName!, row);
+  Future<int> createUserActivity(Map<String,dynamic> row,{String? tableName = UserActivityTable.tableName})async{
+    int rowNumber = await create(tableName!, row);
     return rowNumber;
   }
 

@@ -1,5 +1,6 @@
 
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
+import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import '../../models_n/session_activity_model.dart';
 
 
@@ -14,15 +15,37 @@ class SessionManagementRepository  extends SqlDatabase{
     );
   }
 
-  Future<int?> updateSessionTracker(Map<String,dynamic> element)async{
+  Future<int?> updateSessionTracker(Map<String,dynamic> element,{bool currentSession = false})async{
     return await SqlDatabase.instance.update(
-        tableName: SessionTrackerTable.tableName,
+        tableName: currentSession ? CurrentSessionTable.tableName : SessionTrackerTable.tableName,
         row: element,
         where: '${SessionTrackerTable.id} = ?',
         whereArgs: [element[SessionTrackerTable.id]]
     );
   }
 
+  Future<List<SessionTracker>> getSessionTracker(String sessionId,{bool currentSession = false})async{
+    List<SessionTracker> foundSessions = [];
+    await read(
+      tableName: currentSession ?  CurrentSessionTable.tableName : SessionTrackerTable.tableName,
+      where: '${SessionTrackerTable.id}=?',
+        whereArgs: [sessionId]
+    ).then((value) {
+      if(value !=null && value.isNotEmpty){
+        foundSessions.addAll(SessionTracker().fromJsonList(value));
+      }
+    });
+    return foundSessions;
+  }
+  Future<List<SessionTracker>> getCurrentSession()async{
+    List<SessionTracker> foundSessions = [];
+    await read(tableName: CurrentSessionTable.tableName, readAll: true).then((value) {
+      if(value !=null && value.isNotEmpty){
+        foundSessions.addAll(SessionTracker().fromJsonList(value));
+      }
+    });
+    return foundSessions;
+  }
   Future<List<Map<String, dynamic>>?> getSessionByEmployeeIdAndDate(String id,String date,  {bool currentSession = false})async{
     List<Map<String, dynamic>>? session = [];
 
@@ -38,12 +61,8 @@ class SessionManagementRepository  extends SqlDatabase{
     return session;
   }
 
-  Future<int?> deleteCurrentSession(String userId)async{
-    return await SqlDatabase.instance.delete(
-        tableName: CurrentSessionTable.tableName,
-        where: '${CurrentSessionTable.employeeId}=?',
-        whereArgs: [userId]
-    );
+  Future<int> deleteCurrentSession()async{
+    return await SqlDatabase.instance.delete(tableName: CurrentSessionTable.tableName,deleteAll: true);
 
   }
 

@@ -225,7 +225,7 @@ class CheckInFormGenerator extends GetxController{
 
   Future<int?> clearUserSession()async{
     sessionController.currentSession.value = SessionTracker();
-    return await SessionManagementRepository().deleteCurrentSession(currentAdmin!.appId!);
+    return await SessionManagementRepository().deleteCurrentSession();
   }
 
   Future<int?> createLogOutUserActivity()async{

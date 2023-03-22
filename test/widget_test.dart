@@ -22,10 +22,10 @@ class TestObject{
 
   set setHello (String str){str=hello!;}
 }
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
   sessionManagerUnitTest();
-  authControllerUnitTest();
+  await authControllerUnitTest();
 
 }

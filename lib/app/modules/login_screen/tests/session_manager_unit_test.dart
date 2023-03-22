@@ -1,3 +1,4 @@
+import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -19,23 +20,18 @@ void sessionManagerUnitTest(){
     '''Testing the creation of a new session using SessionTracker''', ()async{
       final id = const Uuid().v1();
       final dateTime = DateTime.now().toIso8601String();
-      var existingSession = SessionTracker(
-        id: "9ac46500-c71b-11ed-9ae8-e3ead359dac3",
-        employeeId: '00001WH',
-        dateCreated: "2023-03-20T15:34:49.298855"
-      );
+      SessionTracker createdSessionInStorage = SessionTracker();
+
       sessionTracker = SessionTracker(
         id:  id,
         employeeId: '00001WH',
         dateCreated: dateTime,
       );
-      await sessionManager.createNewSession(sessionTracker.toJson());
-      if(sessionManager.sessionExists.value ?? true){
-        expect(sessionManager.currentSession.value.toJson(), existingSession.toJson());
-      }else{
-        expect(sessionManager.currentSession.value.toJson(), sessionTracker.toJson());
-      }
-
+      String sessionId = await sessionManager.createNewSession(sessionTracker.toJson()) ?? '';
+       await SessionManagementRepository().getSessionTracker(sessionId,currentSession: true).then((value) {
+        if(value.isNotEmpty && value.length == 1) createdSessionInStorage = value[0];
+      });
+      expect(sessionManager.currentSession.value.toJson(), createdSessionInStorage.toJson());
     }
   );
 

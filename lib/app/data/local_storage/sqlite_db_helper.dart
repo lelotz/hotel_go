@@ -85,12 +85,12 @@ class SqlDatabase{
   ///
   /// [row] Refers to a Map object to be inserted in the table. This Map
   /// needs to have keys that match the table [tableName]'s column Names.
-  Future<int?> create(String tableName,Map<String,dynamic> row)async
+  Future<int> create(String tableName,Map<String,dynamic> row)async
     {
-    int? rowNumber;
+    int rowNumber = -1;
     Database? db = await instance.database;
     try{
-      rowNumber = await db?.insert(tableName, row,conflictAlgorithm: ConflictAlgorithm.replace);
+      rowNumber = await db?.insert(tableName, row,conflictAlgorithm: ConflictAlgorithm.replace) ?? -1;
       //if(tableName == SessionTrackerTable.tableName) logger.i({'title': 'WRITE DB','data':row,'tableName': tableName});
     }catch(e){
       logger.e({'title': 'WRITE DB','data':row,'tableName': tableName},e.toString());
@@ -185,14 +185,14 @@ class SqlDatabase{
   /// [where] Refers to the sql query parameters and conditions
   ///
   /// [whereArgs] Refers to the values of query parameters
-  Future<int?> delete({required String tableName,
-    required String where,required List<Object?> whereArgs})async
+  Future<int> delete({required String tableName,
+    String? where,List<Object?>? whereArgs,bool deleteAll = false})async
     {
-    int? result;
+    int result =-1;
     Database? db = await instance.database;
     try{
-      result = await db?.delete(tableName,where: where,whereArgs: whereArgs);
-      logger.i({'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result});
+      result = deleteAll ? await db?.delete(tableName) ?? -1  : await db?.delete(tableName,where: where,whereArgs: whereArgs) ?? -1;
+      //logger.i({'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result});
     }catch(e){
       logger.e({'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
 
