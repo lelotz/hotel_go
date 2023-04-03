@@ -7,7 +7,7 @@ class AppLogger{
 
   Logger get logger => Logger(
       printer: PrettyPrinter(methodCount: 0),
-   level: Level.wtf
+      // level: Level.error
   );
 
 

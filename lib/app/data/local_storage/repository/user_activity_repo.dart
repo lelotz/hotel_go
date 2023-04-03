@@ -12,11 +12,11 @@ class UserActivityRepository extends SqlDatabase{
   }
 
   /// READ UserActivity
-  Future<List<Map<String, dynamic>>?> getUserActivity(String clientId,String roomTransactionId,{String? tableName = UserActivityTable.tableName})async{
+  Future<List<Map<String, dynamic>>?> getUserActivity(String roomTransactionId,{String? tableName = UserActivityTable.tableName})async{
     return await read(
         tableName: tableName,
-        where: '${UserActivityTable.roomTransactionId} = ? and ${UserActivityTable.guestId} = ?',
-        whereArgs: [roomTransactionId,clientId]
+        where: '${UserActivityTable.roomTransactionId} = ?',
+        whereArgs: [roomTransactionId]
     );
   }
   Future<List<Map<String, dynamic>>?> getUserActivityByActivityId(String activityId,{String? tableName = UserActivityTable.tableName})async{

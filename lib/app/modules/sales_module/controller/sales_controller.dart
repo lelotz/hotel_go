@@ -23,7 +23,7 @@ int dayOffset = 0;
 class SalesController extends GetxController {
   Logger logger = AppLogger.instance.logger;
 
-  Future<Rx<AdminUser>> get loggedInUser async => await Get.find<AuthController>().adminUser;
+  Future<Rx<AdminUser>> get loggedInUser async => Get.find<AuthController>().adminUser;
 
   TextEditingController searchCtrl = TextEditingController();
   TextEditingController roomNumberCtrl = TextEditingController();
@@ -99,17 +99,10 @@ class SalesController extends GetxController {
   }
 
   Future<String> generateSalesFileName() async {
-    String subfolder =
-        extractDate(DateTime.now().add(Duration(days: random(1, 10))))
-            .replaceAll('-', '_');
-    String fileName = await loggedInUser.then((value) {
-      return value.value.fullName!;
-    });
-    fileName = fileName.removeAllWhitespace;
-    fileName = '${fileName}_$subfolder' '_Sales_';
-    await FileManager().createFolder("Sales\\$subfolder");
-    fileName = fileName + random(0, 1024).toString(); //
-    return "Sales\\$subfolder\\$fileName";
+    FileManager fileManager = FileManager();
+    String userName = await loggedInUser.then((value) => value.value.fullName!);
+
+    return await fileManager.generateFileName(category: 'Sales',userName: userName);
   }
 
   List<DataGridRow> buildSalesRow() {

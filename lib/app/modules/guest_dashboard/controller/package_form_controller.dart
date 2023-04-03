@@ -57,7 +57,7 @@ class PackageFormController extends GetxController{
     receivedPackagesView.value.clear();
     await UserActivityRepository().getUserActivity(
       tableName: ReceivedPackagesTable.tableName,
-      metaData.value[LocalKeys.kClientUser].value.clientId!, metaData.value[LocalKeys.kRoomTransaction].value.id!,
+      metaData.value[LocalKeys.kRoomTransaction].value.id!,
     ).then((value)async {
       if(value != null && value.isNotEmpty){
         for(Map<String,dynamic> element in value){
@@ -103,7 +103,7 @@ class PackageFormController extends GetxController{
   Future<void> getReturnedPackages()async{
     await UserActivityRepository().getUserActivity(
       tableName: ReturnedPackagesTable.tableName,
-      metaData.value[LocalKeys.kClientUser].value.clientId!,  metaData.value[LocalKeys.kRoomTransaction].value.id!,
+      metaData.value[LocalKeys.kRoomTransaction].value.id!,
     ).then((value) {
       if(value != null && value.isNotEmpty){
         for(Map<String,dynamic> element in value){
@@ -123,8 +123,8 @@ class PackageFormController extends GetxController{
         activityId: const Uuid().v1(),
         roomTransactionId:  metaData.value[LocalKeys.kRoomTransaction].value.id!,
         guestId:  metaData.value[LocalKeys.kClientUser].value.clientId!,
-        employeeId: metaData.value[LocalKeys.kLoggedInUser].appId,
-        employeeFullName: metaData.value[LocalKeys.kLoggedInUser].fullName,
+        employeeId: metaData.value[LocalKeys.kLoggedInUser].value.appId,
+        employeeFullName: metaData.value[LocalKeys.kLoggedInUser].value.fullName,
         activityStatus: LocalKeys.kStorePackage,
         description: packageDescriptionCtrl.text,
         unit: packageQuantityCtrl.text,

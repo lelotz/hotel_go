@@ -4,6 +4,8 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../core/logs/logger_instance.dart';
+import '../../../core/utils/date_formatter.dart';
+import '../../../core/utils/useful_math.dart';
 
 
 class FileManager{
@@ -78,6 +80,18 @@ class FileManager{
       logger.e('',e);
     }
     return file;
+  }
+
+  Future<String> generateFileName({String userName="system",String category="none"}) async {
+    String subfolder =
+    extractDate(DateTime.now().add(Duration(days: random(1, 10))))
+        .replaceAll('-', '_');
+    String fileName = userName;
+    fileName = fileName.replaceAll(' ', '');
+    fileName = '${fileName}_$subfolder' '_${category}_';
+    await FileManager().createFolder("$category\\$subfolder");
+    fileName = fileName + random(0, 1024).toString(); //
+    return "$category\\$subfolder\\$fileName";
   }
 
 

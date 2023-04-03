@@ -10,6 +10,7 @@ import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/logs/logger_instance.dart';
+import '../../../../core/utils/utils.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/client_user_repo.dart';
 import '../../../data/local_storage/repository/room_data_repository.dart';
@@ -171,16 +172,16 @@ class GuestDashboardController extends GetxController{
   }
 
   Future<void> getUserActivity()async{
+    logger.i({'user':clientUser.value.clientId!, 'roomTR':paymentDataController.roomTransaction.value.id!});
     userActivity.value.clear();
-    await UserActivityRepository().getUserActivity(
-        clientUser.value.clientId!, paymentDataController.roomTransaction.value.id!).then((response) {
+    await UserActivityRepository().getUserActivity(paymentDataController.roomTransaction.value.id!).then((response) {
           if(response != null) {
             for (Map<String, dynamic> element in response) {
               userActivity.value.add(UserActivity.fromJson(element));
             }
             // showSnackBar("Fetched UserActivity", Get.context!);
           }else{
-            // showSnackBar("FAILED TO FETCH UserActivity", Get.context!);
+            showSnackBar("FAILED TO FETCH UserActivity", Get.context!);
           }
     });
   }

@@ -23,8 +23,18 @@ import '../table_sources/laundry_transactions_source.dart';
 import '../table_sources/room_service_source.dart';
 import '../table_sources/rooms_used_table_source.dart';
 
-class HandoverForm extends GetView<HandoverFormController> {
-  const HandoverForm({Key? key}) : super(key: key);
+class HandoverReport extends GetView<HandoverFormController> {
+  HandoverReport({Key? key}) : super(key: key);
+
+  final GlobalKey<SfDataGridState> hotelIssuesTableKey = GlobalKey<SfDataGridState>();
+  final GlobalKey<SfDataGridState> roomServiceTableKey = GlobalKey<SfDataGridState>();
+  final GlobalKey<SfDataGridState> laundryTableKey = GlobalKey<SfDataGridState>();
+  final GlobalKey<SfDataGridState> conferenceTableKey = GlobalKey<SfDataGridState>();
+  final GlobalKey<SfDataGridState> roomsTableKey = GlobalKey<SfDataGridState>();
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,11 +50,26 @@ class HandoverForm extends GetView<HandoverFormController> {
                   child: Column(
                     children: [
                       // EmptyIllustration(),
-                      RoomsUsedSection(),
-                      ConferenceUsageSection(),
-                      LaundryUsageSection(),
-                      RoomServiceTransactionsSection(),
-                      HotelIssuesSection(),
+                      Row(
+                        children: [
+                          const BigText(text: "Export Report"),
+                          Obx(() => controller.isExporting.value ? loadingAnimation() : IconButton(onPressed: ()async{
+                            controller.queTableKey(roomsTableKey, "Rooms");
+                            controller.queTableKey(conferenceTableKey, "Conference");
+                            controller.queTableKey(roomServiceTableKey, "Room Service");
+                            controller.queTableKey(laundryTableKey, "Laundry");
+                            controller.queTableKey(hotelIssuesTableKey, "Hotel Issues");
+
+                            await controller.processTableExports();
+
+                          }, icon: const Icon(Icons.save_alt_outlined)))
+                        ],
+                      ),
+                      RoomsUsedSection(roomsTableKey: roomsTableKey,),
+                      ConferenceUsageSection(conferenceTableKey: conferenceTableKey,),
+                      LaundryUsageSection(laundryTableKey: laundryTableKey,),
+                      RoomServiceTransactionsSection(roomServiceTableKey: roomServiceTableKey,),
+                      HotelIssuesSection(hotelIssuesTableKey: hotelIssuesTableKey,),
                       const HandoverDetailsForm(),
                     ],
                   ),
@@ -140,9 +165,10 @@ class HandoverDetailsForm extends GetView<HandoverFormController> {
 }
 
 class HotelIssuesSection extends GetView<HandoverFormController> {
-  HotelIssuesSection({Key? key}) : super(key: key);
+  HotelIssuesSection({Key? key,required this.hotelIssuesTableKey}) : super(key: key);
 
   final HotelIssuesSource _hotelIssuesSource = HotelIssuesSource();
+  final GlobalKey<SfDataGridState> hotelIssuesTableKey;
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +188,10 @@ class HotelIssuesSection extends GetView<HandoverFormController> {
                         ),
                         reportEntryHeader(
                             onRefreshEntries: controller.onInit,
+                            onSave: ()async{
+                              controller.queTableKey(hotelIssuesTableKey, "hotel_issues");
+                              await controller.processTableExports();
+                            },
                             title: "Hotel Issues",
                             onAddEntry: () {
                               buildDialog(context, 'Hotel Issue',
@@ -170,11 +200,13 @@ class HotelIssuesSection extends GetView<HandoverFormController> {
                                   height: 600,
                                   alignment: Alignment.center);
                             },
-                            onConfirmEntry: () {})
+                            onConfirmEntry: () {}
+                        )
                       ],
                     ),
                     SfDataGrid(
                         source: _hotelIssuesSource,
+                        key: hotelIssuesTableKey,
                         columns: [
                       GridColumn(
                           columnName: 'ROOM NUMBER',
@@ -224,10 +256,11 @@ class HotelIssuesSection extends GetView<HandoverFormController> {
 }
 
 class LaundryUsageSection extends GetView<HandoverFormController> {
-  LaundryUsageSection({Key? key}) : super(key: key);
+  LaundryUsageSection({Key? key,required this.laundryTableKey}) : super(key: key);
 
   final LaundryTransactionsSource _laundryTransactionsSource =
       LaundryTransactionsSource();
+  final GlobalKey<SfDataGridState> laundryTableKey;
 
   @override
   Widget build(BuildContext context) {
@@ -248,6 +281,10 @@ class LaundryUsageSection extends GetView<HandoverFormController> {
                         reportEntryHeader(
                             onRefreshEntries: controller.onInit,
                             title: "Laundry Transactions",
+                            onSave: ()async{
+                              controller.queTableKey(laundryTableKey,"laundry");
+                              await controller.processTableExports();
+                            },
                             onAddEntry: () {
                               // buildDialog(
                               //     context,
@@ -262,7 +299,9 @@ class LaundryUsageSection extends GetView<HandoverFormController> {
                             onConfirmEntry: () {})
                       ],
                     ),
-                    SfDataGrid(source: _laundryTransactionsSource, columns: [
+                    SfDataGrid(
+                        key: laundryTableKey,
+                        source: _laundryTransactionsSource, columns: [
                       GridColumn(
                           columnName: 'ROOM NUMBER',
                           columnWidthMode: ColumnWidthMode.fitByColumnName,
@@ -313,9 +352,10 @@ class LaundryUsageSection extends GetView<HandoverFormController> {
 }
 
 class RoomServiceTransactionsSection extends GetView<HandoverFormController> {
-  RoomServiceTransactionsSection({Key? key}) : super(key: key);
+  RoomServiceTransactionsSection({Key? key,required this.roomServiceTableKey}) : super(key: key);
 
   final RoomServiceSource _roomServiceSource = RoomServiceSource();
+  final GlobalKey<SfDataGridState> roomServiceTableKey;
 
   @override
   Widget build(BuildContext context) {
@@ -334,11 +374,17 @@ class RoomServiceTransactionsSection extends GetView<HandoverFormController> {
                         reportEntryHeader(
                             onRefreshEntries: controller.onInit,
                             title: "Room Service Transactions",
+                            onSave: ()async{
+                              controller.queTableKey(roomServiceTableKey,'Room Service');
+                              await controller.processTableExports();
+                            },
                             onAddEntry: () {},
                             onConfirmEntry: () {}),
                       ],
                     ),
-                    SfDataGrid(source: _roomServiceSource, columns: [
+                    SfDataGrid(
+                        key: roomServiceTableKey,
+                        source: _roomServiceSource, columns: [
                       GridColumn(
                           columnName: 'ROOM NUMBER',
                           columnWidthMode: ColumnWidthMode.fitByColumnName,
@@ -389,9 +435,10 @@ class RoomServiceTransactionsSection extends GetView<HandoverFormController> {
 }
 
 class ConferenceUsageSection extends GetView<HandoverFormController> {
-  ConferenceUsageSection({Key? key}) : super(key: key);
+  ConferenceUsageSection({Key? key,required this.conferenceTableKey}) : super(key: key);
 
   final ConferenceUsageSource conferenceUsageSource = ConferenceUsageSource();
+  final GlobalKey<SfDataGridState> conferenceTableKey;
 
   @override
   Widget build(BuildContext context) {
@@ -409,6 +456,10 @@ class ConferenceUsageSection extends GetView<HandoverFormController> {
                         reportEntryHeader(
                             onRefreshEntries: controller.onInit,
                             title: "Conference Transactions",
+                            onSave: ()async{
+                              controller.queTableKey(conferenceTableKey,'Conference');
+                              await controller.processTableExports();
+                            },
                             onAddEntry: () {
                               buildDialog(
                                   context,
@@ -424,7 +475,9 @@ class ConferenceUsageSection extends GetView<HandoverFormController> {
                             onConfirmEntry: () {}),
                       ],
                     ),
-                    SfDataGrid(source: conferenceUsageSource, columns: [
+                    SfDataGrid(
+                        key:conferenceTableKey,
+                        source: conferenceUsageSource, columns: [
                       GridColumn(
                           columnName: 'NAME',
                           label: Container(
@@ -443,7 +496,7 @@ class ConferenceUsageSection extends GetView<HandoverFormController> {
                           label: Container(
                               padding: const EdgeInsets.all(8.0),
                               alignment: Alignment.center,
-                              child: SmallText(text: 'ADVANCE'))),
+                              child: const SmallText(text: 'ADVANCE'))),
                       GridColumn(
                           columnName: 'TOTAL COST',
                           label: Container(
@@ -461,9 +514,10 @@ class ConferenceUsageSection extends GetView<HandoverFormController> {
 }
 
 class RoomsUsedSection extends GetView<HandoverFormController> {
-  RoomsUsedSection({Key? key}) : super(key: key);
+  RoomsUsedSection({Key? key,required this.roomsTableKey}) : super(key: key);
 
   final RoomsUsedSource _roomSoldSource = RoomsUsedSource();
+  final GlobalKey<SfDataGridState> roomsTableKey;
 
   @override
   Widget build(BuildContext context) {
@@ -482,6 +536,10 @@ class RoomsUsedSection extends GetView<HandoverFormController> {
                         reportEntryHeader(
                             onRefreshEntries: controller.onInit,
                             title: "Rooms Sold",
+                            onSave: ()async{
+                              controller.queTableKey(roomsTableKey,'Rooms');
+                              await controller.processTableExports();
+                            },
                             onAddEntry: () {
                               buildDialog(context, 'Used Rooms Form',
                                   const RoomUsedForm(),
@@ -493,6 +551,7 @@ class RoomsUsedSection extends GetView<HandoverFormController> {
                     ),
                     controller.initialized
                         ? SfDataGrid(
+                            key:roomsTableKey,
                             headerGridLinesVisibility: GridLinesVisibility.none,
                             isScrollbarAlwaysShown: true,
                             source: _roomSoldSource,
@@ -587,7 +646,9 @@ Widget reportEntryHeader(
     {required Function onRefreshEntries,
     required String title,
     required Function onAddEntry,
-    required Function onConfirmEntry}) {
+    required Function onConfirmEntry,
+      required Function onSave
+    }) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -618,7 +679,14 @@ Widget reportEntryHeader(
               onPressed: () {
                 onRefreshEntries();
               },
-              icon: Icon(Icons.refresh))
+              icon: const Icon(Icons.refresh)
+          ),
+          IconButton(
+              onPressed: () async{
+                await onSave();
+              },
+              icon: const Icon(Icons.save_alt_outlined)
+          ),
           //MyOutlinedButton(text: 'Update', onClick: onRefreshEntries,borderColor:ColorsManager.primary,),
         ],
       ),

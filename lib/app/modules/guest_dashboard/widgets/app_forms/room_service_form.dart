@@ -33,16 +33,24 @@ class RoomServiceForm extends GetView<RoomServiceFormController> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   direction: Axis.horizontal,
                   children: [
-                    TextFieldInput(
-                        textEditingController: controller.serviceDescription,
-                        hintText: LocalKeys.kRoomService.tr,
-                        textInputType: TextInputType.text
+                    SizedBox(
+                      width: 150,
+                      child: TextFieldInput(
+                          textEditingController: controller.serviceDescription,
+                          hintText: LocalKeys.kRoomService.tr,
+                          textInputType: TextInputType.text
+                      ),
                     ),
-                    TextFieldInput(
-                        textEditingController: controller.serviceCost,
-                        hintText: LocalKeys.kCost.tr,
-                        textInputType: TextInputType.text
-                    ),
+                    SizedBox(
+                        width: 150,
+                      child: TextFieldInput(
+                          textEditingController: controller.serviceCost,
+                          hintText: LocalKeys.kCost.tr,
+                          textInputType: TextInputType.text
+                      ),
+                    )
+
+
 
                   ],
                 ),
@@ -76,8 +84,8 @@ class RoomServiceForm extends GetView<RoomServiceFormController> {
                           }, child: SmallText(text: LocalKeys.kCancel.tr,color: ColorsManager.white,)
                       ),
                       ElevatedButton(
-                          onPressed: (){
-                            controller.storeRoomServices();
+                          onPressed: ()async{
+                            await controller.storeRoomServices();
                             Navigator.of(context).pop();
                           },
 

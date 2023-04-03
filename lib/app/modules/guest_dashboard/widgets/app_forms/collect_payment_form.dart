@@ -86,11 +86,15 @@ class CollectPaymentForm extends GetView<PaymentController> {
          Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextFieldInput(
-              textEditingController: controller.collectedPaymentInputCtrl,
-              hintText:LocalKeys.kCollectPayment.tr,
-              textInputType: TextInputType.text,
+            SizedBox(
+              width: const Size.fromWidth(200).width,
+              child: TextFieldInput(
+                textEditingController: controller.collectedPaymentInputCtrl,
+                hintText:LocalKeys.kCollectPayment.tr,
+                textInputType: TextInputType.text,
+              ),
             ),
+
             SizedBox(width: const Size.fromWidth(20).width,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
