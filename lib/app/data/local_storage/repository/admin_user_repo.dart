@@ -1,18 +1,18 @@
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 
-class AdminUserRepository extends SqlDatabase{
-
+class AdminUserRepository{
+  SqlDatabase db = SqlDatabase.instance;
   AdminUserRepository();
   // CREATE
   Future<int?> createAdminUser(Map<String,dynamic> row)async{
-    int? rowNumber = await create(AdminUsersTable.tableName, row);
+    int? rowNumber = await db.create(AdminUsersTable.tableName, row);
     return rowNumber;
   }
 
   // READ
 
   Future<List<Map<String, dynamic>>?> getAdminUser(Map<String,dynamic> row)async{
-    List<Map<String, dynamic>>? response = await read(
+    List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,
         where: '${AdminUsersTable.appId} = ?',
         whereArgs: [row[AdminUsersTable.appId]]
@@ -20,7 +20,7 @@ class AdminUserRepository extends SqlDatabase{
     return response;
   }
   Future<List<Map<String, dynamic>>?> getAdminUserByName(String name)async{
-    List<Map<String, dynamic>>? response = await read(
+    List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,
         where: '${AdminUsersTable.fullName} = ?',
         whereArgs: [name]
@@ -28,7 +28,7 @@ class AdminUserRepository extends SqlDatabase{
     return response;
   }
   Future<List<Map<String, dynamic>>?> getAdminUserById(String id)async{
-    List<Map<String, dynamic>>? response = await read(
+    List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,
         where: '${AdminUsersTable.appId} = ?',
         whereArgs: [id]
@@ -40,7 +40,7 @@ class AdminUserRepository extends SqlDatabase{
   Future<int?> updateAdminUser(Map<String,dynamic> row) async{
 
     String id = row[AdminUsersTable.appId];
-    int? rowId = await update(tableName: AdminUsersTable.tableName,
+    int? rowId = await db.update(tableName: AdminUsersTable.tableName,
         row: row,where: '${AdminUsersTable.appId} = ?',whereArgs: [id]
     );
     return rowId;

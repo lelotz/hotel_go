@@ -15,7 +15,7 @@ import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../../widgets/mydividers.dart';
 import '../../../../widgets/text/small_text.dart';
-import '../../room_data_screen/views/room_details_view.dart';
+import '../../guest_dashboard/views/guest_dashboard_view.dart';
 import '../controller/check_in_form_controller.dart';
 
 class CheckInView extends GetView<CheckInFormController> {
@@ -83,10 +83,10 @@ class CheckInView extends GetView<CheckInFormController> {
                               ],
                             ),
 
-                            LabeledText(
-                                title: Get.find<AuthController>().adminUser.value.position!,
-                                subtitle: Get.find<AuthController>().adminUser.value.fullName!
-                            )
+                            // LabeledText(
+                            //     title: controller.,
+                            //     subtitle: Get.find<AuthController>().adminUser.value.fullName!
+                            // )
                           ],
                         ),
                       ),
@@ -226,7 +226,7 @@ class CheckInView extends GetView<CheckInFormController> {
                                             height: 80,
                                             onClick: ()async{
                                               await controller.checkInGuest();
-                                              isReport ? Get.back() : Get.to(()=> const RoomDetailsView());
+                                              isReport ? Get.back() : Get.to(()=> const GuestDashboardView());
                                               Get.delete<CheckInFormController>();
 
                                               },

@@ -21,7 +21,7 @@ class AdminUser {
         this.roomsSold}){
    if(fullName != null){
      firstName = fullName!.split(' ')[0];
-     lastName = fullName!.split(' ')[1] ?? ' ';
+     lastName = fullName!.split(' ')[1];
    }
   }
 
@@ -61,8 +61,20 @@ class AdminUser {
     status = json['status'];
   }
 
+  List<AdminUser> fromJsonList(List<Map<String,dynamic>> list){
+    List<AdminUser> users = [];
+
+    for(Map<String,dynamic> user in list){
+      users.add(AdminUser.fromJson(user));
+    }
+    return users;
+  }
+
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    if(fullName != null){
+      firstName = fullName!.split(' ')[0];
+      lastName = fullName!.split(' ')[1];
+    }    final Map<String, dynamic> data = <String, dynamic>{};
     data['appId'] = appId;
     data['fullName'] = fullName;
     data['firstName'] = firstName;

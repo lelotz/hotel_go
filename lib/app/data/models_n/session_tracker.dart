@@ -5,14 +5,16 @@ class SessionTracker {
   String? employeeId;
   String? dateCreated;
   String? dateEnded;
+  String? sessionStatus;
 
-  SessionTracker({this.id, this.employeeId, this.dateCreated, this.dateEnded});
+  SessionTracker({this.id, this.employeeId, this.dateCreated, this.dateEnded,this.sessionStatus});
 
   SessionTracker.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     employeeId = json['employeeId'];
     dateCreated = json['dateCreated'];
     dateEnded = json['dateEnded'];
+    sessionStatus = json['sessionStatus'];
   }
 
   Map<String, dynamic> toJson() {
@@ -21,6 +23,7 @@ class SessionTracker {
     data['employeeId'] = employeeId;
     data['dateCreated'] = dateCreated;
     data['dateEnded'] = dateEnded;
+    data['sessionStatus'] = sessionStatus;
     return data;
   }
 

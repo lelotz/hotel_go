@@ -1,24 +1,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
-import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/payment_data_controller.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/payment_form_controller.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/room_details_controller.dart';
+import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_data_controller.dart';
+import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_form_controller.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:hotel_pms/core/utils/utils.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../../../core/values/app_constants.dart';
-import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/other_transactions_repo.dart';
 import '../../../data/local_storage/repository/room_transaction_repo.dart';
 import '../../../data/models_n/admin_user_model.dart';
 import '../../../data/models_n/room_data_model.dart';
 import '../../homepage_screen/controller/homepage_controller.dart';
 import '../../login_screen/controller/auth_controller.dart';
+import 'guest_dashboard_controller.dart';
 class RoomServiceFormController extends GetxController{
   RoomData get selectedRoom =>
       Get
@@ -29,8 +25,7 @@ class RoomServiceFormController extends GetxController{
   AdminUser get loggedInUser =>
       Get
           .find<AuthController>()
-          .adminUser
-          .value;
+          .adminUser.value;
   PaymentController paymentController = Get.put(PaymentController());
   PaymentDataController payDataController = Get.find<PaymentDataController>();
 
@@ -51,7 +46,7 @@ class RoomServiceFormController extends GetxController{
     serviceCost.clear();
     serviceDescription.clear();
   }
-  addRoomServiceToBuffer(){
+  addRoomServiceToBuffer()async{
     OtherTransactions roomService = OtherTransactions(
       id: const Uuid().v1(),
       clientId: payDataController.roomTransaction.value.clientId,
@@ -83,7 +78,7 @@ class RoomServiceFormController extends GetxController{
     }
     receivedRoomServiceBuffer.value.clear();
     paymentController.calculateAllFees();
-    Get.find<RoomDetailsController>().updateUI();
+    Get.find<GuestDashboardController>().updateUI();
     updateUI();
   }
 

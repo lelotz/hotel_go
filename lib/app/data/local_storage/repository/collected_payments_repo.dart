@@ -1,12 +1,9 @@
 
 import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
-import 'package:hotel_pms/app/data/local_storage/repository/user_activity_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/session_activity_model.dart';
-import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/core/session_management/session_manager.dart';
 import '../../models_n/collect_payment_model.dart';
-import '../table_keys.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 class CollectedPaymentsRepository extends SqlDatabase{
@@ -17,7 +14,7 @@ class CollectedPaymentsRepository extends SqlDatabase{
   Future<int?> createCollectedPayment(Map<String,dynamic> payment)async{
     int results = -1;
     await SqlDatabase.instance.create(CollectedPaymentsTable.tableName, payment).then((value) async{
-      results = value ?? -1;
+      results = value;
       await SessionManagementRepository().createNewSessionActivity(
           SessionActivity(
             id: const Uuid().v1(),
@@ -34,6 +31,23 @@ class CollectedPaymentsRepository extends SqlDatabase{
         tableName:CollectedPaymentsTable.tableName,
         whereArgs: [date],
         where:'${CollectedPaymentsTable.date} = ?'
+    ).then((value) {
+      if(value != null && value.isNotEmpty){
+        for(Map<String,dynamic> element in value){
+          payments.add(CollectPayment.fromJson(element));
+        }
+      }
+    });
+
+    return payments;
+  }
+
+  Future<List<CollectPayment>?> getCollectedPaymentsById(String collectedPaymentId)async{
+    List<CollectPayment> payments= [];
+    await SqlDatabase.instance.read(
+        tableName:CollectedPaymentsTable.tableName,
+        whereArgs: [collectedPaymentId],
+        where:'${CollectedPaymentsTable.id} = ?'
     ).then((value) {
       if(value != null && value.isNotEmpty){
         for(Map<String,dynamic> element in value){

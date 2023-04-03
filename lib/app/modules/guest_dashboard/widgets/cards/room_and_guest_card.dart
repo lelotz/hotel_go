@@ -4,16 +4,15 @@ import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
 import '../../../../../core/values/app_constants.dart';
 import 'package:flutter/material.dart';
-import '../../../../../core/utils/dim_logic.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/buttons/decorated_text_button.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/title_subtitle.dart';
 import 'package:get/get.dart';
-import '../../controller/room_details_controller.dart';
+import '../../controller/guest_dashboard_controller.dart';
 
 /// Room Number, Status and Guest Name
-class RoomAndGuestCard extends GetView<RoomDetailsController> {
+class RoomAndGuestCard extends GetView<GuestDashboardController> {
 
   final bool isRow;
   final double roomCardWidth;
@@ -22,8 +21,8 @@ class RoomAndGuestCard extends GetView<RoomDetailsController> {
   @override
   Widget build(BuildContext context) {
     return
-    GetBuilder<RoomDetailsController>(
-      init: RoomDetailsController(),
+    GetBuilder<GuestDashboardController>(
+      init: GuestDashboardController(),
         builder: (controller)=>
 
       isRow ? Row(

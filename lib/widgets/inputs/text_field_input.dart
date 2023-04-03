@@ -66,36 +66,32 @@ class _TextFieldInputState extends State<TextFieldInput> {
         borderRadius: BorderRadius.circular(widget.borderRadius)
     ): const UnderlineInputBorder();
 
-    return SizedBox(
-      height: widget.maxLines > 1 ? null : Size.fromHeight(widget.inputFieldHeight).height,
-      width: widget.maxLines > 1 ? null :Size.fromWidth(widget.inputFieldWidth).width,
-      child: TextFormField(
-        validator: (value){
-          return widget.validation!(value);
-        },
-        maxLines: widget.maxLines,
-        controller: widget.textEditingController,
-        onChanged: (value){
-            setState(() {
-              if(widget.onChanged != null){
-                if(value != ""){widget.onChanged!();}
-              }
-            });
-        },
-        decoration: InputDecoration(
-          icon: widget.useIcon ? AppIcon(icon: widget.icon,iconSize: AppSize.size24,): null,
-          border: inputBorder,
-          focusedBorder: focusedBorder,
-          enabledBorder: inputBorder,
-          filled: false,
-          contentPadding: const EdgeInsets.all(8),
-          hintText: widget.hintText,
-          hoverColor: widget.hintTextColor,
-          label: SmallText(text: widget.hintText,color:widget.hintTextColor,fontWeight: FontWeight.w700,),
-        ),
-        keyboardType: widget.textInputType,
-        obscureText: widget.isPass,
+    return TextFormField(
+      validator: (value){
+        return widget.validation!(value);
+      },
+      maxLines: widget.maxLines,
+      controller: widget.textEditingController,
+      onChanged: (value){
+          setState(() {
+            if(widget.onChanged != null){
+              if(value != ""){widget.onChanged!();}
+            }
+          });
+      },
+      decoration: InputDecoration(
+        icon: widget.useIcon ? AppIcon(icon: widget.icon,iconSize: AppSize.size24,): null,
+        border: inputBorder,
+        focusedBorder: focusedBorder,
+        enabledBorder: inputBorder,
+        filled: false,
+        contentPadding: const EdgeInsets.all(8),
+        hintText: widget.hintText,
+        hoverColor: widget.hintTextColor,
+        label: SmallText(text: widget.hintText,color:widget.hintTextColor,fontWeight: FontWeight.w700,),
       ),
+      keyboardType: widget.textInputType,
+      obscureText: widget.isPass,
     );
   }
 }

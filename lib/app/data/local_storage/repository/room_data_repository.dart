@@ -4,21 +4,23 @@ import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/room_data_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_status_model.dart';
 
-import '../table_keys.dart';
 
-class RoomDataRepository extends SqlDatabase{
+class RoomDataRepository {
+
+  SqlDatabase db = SqlDatabase.instance;
   RoomDataRepository();
 
 
   /// CREATE
   Future<int?> createRoom(Map<String,dynamic> row)async{
-    return await create(RoomsTable.tableName, row);
+    int rowNumber = await db.create(RoomsTable.tableName, row);
+    return rowNumber;
   }
 
   /// READ
   /// READ All [ROOMS]
   Future<List<Map<String, dynamic>>?> getAllRooms()async{
-    return await read(tableName: RoomsTable.tableName,readAll: true);
+    return await db.read(tableName: RoomsTable.tableName,readAll: true);
   }
 
 
@@ -26,7 +28,7 @@ class RoomDataRepository extends SqlDatabase{
 
   Future<List<RoomData>> getAllRoomData()async{
     List<RoomData> roomData = [];
-    await read(tableName: RoomsTable.tableName,readAll: true).then((value) async{
+    await db.read(tableName: RoomsTable.tableName,readAll: true).then((value) async{
       if(value != null && value.isNotEmpty){
         for(Map<String,dynamic> room in value){
           RoomData currentRoom = RoomData.fromJson(room);
@@ -46,7 +48,7 @@ class RoomDataRepository extends SqlDatabase{
   /// READ [ROOMS] by [roomNumber]
   Future<RoomData> getRoom(int roomNumber)async{
     RoomData room = RoomData();
-    await read(
+    await db.read(
         tableName: RoomsTable.tableName,
         where: '${RoomsTable.id} = ?',
         whereArgs: [roomNumber]
@@ -67,7 +69,7 @@ class RoomDataRepository extends SqlDatabase{
 
 
     int id = row[RoomsTable.id];
-    int? rowId = await update(tableName: RoomsTable.tableName,
+    int? rowId = await db.update(tableName: RoomsTable.tableName,
         row: row,where: '${RoomsTable.id} = ?',whereArgs: [id]
     );
     return rowId;

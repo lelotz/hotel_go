@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
-import 'package:hotel_pms/core/utils/dim_logic.dart';
 import '../../core/resourses/color_manager.dart';
 import '../../core/values/localization/local_keys.dart';
-import '../icons/app_icon.dart';
+
 import '../text/big_text.dart';
 import '../text/small_text.dart';
 import 'package:get/get.dart';

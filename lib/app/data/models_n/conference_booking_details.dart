@@ -19,11 +19,11 @@ class ConferenceBookingDetails {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['bookingId'] = this.bookingId;
-    data['date'] = this.date;
-    data['startTime'] = this.startTime;
-    data['endTime'] = this.endTime;
+    data['id'] = id;
+    data['bookingId'] = bookingId;
+    data['date'] = date;
+    data['startTime'] = startTime;
+    data['endTime'] = endTime;
     return data;
   }
 }

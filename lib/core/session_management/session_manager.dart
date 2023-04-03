@@ -1,3 +1,5 @@
+import 'package:hotel_pms/core/utils/date_formatter.dart';
+import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:uuid/uuid.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/models_n/session_activity_model.dart';
@@ -17,61 +19,65 @@ class SessionManager extends GetxController{
   /// Creates a new session if
   /// 1. A session older than 8 hours and created on the same day exists
   /// 2. Current Session is empty
-  Future<String?> createNewSession(Map<String,dynamic> element)async{
+  Future<String?> createNewSession(String userId)async{
+    Map<String,dynamic> sessionTrackerMap = SessionTracker(
+      id: const Uuid().v1(),
+      employeeId: userId,
+      dateCreated: DateTime.now().toIso8601String(),
+      sessionStatus: SessionStatusTypes.instance.currentSession
+    ).toJson();
 
     /// Search for existing session
-    sessionExists.value = await getExistingOpenSession(element);
-    sessionExists.refresh();
+    sessionExists.value = await getExistingOpenSession(userId);
 
     if(sessionExists.value == false){
       /// Create currentSession
-      await SessionManagementRepository().createNewSessionTracker(element).then((value) {
+      await SessionManagementRepository().createNewSessionTracker(sessionTrackerMap).then((value) {
         if (value != null) {
-          currentSession.value = SessionTracker.fromJson(element);
+          currentSession.value = SessionTracker.fromJson(sessionTrackerMap);
         }
       });
-      await setCurrentSessionToStorage(element);
     }
 
     return currentSession.value.id;
   }
 
-  Future<bool> getExistingOpenSession(Map<String,dynamic> element)async {
-    bool sessionExists = false;
-    if (element['employeeId'] != null) {
-      await SessionManagementRepository().getSessionByEmployeeIdAndDate(
-          element['employeeId'], DateTime.now().toIso8601String(),
-          currentSession: true).then((value) async {
-        if (value != null && value.length == 1) {
-          currentSession.value = SessionTracker.fromJson(value[0]);
-          logger.i({
-            "title": "Found existing session with today's date",
-            "data": value[0]
-          });
-          sessionExists = true;
-        } else if (value != null && value.length > 1) {
-          logger.wtf({
-            'title': 'More than one session was found which means the last session was not logged out',
-            'actions': ''
-          });
-        }
-      });
 
+  Future<SessionTracker?> updateRogueSessions(List<SessionTracker> rogueSessions, String attemptingUserId)async{
+    SessionTracker validExistingSession = SessionTracker();
+    for(SessionTracker session in rogueSessions){
+      if(session.employeeId == attemptingUserId &&
+          isTimeDifferenceLessOrEqualTo(DateTime.parse(session.dateCreated!),DateTime.now(),9)){
+        validExistingSession = session;
+        //logger.i({'using existing session': validExistingSession.toJson()});
+      }else {
+        session.dateEnded = DateTime.now().toIso8601String();
+        session.sessionStatus = SessionStatusTypes.instance.expiredSession;
+        await SessionManagementRepository().updateSessionTracker(session.toJson());
+      }
     }
-    return sessionExists;
+
+    return validExistingSession;
   }
 
-  setCurrentSessionToStorage(Map<String,dynamic> sessionTrackerMap)async{
-    await SessionManagementRepository().getCurrentSession().then((value)async {
-      if(value.isNotEmpty) await SessionManagementRepository().deleteCurrentSession();
-    });
+  Future<bool> getExistingOpenSession(String userId)async {
+    bool sessionExists = false;
 
-    await SessionManagementRepository().createNewSessionTracker(sessionTrackerMap,currentSession: true).then((value) {
-      if (value != null) {
-        currentSession.value = SessionTracker.fromJson(sessionTrackerMap);
+    await SessionManagementRepository().getSessionByStatus(SessionStatusTypes.instance.currentSession).then((value) async{
+      if(value.isNotEmpty){
+        //logger.w({'rogue sessions detected': value.length});
+        currentSession.value = await updateRogueSessions(value, userId) ?? SessionTracker();
+        if(currentSession.value.id != null) {
+          sessionExists = true;
+          //logger.i({'sessionExists': currentSession.value.toJson()});
+        }
       }
     });
+
+    return sessionExists;
+
   }
+
 
   updateSessionTracker()async{
     if(isTest){
@@ -79,8 +85,9 @@ class SessionManager extends GetxController{
     }else{
       currentSession.value.dateEnded = DateTime.now().toIso8601String();
     }
-
-    await SessionManagementRepository().updateSessionTracker(currentSession.value.toJson()).then((value) {});
+    currentSession.value.sessionStatus = SessionStatusTypes.instance.expiredSession;
+    await SessionManagementRepository().updateSessionTracker(currentSession.value.toJson());
+    //logger.i({'updatedSessionAtLogOff':currentSession.value.toJson()});
 
   }
 

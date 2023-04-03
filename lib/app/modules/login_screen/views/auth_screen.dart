@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
-import 'package:hotel_pms/app/modules/user_management/controller/create_new_user_form_controller.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
-import '../../../../core/utils/dim_logic.dart';
 import '../../../../core/values/assets.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../../widgets/buttons/container_text_button.dart';
@@ -18,7 +16,7 @@ class LandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthController authController = Get.put(AuthController(),permanent: true);
+    AuthController authController = Get.put(AuthController(isTest:false),permanent: true);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -79,7 +77,7 @@ class LandingPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: AppPadding.padding40,right: AppPadding.padding40),
                   child: ContainerTextButton(
-                    onClick: authController.authenticateAdminUser,
+                    onClick: authController.loginUser,
                     text: LocalKeys.kLogin.tr,backgroundColor: ColorsManager.darkGrey,
                     textColor: ColorsManager.darkGrey
                   ),

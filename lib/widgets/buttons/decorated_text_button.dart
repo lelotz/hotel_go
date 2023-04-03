@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/core/utils/dim_logic.dart';
 import '../../core/resourses/size_manager.dart';
 import '../text/big_text.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';

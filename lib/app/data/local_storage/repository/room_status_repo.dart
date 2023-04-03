@@ -1,31 +1,28 @@
 
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
-import 'package:hotel_pms/app/data/models_n/room_status_model.dart';
 
-import '../table_keys.dart';
 
-class RoomStatusRepository extends SqlDatabase{
-
+class RoomStatusRepository{
+  SqlDatabase db = SqlDatabase.instance;
   RoomStatusRepository();
   /// Room Status CRUD
 
   /// CREATE RoomStatus
   Future<int?> createRoomStatus(Map<String,dynamic> row)async{
-    int? rowNumber = await create(RoomStatusTable.tableName, row);
+    int? rowNumber = await db.create(RoomStatusTable.tableName, row);
     return rowNumber;
   }
 
   /// READ RoomStatus
   Future<List<Map<String, dynamic>>?> getAllRoomsStatus()async{
-
-    return await read(
+    return await db.read(
         tableName: RoomStatusTable.tableName,
         readAll: true
     );
   }
   /// READ RoomStatus by proving roomNumber
   Future<List<Map<String, dynamic>>?> getRoomsStatus(int roomId)async{
-    return await read(
+    return await db.read(
         tableName: RoomStatusTable.tableName,
         where: '${RoomStatusTable.roomId} = ?',
         whereArgs: [roomId.toString()]
@@ -35,7 +32,7 @@ class RoomStatusRepository extends SqlDatabase{
   /// Update ROOM Status
   Future<int?> updateRoomStatus(Map<String,dynamic> row) async{
     int id = row[RoomStatusTable.roomId];
-    int? rowId = await update(tableName: RoomStatusTable.tableName,
+    int? rowId = await db.update(tableName: RoomStatusTable.tableName,
         row: row,where: '${ RoomStatusTable.roomId} = ?',whereArgs: [id]
     );
     return rowId;

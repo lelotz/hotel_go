@@ -16,7 +16,7 @@ class HomepageController extends GetxController{
   ///Rx<List<String>> authorizedRoutes =
 
   @override
-  void onInit()async {
+  Future<void> onInit()async {
     // TODO: implement onInit
     await loadRoomData();
 
@@ -36,7 +36,7 @@ class HomepageController extends GetxController{
     roomData.value = await RoomDataRepository().getAllRoomData();
     roomDataCount.value = roomData.value.length;
     roomDataCount.refresh();
-    logger.wtf({'Room Data loaded':roomData.value.length});
+    //logger.wtf({'Room Data loaded':roomData.value.length});
   }
 
   Future<void> refreshSelectedRoom()async{
@@ -46,7 +46,7 @@ class HomepageController extends GetxController{
 
   selectedRoom(RoomData room){
     selectedRoomData.value = room;
-    logger.i({'Selected Room' : selectedRoomData.value.roomNumber,'status': selectedRoomData.value.roomStatus!.description });
+    //logger.i({'Selected Room' : selectedRoomData.value.roomNumber,'status': selectedRoomData.value.roomStatus!.description });
     //print('ROOM DATA : ${selectedRoomData.value.roomNumber}');
   }
 

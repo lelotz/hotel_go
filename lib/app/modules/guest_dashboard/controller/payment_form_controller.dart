@@ -5,8 +5,7 @@ import 'package:hotel_pms/app/data/models_n/client_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/payment_data_controller.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/room_details_controller.dart';
+import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_data_controller.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
@@ -33,11 +32,7 @@ class PaymentController extends GetxController {
           .selectedRoomData
           .value;
 
-  AdminUser get loggedInUser =>
-      Get
-          .find<AuthController>()
-          .adminUser
-          .value;
+  Rx<AdminUser> loggedInUser = Get.find<AuthController>().adminUser;
 
   ClientUser clientUser = ClientUser();
 
@@ -74,7 +69,7 @@ class PaymentController extends GetxController {
   Rx<String> selectedBill = Rx<String>("");
 
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     await getMetaData();
     await calculateAllFees();
     super.onInit();
@@ -185,8 +180,8 @@ class PaymentController extends GetxController {
           id: const Uuid().v1(),
           clientId: payDataController.roomTransaction.value.clientId,
           clientName: clientUser.fullName,
-          employeeId: loggedInUser.appId,
-          employeeName: loggedInUser.fullName,
+          employeeId:loggedInUser.value.appId,
+          employeeName: loggedInUser.value.fullName,
           roomTransactionId: payDataController.roomTransaction.value.id,
           roomNumber: selectedRoom.roomNumber,
           amountCollected: stringToInt(collectedPaymentInputCtrl.text),
@@ -227,38 +222,42 @@ class PaymentController extends GetxController {
   /// Update RoomService Fees with data form [CollectPaymentForm]
   updateRoomServiceFees() async {
     //await calculateRoomServiceCost();
-    int paymentInput = stringToInt(collectedPaymentInputCtrl.text);
-    int currentRoomServiceTransactionCost = 0;
-    collectedPaymentInputCtrl.text = roomServiceBalance.value.toString();
-    for(OtherTransactions roomServiceTransaction in sessionTransactions.value[LocalKeys.kRoomService.toUpperCase()]!){
-      if(roomServiceTransaction.outstandingBalance! > 0){
-        currentRoomServiceTransactionCost = paymentInput - (paymentInput - roomServiceTransaction.grandTotal!);
-        roomServiceTransaction.amountPaid = currentRoomServiceTransactionCost;
-        roomServiceTransaction.outstandingBalance = roomServiceTransaction.grandTotal! - roomServiceTransaction.amountPaid!;
-        paymentInput = paymentInput - currentRoomServiceTransactionCost;
-        await  OtherTransactionsRepository().updateOtherTransaction(roomServiceTransaction.toJson(),);
-      }
-    }
-    /// Updates [RoomTransaction]
-    await updateGrandTotal();
-    await CollectPayment(
-      id: const Uuid().v1(),
-      clientId: payDataController.roomTransaction.value.clientId,
-      clientName: clientUser.fullName,
-      employeeId: loggedInUser.appId,
-      employeeName: loggedInUser.fullName,
-      roomTransactionId: payDataController.roomTransaction.value.id,
-      roomNumber: selectedRoom.roomNumber,
-      amountCollected: stringToInt(collectedPaymentInputCtrl.text),
-      dateTime: DateTime.now().toIso8601String(),
-      date: extractDate(DateTime.now()),
-      time: extractTime(DateTime.now()),
-      service: TransactionTypes.roomServiceTransaction,
-      payMethod: "CASH",
-      receiptNumber: const Uuid().v1(),
+    if(sessionTransactions.value.keys.contains(LocalKeys.kRoomService.toUpperCase())){
 
-    ).toDb();
-    Get.delete<PaymentController>();
+      int paymentInput = roomServiceBalance.value;
+      int currentRoomServiceTransactionCost = 0;
+      collectedPaymentInputCtrl.text = roomServiceBalance.value.toString();
+      for(OtherTransactions roomServiceTransaction in sessionTransactions.value[LocalKeys.kRoomService.toUpperCase()]!){
+        if(roomServiceTransaction.outstandingBalance! > 0){
+          currentRoomServiceTransactionCost = paymentInput - (paymentInput - roomServiceTransaction.grandTotal!);
+          roomServiceTransaction.amountPaid = currentRoomServiceTransactionCost;
+          roomServiceTransaction.outstandingBalance = roomServiceTransaction.grandTotal! - roomServiceTransaction.amountPaid!;
+          paymentInput = paymentInput - currentRoomServiceTransactionCost;
+          await  OtherTransactionsRepository().updateOtherTransaction(roomServiceTransaction.toJson(),);
+        }
+      }
+      /// Updates [RoomTransaction]
+      await updateGrandTotal();
+      await CollectPayment(
+        id: const Uuid().v1(),
+        clientId: payDataController.roomTransaction.value.clientId,
+        clientName: clientUser.fullName,
+        employeeId: loggedInUser.value.appId,
+        employeeName: loggedInUser.value.fullName,
+        roomTransactionId: payDataController.roomTransaction.value.id,
+        roomNumber: selectedRoom.roomNumber,
+        amountCollected: stringToInt(collectedPaymentInputCtrl.text),
+        dateTime: DateTime.now().toIso8601String(),
+        date: extractDate(DateTime.now()),
+        time: extractTime(DateTime.now()),
+        service: TransactionTypes.roomServiceTransaction,
+        payMethod: "CASH",
+        receiptNumber: const Uuid().v1(),
+
+      ).toDb();
+      Get.delete<PaymentController>();
+    }
+
   }
 
   /// Calculate laundryCost
@@ -285,45 +284,52 @@ class PaymentController extends GetxController {
 
 
   /// Update Laundry Fees with data form [CollectPaymentForm]
-  updateLaundryFees() async {
-    //print('[UPD]sessionData ${sessionTransactions.value[LocalKeys.kLaundry.toUpperCase()]?.length ?? -1}');
-    await calculateLaundryCost();
-    //print('[UPD 1]sessionData ${sessionTransactions.value[LocalKeys.kLaundry.toUpperCase()]?.length ?? -1}');
-    int paymentInput = stringToInt(collectedPaymentInputCtrl.text);
-    int currentLaundryTransactionCost = 0;
-    collectedPaymentInputCtrl.text = laundryBalance.value.toString();
+  updateLaundryFees({bool payingAllBills = false}) async {
+    if(sessionTransactions.value.keys.contains(LocalKeys.kLaundry.toUpperCase())){
+      await calculateLaundryCost();
+      int paymentInput = laundryBalance.value;
+      int currentLaundryTransactionCost = 0;
+      collectedPaymentInputCtrl.text = laundryBalance.value.toString();
 
-    for (OtherTransactions laundryTransaction in sessionTransactions.value[LocalKeys.kLaundry.toUpperCase()] ?? []) {
-      if (laundryTransaction.outstandingBalance! > 0) {
-        currentLaundryTransactionCost = paymentInput - (paymentInput - laundryTransaction.grandTotal!);
-        laundryTransaction.amountPaid = currentLaundryTransactionCost;
-        laundryTransaction.outstandingBalance = laundryTransaction.grandTotal! - laundryTransaction.amountPaid!;
-        paymentInput = paymentInput - currentLaundryTransactionCost;
+      for (OtherTransactions laundryTransaction in sessionTransactions.value[LocalKeys.kLaundry.toUpperCase()] ?? []) {
+        if (laundryTransaction.outstandingBalance! > 0) {
+          currentLaundryTransactionCost = paymentInput - (paymentInput - laundryTransaction.grandTotal!);
+          laundryTransaction.amountPaid = currentLaundryTransactionCost;
+          laundryTransaction.outstandingBalance = laundryTransaction.grandTotal! - laundryTransaction.amountPaid!;
+          paymentInput = paymentInput - currentLaundryTransactionCost;
 
-        await OtherTransactionsRepository().updateOtherTransaction(laundryTransaction.toJson());
+          await OtherTransactionsRepository().updateOtherTransaction(laundryTransaction.toJson());
+        }
       }
+
+
+      await CollectPayment(
+        id: const Uuid().v1(),
+        clientId: payDataController.roomTransaction.value.clientId,
+        clientName: clientUser.fullName,
+        employeeId:  loggedInUser.value.appId,
+        employeeName: loggedInUser.value.fullName,
+        roomTransactionId: payDataController.roomTransaction.value.id,
+        roomNumber: selectedRoom.roomNumber,
+        amountCollected: stringToInt(collectedPaymentInputCtrl.text),
+        dateTime: DateTime.now().toIso8601String(),
+        date: extractDate(DateTime.now()),
+        time: extractTime(DateTime.now()),
+        service: TransactionTypes.laundryPayment,
+        payMethod: "CASH",
+        receiptNumber: const Uuid().v1(),
+      ).toDb();
+      /// Updates [RoomTransaction]
+      await updateGrandTotal();
     }
 
 
-    await CollectPayment(
-      id: const Uuid().v1(),
-      clientId: payDataController.roomTransaction.value.clientId,
-      clientName: clientUser.fullName,
-      employeeId: loggedInUser.appId,
-      employeeName: loggedInUser.fullName,
-      roomTransactionId: payDataController.roomTransaction.value.id,
-      roomNumber: selectedRoom.roomNumber,
-      amountCollected: stringToInt(collectedPaymentInputCtrl.text),
-      dateTime: DateTime.now().toIso8601String(),
-      date: extractDate(DateTime.now()),
-      time: extractTime(DateTime.now()),
-      service: TransactionTypes.laundryPayment,
-      payMethod: "CASH",
-      receiptNumber: const Uuid().v1(),
-    ).toDb();
-    /// Updates [RoomTransaction]
-    await updateGrandTotal();
+  }
 
+  Future<void> payAllBills()async{
+    await updateRoomFees();
+    await updateLaundryFees();
+    await updateRoomServiceFees();
   }
 
   selectBill(String billType) {
@@ -357,8 +363,7 @@ class PaymentController extends GetxController {
         await updateRoomServiceFees();
         break;
       case LocalKeys.kAll :
-        collectedPaymentInputCtrl.text =
-            grandTotalOutstandingBalance.value.toString();
+        await payAllBills();
         break;
     }
   }

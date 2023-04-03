@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/widgets/tables/display_stored_laundry.dart';
 import '../../../../../core/resourses/color_manager.dart';
-import '../../../../../core/resourses/size_manager.dart';
-import '../../../../../core/utils/dim_logic.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/buttons/decorated_text_button.dart';
 import '../../../../../widgets/buttons/my_outlined_button.dart';
@@ -12,6 +9,7 @@ import '../../../../../widgets/mydividers.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import '../../controller/laundry_form_controller.dart';
+import '../tables/display_stored_laundry.dart';
 import 'dialog_forms.dart';
 
 

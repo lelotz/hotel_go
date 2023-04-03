@@ -4,9 +4,11 @@ import 'package:hotel_pms/app/modules/reports/view/reports_view.dart';
 import 'package:hotel_pms/app/modules/sandbox/syncfusion_table_example.dart';
 import 'package:hotel_pms/app/modules/user_management/views/user_management_view.dart';
 import 'package:hotel_pms/widgets/dialogs/dialod_builder.dart';
+import 'package:hotel_pms/widgets/illustrations/illustrations_example.dart';
 import '../../../core/resourses/color_manager.dart';
 import '../../../core/resourses/size_manager.dart';
 import '../../../core/values/localization/local_keys.dart';
+import '../../../widgets/tables/paged_table_example.dart';
 import '../../../widgets/text/big_text.dart';
 import '../../../widgets/text/small_text.dart';
 import '../book_service/view/book_service_view.dart';
@@ -65,7 +67,12 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
             ElevatedButton(
                 style:style,
                 onPressed: (){Get.to(()=> const SyncFusionExample());},
-                child: const SmallText(text: "SyncFusion Expample",color: ColorsManager.grey1,)),
+                child: const SmallText(text: "Exportable Table",color: ColorsManager.grey1,)),
+            SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
+            ElevatedButton(
+                style:style,
+                onPressed: (){Get.to(()=> PagedDataExample());},
+                child: const SmallText(text: "Paged Data Example",color: ColorsManager.grey1,)),
 
           ],
         ),

@@ -11,7 +11,6 @@ import 'package:hotel_pms/app/modules/reports/controller/handover_form_controlle
 import 'package:hotel_pms/core/logs/logger_instance.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
-import 'package:hotel_pms/core/utils/utils.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
 import 'package:hotel_pms/mock_data/mock_data_api.dart';
@@ -42,34 +41,38 @@ class CheckInFormController extends GetxController{
   TextEditingController countryOfBirthCtrl = TextEditingController();
   Rx<DateTime> checkInDate = Rx<DateTime>(DateTime.now());
   Rx<DateTime> checkOutDate = Rx<DateTime>(DateTime.now());
-
+  Map<String,dynamic> checkInArtifacts = {};
 
   HomepageController? homepageController;
   Rx<RoomData> selectedRoomData = Rx<RoomData>(RoomData());
-  String employeeId = Get.find<AuthController>().adminUser.value.appId!;
-  String employeeName = Get.find<AuthController>().adminUser.value.fullName!;
+  Future<String> get employeeId async => Get.find<AuthController>().adminUser.value.appId!;
+  Future<String> get employeeIdName async => Get.find<AuthController>().adminUser.value.fullName!;
+
 
   String userId = const Uuid().v1();
-  String transactionId = const Uuid().v1();
+  final String transactionId = const Uuid().v1();
 
   Rx<int> roomCost = Rx<int>(0);
   Rx<int> outstandingBalance = Rx<int>(0);
   bool isReport;
+  bool isTest;
+  int mockNameIndex = random(0,mockNames.length);
+  int mockCountriesIndex = random(0, mockCountries.length);
   String roomNumber;
 
-  CheckInFormController({this.isReport = false,this.roomNumber = "101"});
+  CheckInFormController({this.isReport = false,this.roomNumber = "101",this.isTest=false});
 
   @override
-  onInit()async{
+  Future<void> onInit()async{
     super.onInit();
     adultsCtrl.text = "1";
     childrenCtrl.text = "0";
-    fullNameCtrl.text = mockNames[random(0,mockNames.length)];
-    goingToCtrl.text = mockCountries[random(0, mockCountries.length)];
-    comingFromCtrl.text = mockCountries[random(0, mockCountries.length)];
+    fullNameCtrl.text = mockNames[mockNameIndex];
+    goingToCtrl.text = mockCountries[mockCountriesIndex];
+    comingFromCtrl.text = mockCountries[mockCountriesIndex];
     idNumberCtrl.text = random(111111, 9999999).toString();
     idTypeCtrl.text = "PASSPORT";
-    countryOfBirthCtrl.text = mockCountries[random(0, mockCountries.length)];
+    countryOfBirthCtrl.text = mockCountries[mockCountriesIndex];
     nightsCtrl.text = "1";
     paidTodayCtrl.text = "0";
     await initializeRoomData(roomNumber);
@@ -89,7 +92,7 @@ class CheckInFormController extends GetxController{
           if(value != null )selectedRoomData.value.roomStatus = RoomStatusModel.fromJson(value[0]);
         });
       });
-      logger.i({'roomData': selectedRoomData.value});
+      //logger.i({'roomData': selectedRoomData.value});
 
 
     }
@@ -98,7 +101,7 @@ class CheckInFormController extends GetxController{
 
   stayCost(){
     int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType['VIP'] : AppConstants.roomType['STD'];
-    roomCost.value = (stringToInt(nightsCtrl.text) ?? 0) * roomPrice;
+    roomCost.value = (stringToInt(nightsCtrl.text) ) * roomPrice;
     //roomCost.value = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType['VIP'] : AppConstants.roomType['STD'];
     checkOutDate.value.add(Duration(days: stringToInt(nightsCtrl.text)));
     roomCost.refresh();
@@ -113,26 +116,29 @@ class CheckInFormController extends GetxController{
     int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType[LocalKeys.kVip] : AppConstants.roomType[LocalKeys.kStd];
 
     roomCost.value = stringToInt(nightsCtrl.text) * roomPrice;
-    paidTodayCtrl.text = roomCost.value.toString();
+    if(isTest == false){
+      paidTodayCtrl.text = roomCost.value.toString();
+    }
     outstandingBalance.value = roomCost.value - stringToInt(paidTodayCtrl.text);
 
     await createClientProfile().then((value) async{
-      showSnackBar("Created Profile", Get.context!);
+      //showSnackBar("Created Profile", Get.context!);
         await createRoomTransaction().then((value) async{
-          showSnackBar("Created Transaction", Get.context!);
+          //showSnackBar("Created Transaction", Get.context!);
           await updateRoomData().then((value)async {
-            showSnackBar("Updated RoomsStatus", Get.context!);
+           // showSnackBar("Updated RoomsStatus", Get.context!);
             await updateAdminUserRoomsSold().then((value) {
-              showSnackBar("Updated Rooms Sold", Get.context!);
+              //showSnackBar("Updated Rooms Sold", Get.context!);
             }).then((value) async {
               await createClientActivity().then((value) {
-                showSnackBar("Created ClientActivity", Get.context!);
+               // showSnackBar("Created ClientActivity", Get.context!);
               }).then((value) async{
                 if(int.tryParse(paidTodayCtrl.text) != null && int.tryParse(paidTodayCtrl.text) != 0){
-                  await CollectPayment(
-                    id: const Uuid().v1(),
-                    employeeId: employeeId,
-                    employeeName: employeeName,
+                  final String collectPaymentId = const Uuid().v1();
+                  CollectPayment collectPayment = CollectPayment(
+                    id: collectPaymentId,
+                    employeeId: await employeeId,
+                    employeeName: await employeeIdName,
                     roomTransactionId: transactionId,
                     clientId: userId,
                     clientName: fullNameCtrl.text,
@@ -144,13 +150,16 @@ class CheckInFormController extends GetxController{
                     time: extractTime(DateTime.now()),
                     payMethod: "CASH",
                     receiptNumber: const Uuid().v1(),
-                  ).toDb().then((value) async{
+                  );
+                  await collectPayment.toDb().then((value) async{
                     await homepageController?.refreshSelectedRoom();
-                    if(isReport)  await Get.find<HandoverFormController>().onInit();
-                    showSnackBar("Created CollectPayment", Get.context!);
+                    checkInArtifacts[CheckInArtifactsKeys.collectedPaymentId] = collectPaymentId;
+                    checkInArtifacts['${CheckInArtifactsKeys.collectedPaymentId}value'] = collectPayment.toJson();
+                    if(isReport && isTest == false)  await Get.find<HandoverFormController>().onInit();
+                    //showSnackBar("Created CollectPayment", Get.context!);
                   });
                 }
-                //update();
+
               });
             });
           });
@@ -159,40 +168,46 @@ class CheckInFormController extends GetxController{
 
   }
   Future<void> createClientProfile()async{
+    ClientUser clientUser = ClientUser(
+        clientId: userId,
+        fullName: fullNameCtrl.text,
+        idType: idTypeCtrl.text,
+        idNumber: idNumberCtrl.text,
+        countryOfBirth: countryOfBirthCtrl.text
+    );
     await ClientUserRepository().createClientUser(
-        ClientUser(
-            clientId: userId,
-            fullName: fullNameCtrl.text,
-            idType: idTypeCtrl.text,
-            idNumber: idNumberCtrl.text,
-            countryOfBirth: countryOfBirthCtrl.text
-        ).toJson());
+        clientUser.toJson()).then((value) {
+          checkInArtifacts[CheckInArtifactsKeys.clientId] = userId;
+          checkInArtifacts['${CheckInArtifactsKeys.clientId}value'] = clientUser.toJson();
+    });
   }
   Future<void> createRoomTransaction()async {
-    await RoomTransactionRepository().createRoomTransaction(
-        RoomTransaction(
-          id: transactionId,
-          clientId: userId,
-          employeeId: employeeId,
-          checkOutDate: checkOutDate.value.toIso8601String(),
-          checkInDate: checkInDate.value.toIso8601String(),
-          arrivingFrom: comingFromCtrl.text,
-          goingTo: goingToCtrl.text,
-          roomNumber: selectedRoomData.value.roomNumber,
-          nights: stringToInt(nightsCtrl.text),
-          roomCost: roomCost.value,
-          roomAmountPaid: int.tryParse(paidTodayCtrl.text),
-          roomOutstandingBalance: outstandingBalance.value,
-          otherCosts: 0,
-          grandTotal: roomCost.value,
-          outstandingBalance: roomCost.value - int.tryParse(paidTodayCtrl.text)!,
-          amountPaid: int.tryParse(paidTodayCtrl.text),
-          paymentNotes: outstandingBalance.value != 0 ? LocalKeys.kRequestedPaymentAtCheckOut : "",
-          transactionNotes: '',
-          date: DateTime.now().toIso8601String(),
-          time: extractTime(DateTime.now()),
-        ).toJson()
+    RoomTransaction roomTransaction = RoomTransaction(
+      id: transactionId,
+      clientId: userId,
+      employeeId: await employeeId,
+      checkOutDate: checkOutDate.value.toIso8601String(),
+      checkInDate: checkInDate.value.toIso8601String(),
+      arrivingFrom: comingFromCtrl.text,
+      goingTo: goingToCtrl.text,
+      roomNumber: selectedRoomData.value.roomNumber,
+      nights: stringToInt(nightsCtrl.text),
+      roomCost: roomCost.value,
+      roomAmountPaid: int.tryParse(paidTodayCtrl.text),
+      roomOutstandingBalance: outstandingBalance.value,
+      otherCosts: 0,
+      grandTotal: roomCost.value,
+      outstandingBalance: roomCost.value - int.tryParse(paidTodayCtrl.text)!,
+      amountPaid: int.tryParse(paidTodayCtrl.text),
+      paymentNotes: outstandingBalance.value != 0 ? LocalKeys.kRequestedPaymentAtCheckOut : "",
+      transactionNotes: '',
+      date: DateTime.now().toIso8601String(),
+      time: extractTime(DateTime.now()),
     );
+    await RoomTransactionRepository().createRoomTransaction(roomTransaction.toJson()).then((value) {
+      checkInArtifacts[CheckInArtifactsKeys.roomTransactions] = roomTransaction.id;
+      checkInArtifacts['${CheckInArtifactsKeys.roomTransactions}value'] = roomTransaction.toJson();
+    });
   }
   Future<void> updateRoomData()async{
     selectedRoomData.value.currentTransactionId = transactionId;
@@ -200,29 +215,46 @@ class CheckInFormController extends GetxController{
     selectedRoomData.value.roomStatus!.code =  LocalKeys.kStatusCode200.toString();
     selectedRoomData.value.nextAvailableDate = checkOutDate.value.toIso8601String();
     await RoomDataRepository().updateRoom(selectedRoomData.value.toJson()).then((value) async {
-      showSnackBar("Updated RoomsData", Get.context!);
-      await RoomStatusRepository().updateRoomStatus(selectedRoomData.value.roomStatus!.toJson());
+      await RoomStatusRepository().updateRoomStatus(selectedRoomData.value.roomStatus!.toJson()).then((value) {
+      });
     });
+    logger.i({'currentTID':selectedRoomData.value.toJson()});
+    checkInArtifacts[CheckInArtifactsKeys.roomData] = selectedRoomData.value.roomNumber;
+    checkInArtifacts['${CheckInArtifactsKeys.roomData}value'] = selectedRoomData.value.toJson();
   }
   Future<void> updateAdminUserRoomsSold()async{
+    await Get.find<AuthController>().updateAdminUser();
     AdminUser aU = Get.find<AuthController>().adminUser.value;
-    await AdminUserRepository().updateAdminUser(AdminUser.incrementRoomsSold(aU.toJson()).toJson());
+    await AdminUserRepository().getAdminUserById(await employeeId).then((value) {
+      aU = AdminUser().fromJsonList(value ?? [])[0];
+    });
+
+    //logger.i({'updateAdminUserFromAuth': aU.appId});
+    aU = AdminUser.incrementRoomsSold(aU.toJson());
+    await AdminUserRepository().updateAdminUser(aU.toJson()).then((value) {
+      checkInArtifacts[CheckInArtifactsKeys.employeeId] = aU.appId;
+      checkInArtifacts['${CheckInArtifactsKeys.employeeId}value'] = aU.toJson();
+    });
+    await Get.find<AuthController>().updateAdminUser();
   }
   Future<void> createClientActivity()async {
-    await UserActivityRepository().createUserActivity(
-      UserActivity(
-        activityId: const Uuid().v1(),
+    final String activityId = const Uuid().v1();
+    UserActivity userActivity = UserActivity(
+        activityId: activityId,
         guestId: userId,
         roomTransactionId: transactionId,
-        employeeId: employeeId,
-        employeeFullName: Get.find<AuthController>().adminUser.value.fullName,
+        employeeId: await employeeId,
+        employeeFullName: await employeeIdName,
         activityValue: roomCost.value,
         activityStatus: LocalKeys.kCheckIn.capitalize,
         description: LocalKeys.kCheckIn.capitalize,
         unit: LocalKeys.kRoom.capitalize,
         dateTime: DateTime.now().toIso8601String()
-      ).toJson()
     );
+    await UserActivityRepository().createUserActivity(userActivity.toJson()).then((value) {
+      checkInArtifacts[CheckInArtifactsKeys.clientActivity] = activityId;
+      checkInArtifacts['${CheckInArtifactsKeys.clientActivity}value'] = userActivity.toJson();
+    });
   }
 
 }

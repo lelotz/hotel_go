@@ -31,7 +31,6 @@ List<String> dbTablesSql = [
   CollectedPaymentsTable().sql,
   SessionTrackerTable().sql,
   SessionActivityTable().sql,
-  CurrentSessionTable().sql,
   EncryptedDataTable().sql,
   ServiceBookingTable().sql,
   PettyCashTable().sql,

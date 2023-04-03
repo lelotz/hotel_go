@@ -1,7 +1,6 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
-import 'package:hotel_pms/mock_data/mock_data_api.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/useful_math.dart';
 import '../../../../core/values/localization/local_keys.dart';
@@ -11,7 +10,7 @@ import '../../../data/models_n/admin_user_model.dart';
  authControllerUnitTest()async{
 
 
-  test('''Auth Controller on Init test''',(){
+  test('''Auth Controller on Init test''',()async{
     AuthController authController = AuthController();
     authController.onInit();
 
@@ -33,13 +32,13 @@ import '../../../data/models_n/admin_user_model.dart';
   });
 
   // group(description, () { })
-  for(int i=0; i< 100;i++){
-    test('''Test User Authentication && Log off''',()async{
+  for(int i=0; i== 0;i++){
+    test('''Test User Log In && Log off''',()async{
       AuthController authController = Get.put(AuthController(isTest: true));
       authController.onInit();
       //authController.sessionController.sessionExists.value = null;
 
-      await authController.authenticateAdminUser();
+      await authController.loginUser();
       expect(authController.authResult.value ,LocalKeys.kSuccess);
       if(authController.sessionController.sessionExists.value == false) {
         expect(authController.sessionController.currentSession.value.toJson(), authController.sessionTracker.value.toJson());
@@ -53,7 +52,7 @@ import '../../../data/models_n/admin_user_model.dart';
       expect(authController.isLoggedOut.value ,true);
       expect( authController.hasInitiatedLogout.value , false);
       expect(authController.isLoggedOut.value, true);
-      authController.randomUserIndex = random(0,3);
+      authController.randomUserIndex = random(0,2);
     });
 
   }

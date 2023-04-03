@@ -39,18 +39,18 @@ class OtherTransactions {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['clientId'] = this.clientId;
-    data['employeeId'] = this.employeeId;
-    data['roomTransactionId'] = this.roomTransactionId;
-    data['roomNumber'] = this.roomNumber;
-    data['amountPaid'] = this.amountPaid;
-    data['outstandingBalance'] = this.outstandingBalance;
-    data['grandTotal'] = this.grandTotal;
-    data['paymentNotes'] = this.paymentNotes;
-    data['transactionNotes'] = this.transactionNotes;
-    data['dateTime'] = this.dateTime;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['clientId'] = clientId;
+    data['employeeId'] = employeeId;
+    data['roomTransactionId'] = roomTransactionId;
+    data['roomNumber'] = roomNumber;
+    data['amountPaid'] = amountPaid;
+    data['outstandingBalance'] = outstandingBalance;
+    data['grandTotal'] = grandTotal;
+    data['paymentNotes'] = paymentNotes;
+    data['transactionNotes'] = transactionNotes;
+    data['dateTime'] = dateTime;
     return data;
   }
 }

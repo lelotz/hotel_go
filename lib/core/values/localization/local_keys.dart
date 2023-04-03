@@ -12,6 +12,10 @@ class LocalKeys {
   static const String kSuccess = "Success";
   static const String kInvalidCredentials = "Invalid Credentials";
 
+  /// Session Status
+  static const String kCurrent = "Current";
+  static const String kExpired = "Expired";
+
 
   /// Input Prompts
   static const String kEnter = "Enter ";

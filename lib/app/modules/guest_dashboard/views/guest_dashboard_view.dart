@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/homepage_screen/views/homepage_view.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/clear_controllers.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
 import 'package:hotel_pms/widgets/icons/app_icon.dart';
@@ -11,24 +10,25 @@ import 'package:hotel_pms/widgets/text/small_text.dart';
 import '../../../../core/resourses/color_manager.dart';
 import '../../../../core/values/app_constants.dart';
 import '../../../../core/values/localization/local_keys.dart';
+import '../controller/clear_controllers.dart';
 import '../widgets/app_forms/dialog_forms.dart';
 import '../widgets/app_forms/forms_dropdown_menu.dart';
 import '../widgets/cards/room_and_guest_card.dart';
 import '../../../../widgets/text/title_subtitle.dart';
 import 'package:get/get.dart';
-import '../controller/room_details_controller.dart';
+import '../controller/guest_dashboard_controller.dart';
 import '../widgets/tables/user_activity_table.dart';
 
-class RoomDetailsView extends GetView<RoomDetailsController> {
+class GuestDashboardView extends GetView<GuestDashboardController> {
 
-  const RoomDetailsView({Key? key}) : super(key: key);
+  const GuestDashboardView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
 
-    return GetBuilder<RoomDetailsController>(
-      init: RoomDetailsController(),
+    return GetBuilder<GuestDashboardController>(
+      init: GuestDashboardController(),
       builder: (controller)=>
         Scaffold(
           appBar: AppBar(

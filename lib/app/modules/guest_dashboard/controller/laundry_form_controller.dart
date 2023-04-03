@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/payment_data_controller.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/payment_form_controller.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/room_details_controller.dart';
+import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_data_controller.dart';
+import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_form_controller.dart';
+
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:hotel_pms/core/utils/utils.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
@@ -15,12 +14,13 @@ import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/other_transactions_repo.dart';
 import '../../../data/local_storage/repository/room_transaction_repo.dart';
 import '../../../data/local_storage/repository/user_activity_repo.dart';
+import 'guest_dashboard_controller.dart';
 
 
 class LaundryFormController extends GetxController{
-  Rx<Map<String,dynamic>> get metaData => Get.find<RoomDetailsController>().metaData;
-  Rx<List<UserActivity>> get userActivity => Get.find<RoomDetailsController>().userActivity;
-  Rx<int> get userActivityCount => Get.find<RoomDetailsController>().userActivityCount;
+  Rx<Map<String,dynamic>> get metaData => Get.find<GuestDashboardController>().metaData;
+  Rx<List<UserActivity>> get userActivity => Get.find<GuestDashboardController>().userActivity;
+  Rx<int> get userActivityCount => Get.find<GuestDashboardController>().userActivityCount;
   PaymentController paymentController = Get.put(PaymentController());
 
   Rx<List<OtherTransactions>> receivedLaundryView = Rx<List<OtherTransactions>>([]);
@@ -127,7 +127,7 @@ class LaundryFormController extends GetxController{
     receivedLaundryBuffer.value.clear();
     clearLaundryFormInputs();
     updateUI();
-    Get.find<RoomDetailsController>().updateUI();
+    Get.find<GuestDashboardController>().updateUI();
   }
 
 

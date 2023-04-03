@@ -15,6 +15,7 @@ import '../../../../core/services/table_services.dart';
 import '../../../../widgets/buttons/my_outlined_button.dart';
 import '../../../../widgets/dropdown_menu/custom_dropdown_menu.dart';
 import '../../../../widgets/forms/form_header.dart';
+import '../../../../widgets/illustrations/empty_illustration.dart';
 import '../../../../widgets/tables/paged_data_table_source.dart';
 import '../../book_service/view/book_service_form.dart';
 import '../../place_holders/paginated_table_place_holders.dart';
@@ -36,14 +37,13 @@ class HandoverForm extends GetView<HandoverFormController> {
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               children:  const [
+                // EmptyIllustration(),
                 RoomsUsedSection(),
                 ConferenceUsageSection(),
                 LaundryUsageSection(),
                 RoomServiceTransactionsSection(),
                 HotelIssuesSection(),
                 HandoverDetailsForm(),
-
-
               ],
             ),
           ),
@@ -282,7 +282,7 @@ class ConferenceUsageSection extends GetView<HandoverFormController> {
               ),
             ],
             rowsPerPage: getMaxTableRows(controller.conferenceActivityCurrentSession.value.length),
-            columns: controller.conferenceUsageTableSource == null ? TablePlaceHolders.initColumn :const [
+            columns: const [
               DataColumn(label: SmallText(text: 'NAME',)),
               DataColumn(label: SmallText(text: 'EVENT TYPE',)),
               DataColumn(label: SmallText(text: 'ADVANCE',)),

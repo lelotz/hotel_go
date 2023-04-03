@@ -6,17 +6,17 @@ import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import 'package:get/get.dart';
 
-import '../../controller/room_details_controller.dart';
+import '../../controller/guest_dashboard_controller.dart';
 
 
 
-class UserActivityTableView extends GetView<RoomDetailsController> {
+class UserActivityTableView extends GetView<GuestDashboardController> {
    const UserActivityTableView({Key? key}) : super(key: key);
   //RoomDetailsController con = Get.put(RoomDetailsController());
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<RoomDetailsController>(
-      init: RoomDetailsController(),
+    return GetBuilder<GuestDashboardController>(
+      init: GuestDashboardController(),
         builder: (controller)=>SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.vertical,

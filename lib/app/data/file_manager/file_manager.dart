@@ -41,9 +41,11 @@ class FileManager{
     Directory? appDir  = await directoryPath;
     Directory directory = Directory('${appDir!.path}\\$path');
     try{
-      if(appDir.path.isNotEmpty && await appDir.exists() == false) {
+      if(appDir.path.isNotEmpty && await directory.exists() == false) {
         directory.create();
-      } else {}
+      } else {
+
+      }
     }catch(e){
       logger.e(e);
     }
@@ -65,7 +67,7 @@ class FileManager{
   Future<String> getAppStorageDirectory()async{
     Directory? directory;
     directory = await directoryPath;
-    return '${directory!.path}\\' ?? '';
+    return '${directory!.path}\\' ;
   }
 
   File? getNewFile(String path){

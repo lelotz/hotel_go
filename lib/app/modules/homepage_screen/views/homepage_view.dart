@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 import '../../../../widgets/app_bars/global_app_bar.dart';
 import '../../../../widgets/cards/dashboard_card.dart';
 import '../../../../widgets/text/big_text.dart';
-import '../../room_data_screen/views/room_details_view.dart';
+import '../../guest_dashboard/views/guest_dashboard_view.dart';
 import '../controller/homepage_controller.dart';
 
 
@@ -63,7 +63,7 @@ class HomePageView extends GetView<HomepageController> {
                       onTap:(){
                         controller.selectedRoom(controller.roomData.value[index]);
                         if(controller.selectedRoomData.value.roomStatus!.description == LocalKeys.kOccupied){
-                          Get.to(popGesture: true,opaque: true,()=> const RoomDetailsView());
+                          Get.to(popGesture: true,opaque: true,()=> const GuestDashboardView());
 
                         }else{
                           Get.to(()=> CheckInView());

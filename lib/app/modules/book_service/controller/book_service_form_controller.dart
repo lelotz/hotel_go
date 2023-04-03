@@ -186,7 +186,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
   }
 
   String parseTimeOfDayToString(TimeOfDay? time){
-    return '${time!.hour ?? 0}:${time.minute??0}';
+    return '${time!.hour }:${time.minute}';
   }
 
 
@@ -219,7 +219,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
   Future<void> createRoomBooking({int isRoom=0})async{
     int serviceDurationInDays = bookingServiceEndDate.value.difference(bookingServiceStartDate.value).inDays;
     await ServiceBookingRepository().createServiceBooking(ServiceBooking(
-          id: bookServiceId.value,employeeId: authController.adminUser.value.appId,
+          id: bookServiceId.value,employeeId:authController.adminUser.value.appId,
           bookingDatetime:resetTimeInDateTime(DateTime.now()),roomNumber: int.parse(roomNumberController.text),
           bookingExpiryDateTime: resetTimeInDateTime(bookingServiceStartDate.value.add(const Duration(days: -1))),
           serviceStartDate: resetTimeInDateTime(bookingServiceStartDate.value),

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/laundry_form_controller.dart';
+
 import 'package:hotel_pms/widgets/icons/app_icon.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/text/big_text.dart';
 import 'package:get/get.dart';
-
-import '../../controller/room_details_controller.dart';
+import '../../controller/laundry_form_controller.dart';
 
 
 class DisplayStoredLaundry extends GetView<LaundryFormController> {

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/room_service_controller.dart';
 import 'package:hotel_pms/widgets/inputs/text_field_input.dart';
 import 'package:hotel_pms/widgets/mydividers.dart';
 import '../../../../../core/resourses/color_manager.dart';
 import '../../../../../core/resourses/size_manager.dart';
-import '../../../../../core/utils/dim_logic.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/buttons/my_outlined_button.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
+import '../../controller/room_service_controller.dart';
 import 'dialog_forms.dart';
 
 
@@ -48,7 +47,7 @@ class RoomServiceForm extends GetView<RoomServiceFormController> {
                   ],
                 ),
                 ElevatedButton(
-                    onPressed: controller.addRoomServiceToBuffer,
+                    onPressed: ()async{await controller.addRoomServiceToBuffer();},
                     child: SmallText(text: LocalKeys.kStore.tr ,color: ColorsManager.white)
                 ),
                 thinDivider(),

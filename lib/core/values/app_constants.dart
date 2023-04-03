@@ -27,6 +27,28 @@ class TransactionTypes{
 
 }
 
+class CheckInArtifactsKeys{
+  CheckInArtifactsKeys._privateConstruct();
+  static final CheckInArtifactsKeys instance = CheckInArtifactsKeys._privateConstruct();
+
+  static const String clientId = LocalKeys.kClientUser;
+  static const String roomTransactions = LocalKeys.kRoomTransaction;
+  static const String roomData = LocalKeys.kRoomDetails;
+  static const String roomStatus = "RoomStatus";
+  static const String employeeId = LocalKeys.kEmployeeId;
+  static const String clientActivity = LocalKeys.kGuestActivity;
+  static const String collectedPaymentId = LocalKeys.kCollectPayment;
+
+}
+
+class SessionStatusTypes{
+  SessionStatusTypes._privateConstruct();
+  static final SessionStatusTypes instance = SessionStatusTypes._privateConstruct();
+
+  final String currentSession = LocalKeys.kCurrent;
+  final String expiredSession = LocalKeys.kExpired;
+}
+
 class HotelIssueType{
   HotelIssueType._();
   static const String brokenItem = "Broken Item";

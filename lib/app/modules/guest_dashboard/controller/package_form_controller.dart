@@ -1,19 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
-import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
+
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/room_details_controller.dart';
+
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:hotel_pms/core/utils/utils.dart';
-import 'package:hotel_pms/widgets/dialogs/activity_status_dialog.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/user_activity_repo.dart';
+import 'guest_dashboard_controller.dart';
 
 class PackageFormController extends GetxController{
-  Rx<Map<String,dynamic>> get metaData => Get.find<RoomDetailsController>().metaData;
-  Rx<List<UserActivity>> get userActivity => Get.find<RoomDetailsController>().userActivity;
+  Rx<Map<String,dynamic>> get metaData => Get.find<GuestDashboardController>().metaData;
+  Rx<List<UserActivity>> get userActivity => Get.find<GuestDashboardController>().userActivity;
 
   TextEditingController packageDescriptionCtrl = TextEditingController();
   TextEditingController packageQuantityCtrl = TextEditingController();
@@ -44,7 +43,7 @@ class PackageFormController extends GetxController{
     receivedPackagesBufferCount.value = receivedPackagesBuffer.value.length;
     returnedPackagesBufferCount.value = returnedPackagesBuffer.value.length;
     returnedPackagesBufferCount.value = returnedPackagesBuffer.value.length;
-    Get.find<RoomDetailsController>().updateUI();
+    Get.find<GuestDashboardController>().updateUI();
     userActivity.refresh();
   }
 
@@ -68,9 +67,9 @@ class PackageFormController extends GetxController{
           }
           //returnedPackages.value.add(UserActivity.fromJson(element));
         }
-        showSnackBar("Fetched Returned Packages : ${userActivity.value.length}", Get.context!);
+      //  showSnackBar("Fetched Returned Packages : ${userActivity.value.length}", Get.context!);
       }else{
-        showSnackBar("FAILED: Fetch Returned Packages", Get.context!);
+       // showSnackBar("FAILED: Fetch Returned Packages", Get.context!);
       }
     });
     updateUI();
@@ -111,9 +110,9 @@ class PackageFormController extends GetxController{
           userActivity.value.add(UserActivity.fromJson(element));
           //returnedPackages.value.add(UserActivity.fromJson(element));
         }
-        showSnackBar("Fetched Returned Packages : ${userActivity.value.length}", Get.context!);
+        // showSnackBar("Fetched Returned Packages : ${userActivity.value.length}", Get.context!);
       }else{
-        showSnackBar("FAILED: Fetch Returned Packages", Get.context!);
+         // showSnackBar("FAILED: Fetch Returned Packages", Get.context!);
       }
     });
     updateUI();
@@ -135,7 +134,7 @@ class PackageFormController extends GetxController{
 
     receivedPackagesBuffer.value.add(package);
     updateUI();
-    showSnackBar("Package Loaded In Memory", Get.context!);
+    // showSnackBar("Package Loaded In Memory", Get.context!);
   }
 
   Future<void> storeClientPackage()async{
@@ -151,7 +150,7 @@ class PackageFormController extends GetxController{
     clearPackageFormInputs();
     receivedPackagesBuffer.value.clear();
     updateUI();
-    Get.find<RoomDetailsController>().updateUI();
+    Get.find<GuestDashboardController>().updateUI();
     //successAlert("Package Stored", LocalKeys.kSuccess.tr,context: Get.context!);
     Navigator.of(Get.overlayContext!).pop();
   }
@@ -163,7 +162,7 @@ class PackageFormController extends GetxController{
     package.dateTime = DateTime.now().toIso8601String();
     returnedPackagesBuffer.value.add(package);
     updateUI();
-    showSnackBar("Returned package loaded to memory", Get.context!);
+    // showSnackBar("Returned package loaded to memory", Get.context!);
   }
 
   Future<void> returnClientPackage()async{
@@ -179,7 +178,7 @@ class PackageFormController extends GetxController{
     Navigator.of(Get.overlayContext!).pop();
     returnedPackagesBuffer.value.clear();
 
-    showSnackBar("Package Return", Get.context!);
+    // showSnackBar("Package Return", Get.context!);
   }
 
   receivePackage(){

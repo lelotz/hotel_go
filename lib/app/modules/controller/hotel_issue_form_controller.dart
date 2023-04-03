@@ -2,15 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/hotel_issues_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
-import 'package:hotel_pms/app/data/local_storage/repository/user_activity_repo.dart';
+
 import 'package:hotel_pms/app/data/models_n/hotel_issues_model.dart';
-import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
+
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/utils/useful_math.dart';
 import '../../../core/values/app_constants.dart';
 import '../../data/models_n/session_activity_model.dart';
-import '../room_data_screen/controller/room_info_controller.dart';
+import '../guest_dashboard/controller/room_info_controller.dart';
+
 
 class HotelIssuesFormController extends GetxController{
   AuthController authController = Get.find<AuthController>();

@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
+import 'package:hotel_pms/app/modules/guest_dashboard/controller/package_form_controller.dart';
+import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_data_controller.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/package_form_controller.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/payment_data_controller.dart';import 'package:hotel_pms/app/modules/room_data_screen/widgets/app_forms/dialog_forms.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
-import 'package:hotel_pms/core/utils/utils.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/logs/logger_instance.dart';
@@ -21,13 +19,14 @@ import '../../../data/local_storage/repository/user_activity_repo.dart';
 import '../../../data/models_n/client_user_model.dart';
 import '../../../data/models_n/room_data_model.dart';
 import '../../homepage_screen/controller/homepage_controller.dart';
+import '../widgets/app_forms/dialog_forms.dart';
 
-class RoomDetailsController extends GetxController{
+class GuestDashboardController extends GetxController{
   Logger logger = AppLogger.instance.logger;
   PaymentDataController paymentDataController = Get.put(PaymentDataController());
   RoomData roomData = Get.find<HomepageController>().selectedRoomData.value;
   Rx<RoomData> selectedRoom = Rx<RoomData>(RoomData());
-  AdminUser get loggedInUser => Get.find<AuthController>().adminUser.value;
+  Rx<AdminUser> loggedInUser = Get.find<AuthController>().adminUser;
   Rx<ClientUser> clientUser = Rx<ClientUser>(ClientUser());
 
   Rx<Map<String,dynamic>>  metaData = Rx<Map<String,dynamic>>({});
@@ -39,17 +38,22 @@ class RoomDetailsController extends GetxController{
   Rx<String> checkInDate = "".obs;
   Rx<String> checkOutDate = "".obs;
   Rx<bool> isLoadingData = true.obs;
+  bool isTest;
+
+  GuestDashboardController({this.isTest = true});
+
+
 
 
   @override
-  void onInit() async {
-    logger.i({'Initiating Guest Dashboard': selectedRoom.value});
+  Future<void> onInit() async {
+
     selectedRoom.value = await RoomDataRepository().getRoom(roomData.roomNumber ?? 0);
-    logger.i({'roomStatus': selectedRoom.value.roomStatus!.description});
+    logger.wtf({'Initiating Guest Dashboard': selectedRoom.value.toJson(),'roomStatus': selectedRoom.value.roomStatus!.description});
     if(selectedRoom.value.roomStatus!.description == LocalKeys.kOccupied){
       await getClientData();
       await initializeMetaData();
-      initializeDependencies();
+      // initializeDependencies();
       updateUI();
 
     }
@@ -71,10 +75,7 @@ class RoomDetailsController extends GetxController{
     super.dispose();
   }
 
-  void initializeDependencies(){
-    PackageFormController packageFormController = Get.put(PackageFormController());
-    updateUI();
-  }
+
 
   Future<void> initializeMetaData()async{
       metaData.value = {
@@ -103,34 +104,34 @@ class RoomDetailsController extends GetxController{
       selectedRoom.value.roomStatus!.code = LocalKeys.kStatusCode100.toString();
       selectedRoom.value.currentTransactionId = "";
       await RoomDataRepository().updateRoom(selectedRoom.toJson()).then((value) async{
-        showSnackBar("UpdatedRoom", Get.context!);
+        // showSnackBar("UpdatedRoom", Get.context!);
         /// Update RoomStatus
         await RoomStatusRepository().updateRoomStatus(selectedRoom.value.roomStatus!.toJson()).then((value) async{
-          showSnackBar("UpdatedRoomStatus", Get.context!);
+          // showSnackBar("UpdatedRoomStatus", Get.context!);
           /// Create Admin and Client Activity
           await UserActivityRepository().createUserActivity(
               UserActivity(
                 activityId: const Uuid().v1(),
                 roomTransactionId: paymentDataController.roomTransaction.value.id,
                 guestId: clientUser.value.clientId,
-                employeeId: Get.find<AuthController>().adminUser.value.appId,
-                employeeFullName: Get.find<AuthController>().adminUser.value.fullName,
+                employeeId: loggedInUser.value.appId,
+                employeeFullName: loggedInUser.value.fullName,
                 description: LocalKeys.kCheckout.capitalize,
                 activityValue: 0,
                 unit: LocalKeys.kRoom.capitalize,
                 dateTime: DateTime.now().toIso8601String(),
               ).toJson()
           ).then((value) {
-            showSnackBar("Created AdminActivity", Get.context!);
-            Get.find<HomepageController>().onInit();
+            // showSnackBar("Created AdminActivity", Get.context!);
+            if(isTest==false) Get.find<HomepageController>().onInit();
 
           }).then((value) {
-            Navigator.of(Get.overlayContext!).pop();
+            if(isTest==false) Navigator.of(Get.overlayContext!).pop();
           });
         });
       });
     }else{
-      actionsDialogForms(context: Get.context!, formName: LocalKeys.kCollectPayment);
+      if(isTest==false) actionsDialogForms(context: Get.context!, formName: LocalKeys.kCollectPayment);
     }
   }
 
@@ -150,9 +151,9 @@ class RoomDetailsController extends GetxController{
       if(response!.isNotEmpty){
         paymentDataController.roomTransaction.value = RoomTransaction.fromJson(response[0]);
 
-        showSnackBar("Fetched RoomTransaction", Get.context!);
+        //showSnackBar("Fetched RoomTransaction", Get.context!);
       }else{
-        showSnackBar("FAILED TO FETCH RoomTransaction", Get.context!);
+        // showSnackBar("FAILED TO FETCH RoomTransaction", Get.context!);
       }
     });
   }
@@ -162,9 +163,9 @@ class RoomDetailsController extends GetxController{
       if(response!.isNotEmpty){
         clientUser.value = ClientUser.fromJson(response[0]);
         clientUser.refresh();
-        showSnackBar("Fetched ClientUser ${clientUser.value.fullName}", Get.context!);
+        // showSnackBar("Fetched ClientUser ${clientUser.value.fullName}", Get.context!);
       }else{
-        showSnackBar("FAILED TO FETCH clientUser", Get.context!);
+        // showSnackBar("FAILED TO FETCH clientUser", Get.context!);
       }
     });
   }
@@ -177,9 +178,9 @@ class RoomDetailsController extends GetxController{
             for (Map<String, dynamic> element in response) {
               userActivity.value.add(UserActivity.fromJson(element));
             }
-            showSnackBar("Fetched UserActivity", Get.context!);
+            // showSnackBar("Fetched UserActivity", Get.context!);
           }else{
-            showSnackBar("FAILED TO FETCH UserActivity", Get.context!);
+            // showSnackBar("FAILED TO FETCH UserActivity", Get.context!);
           }
     });
   }
@@ -188,8 +189,8 @@ class RoomDetailsController extends GetxController{
     UserActivity receiveKeyActivity = UserActivity(
       activityId: const Uuid().v1(),
       guestId: clientUser.value.clientId,
-      employeeId: loggedInUser.appId,
-      employeeFullName: loggedInUser.fullName,
+      employeeId: loggedInUser.value.appId,
+      employeeFullName: loggedInUser.value.fullName,
       roomTransactionId: paymentDataController.roomTransaction.value.id,
       description: LocalKeys.kSubmitKey,
       unit: LocalKeys.kKey.capitalize,
@@ -203,7 +204,7 @@ class RoomDetailsController extends GetxController{
     ).then((value) {
       userActivity.value.add(receiveKeyActivity);
       updateUI();
-      showSnackBar("RECEIVED KEY", Get.context!);
+      // showSnackBar("RECEIVED KEY", Get.context!);
     });
   }
 
@@ -211,8 +212,8 @@ class RoomDetailsController extends GetxController{
     UserActivity returnKeyActivity = UserActivity(
       activityId: const Uuid().v1(),
       guestId: clientUser.value.clientId,
-      employeeId: loggedInUser.appId,
-      employeeFullName: loggedInUser.fullName,
+      employeeId: loggedInUser.value.appId,
+      employeeFullName: loggedInUser.value.fullName,
       roomTransactionId: paymentDataController.roomTransaction.value.id,
       description: LocalKeys.kRetrieveKey,
       unit: LocalKeys.kKey.capitalize,
@@ -225,7 +226,7 @@ class RoomDetailsController extends GetxController{
     ).then((value) {
       userActivity.value.add(returnKeyActivity);
       updateUI();
-      showSnackBar("RETURNED KEY", Get.context!);
+      // showSnackBar("RETURNED KEY", Get.context!);
     });
   }
 

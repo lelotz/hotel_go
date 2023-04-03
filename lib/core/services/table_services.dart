@@ -17,6 +17,7 @@ import 'dart:io';
 
 int getMaxTableRows(int maxRows){
   if(maxRows > 8) return 8;
+  if(maxRows == 0) return 1;
   return maxRows;
 }
 
@@ -36,13 +37,15 @@ class ExportTableData{
   Future<String> getPath()async{
     Directory? directory = await storageDirectory;
 
-    if(directory != null) return "${directory.path}\\${FileManager.defaultStoragePath}";
+    if(directory != null) return directory.path;
     return '';
   }
 
   Future<void> exportDataGridToExcel({required GlobalKey<SfDataGridState> key,required String filePath,String fileCategory='Reports'}) async {
 
     final Workbook workbook = key.currentState!.exportToExcelWorkbook();
+
+
 
     final List<int> bytes = workbook.saveAsStream();
     workbook.dispose();

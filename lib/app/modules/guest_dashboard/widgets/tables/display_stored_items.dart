@@ -7,7 +7,7 @@ import '../../../../../widgets/text/big_text.dart';
 import 'package:get/get.dart';
 
 import '../../controller/package_form_controller.dart';
-import '../../controller/room_details_controller.dart';
+import '../../controller/guest_dashboard_controller.dart';
 
 
 class DisplayStoredItems extends GetView<PackageFormController> {

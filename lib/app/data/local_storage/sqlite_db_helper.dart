@@ -1,16 +1,18 @@
-
 import 'dart:async';
 import 'dart:io';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/encrypted_data_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/room_data_repository.dart';
-import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/room_status_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
 import 'package:logger/logger.dart';
 import 'package:sqflite_common/sqlite_api.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../../../core/logs/logger_instance.dart';
+import '../models_n/admin_user_model.dart';
+import '../models_n/encrypted_data_model.dart';
 import 'innit_data.dart';
 
 
@@ -28,9 +30,12 @@ class SqlDatabase{
   static Database? _database;
   Future<Database?> get database async
     {
-    if(_database !=null) return _database;
+    if(_database !=null) {
+     // logger.i('database already initialized');
+      return _database;
+    }
 
-    _database = await _initiateDatabase();
+    _database =  await _initiateDatabase();
     return _database;
 
   }
@@ -41,6 +46,7 @@ class SqlDatabase{
     try{
       Directory? directory = await FileManager().directoryPath;
       String path = join(directory!.path,_dbName);
+      //logger.e('initializing new db instance');
       return await databaseFactory.openDatabase(
           path,
           options: OpenDatabaseOptions(
@@ -61,7 +67,7 @@ class SqlDatabase{
   Future<void> createTable(Database db, int version, String sqlScript)async
     {
     try {
-      db.execute(sqlScript);
+      await db.execute(sqlScript);
     }catch (e){
       logger.e({'title':'CREATE-DB-ERROR','data':sqlScript},e.toString());
     }
@@ -69,13 +75,22 @@ class SqlDatabase{
   /// Runs when the database is initially created
   ///
   /// This is where all the tables are created
-  Future _onCreate(Database db, int version)async
+  _onCreate(Database db, int version)async
     {
-    for(final sqlScript in dbTablesSql){
-      createTable(db, version, sqlScript);
-    }
+    await createAppTables(db, version);
+
     /// Adds Initial Data required to use the system
     loadInitData(initRoomData, initRoomStatus, initAdminUsers);
+
+  }
+
+  Future<void> createAppTables(Database db, int version) async {
+    await Future.forEach(dbTablesSql, (sqlScript) async{
+      await createTable(db, version, sqlScript);
+    });
+    // for(final sqlScript in dbTablesSql){
+    //    await createTable(db, version, sqlScript);
+    // }
   }
 
   /// Safely creates or inserts a row in an sql table
@@ -95,6 +110,7 @@ class SqlDatabase{
     }catch(e){
       logger.e({'title': 'WRITE DB','data':row,'tableName': tableName},e.toString());
     }
+
 
     return rowNumber;
   }
@@ -125,6 +141,7 @@ class SqlDatabase{
     }catch(e){
       logger.e({'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
     }
+    //await db?.close();
 
     return result;
   }
@@ -142,6 +159,7 @@ class SqlDatabase{
     }catch(e){
       logger.e({'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
     }
+    //await db?.close();
 
     return result;
   }
@@ -171,6 +189,7 @@ class SqlDatabase{
     }catch(e){
       logger.e({'title': 'UPDATE','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
     }
+    //await db?.close();
 
     return result;
   }
@@ -197,6 +216,7 @@ class SqlDatabase{
       logger.e({'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
 
     }
+    //await db?.close();
     return result;
   }
 

@@ -1,31 +1,26 @@
 
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/widgets/tables/padded_data_table_row.dart';
 
-import '../../app/data/models_n/internl_transaction_model.dart';
 
 
+import '../../app/modules/place_holders/paginated_table_place_holders.dart';
 import '../text/big_text.dart';
-import '../text/small_text.dart';
 
 class PagedDataTableSource extends DataTableSource{
   List<Object> rows;
-  //List<Widget> cells;
-  List<String> onEmptySource = ['No Data to display'];
   List<DataCell> Function(int index) cells;
-  bool isEmpty = false;
+  bool isEmpty;
 
   PagedDataTableSource({required this.rows,required this.cells,required this.isEmpty});
 
   @override
   DataRow? getRow(int index) {
-    if(rows.isEmpty) rows.add('Table is Empty');
+    if(rows.isEmpty) rows.add(TablePlaceHolders.onEmptyCells);
 
     // TODO: implement getRow
     return  DataRow(
-        cells: rows.isEmpty || isEmpty ?  [paddedDataCell(text: BigText(text: onEmptySource[index],size: 16,)),] :
-        cells(index)
+        cells: isEmpty ?  TablePlaceHolders.onEmptyCells : cells(index)
     );
   }
 

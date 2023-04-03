@@ -1,8 +1,6 @@
 
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 
-import '../table_keys.dart';
-
 class UserActivityRepository extends SqlDatabase{
 
   UserActivityRepository();

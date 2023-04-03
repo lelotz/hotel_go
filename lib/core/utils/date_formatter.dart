@@ -10,6 +10,12 @@ import '../../widgets/icons/app_icon.dart';
 import '../../widgets/text/big_text.dart';
 import '../../widgets/text/small_text.dart';
 
+
+bool isTimeDifferenceLessOrEqualTo(DateTime firstDate,DateTime secondDate, int differenceValue){
+  int timeDifferenceInHours = firstDate.difference(secondDate).inHours;
+  return timeDifferenceInHours <= differenceValue ? true : false;
+}
+
 String extractDate(DateTime? date,{String? dateFromString}){
   if(dateFromString!=null){
     date = DateTime.parse(dateFromString);

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/modules/room_data_screen/controller/package_form_controller.dart';
 import '../../../../../core/resourses/color_manager.dart';
 import '../../../../../core/resourses/size_manager.dart';
 import '../../../../../core/utils/dim_logic.dart';
@@ -11,6 +10,7 @@ import '../../../../../widgets/inputs/text_field_input.dart';
 import '../../../../../widgets/mydividers.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
+import '../../controller/package_form_controller.dart';
 import '../tables/display_stored_items.dart';
 import 'dialog_forms.dart';
 

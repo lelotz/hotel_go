@@ -15,7 +15,6 @@ class RoomData {
     isVIP = json['isVIP'];
     currentTransactionId = json['currentTransactionId'];
     nextAvailableDate = json['nextAvailableDate'];
-    //roomStatus = json['roomStatus'];
   }
 
   Map<String, dynamic> toJson() {
@@ -24,7 +23,6 @@ class RoomData {
     data['isVIP'] = isVIP;
     data['currentTransactionId'] = currentTransactionId;
     data['nextAvailableDate'] = nextAvailableDate;
-    //data['roomStatus'] = roomStatus;
     return data;
   }
 }

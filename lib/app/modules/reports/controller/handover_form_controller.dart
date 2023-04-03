@@ -23,6 +23,7 @@ import '../../../../widgets/tables/padded_data_table_row.dart';
 import '../../../../widgets/tables/paged_data_table_source.dart';
 import '../../../../widgets/text/big_text.dart';
 import '../../../../widgets/text/small_text.dart';
+import '../../place_holders/paginated_table_place_holders.dart';
 import 'input_list_exapandable_panel_controller.dart';
 
 class HandoverFormController extends GetxController{

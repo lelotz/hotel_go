@@ -17,20 +17,38 @@ import 'package:hotel_pms/app/data/models_n/room_status_model.dart';
 /// [AdminUser]
 /// [RoomData] and
 /// [RoomStatusModel]
-loadInitData(List<RoomData> roomData, List<RoomStatusModel> roomStatus,List<AdminUser> adminUsers)async{
+Future<int> loadInitData(List<RoomData> roomData, List<RoomStatusModel> roomStatus,List<AdminUser> adminUsers)async{
+  //int testUsers = adminUsers.length;
+
+
+
+  for(RoomData element in roomData){
+    await RoomDataRepository().createRoom(element.toJson());
+  }
+
+  for(RoomStatusModel element in roomStatus){
+    await RoomStatusRepository().createRoomStatus(element.toJson());
+  }
 
   for(AdminUser element in adminUsers){
     await AdminUserRepository().createAdminUser(element.toJson());
     await EncryptedDataRepository().createEncryptedData(EncryptedData(userId: element.appId,data: '').toJson());
   }
 
-  for(RoomData element in roomData){
-    RoomDataRepository().createRoom(element.toJson());
-  }
+  //  Future.forEach(adminUsers, (element) async{
+  //   await AdminUserRepository().createAdminUser(element.toJson());
+  //   await EncryptedDataRepository().createEncryptedData(EncryptedData(userId: element.appId,data: '').toJson());
+  // });
 
-  for(RoomStatusModel element in roomStatus){
-    RoomStatusRepository().createRoomStatus(element.toJson());
-  }
+  //  Future.forEach(roomData, (element) async{
+  //   await RoomDataRepository().createRoom(element.toJson());
+  // });
+
+  //  Future.forEach(roomStatus, (element) async{
+  //   await RoomStatusRepository().createRoomStatus(element.toJson());
+  // });
+
+  return 0;
 
 }
 
@@ -63,7 +81,7 @@ List<AdminUser> initAdminUsers = [
   ),
   AdminUser(
     appId: "00004WH",
-    fullName: "Esther Pritva",
+    fullName: "Esther Ritva",
     position: AppConstants.userRoles[300],
     phone: "",
     roomsSold: 0,
