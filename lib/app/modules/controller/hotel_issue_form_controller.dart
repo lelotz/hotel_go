@@ -37,7 +37,7 @@ class HotelIssuesFormController extends GetxController{
     allRooms.value = roomInfoController.allRooms.value;
     roomNumber.value = allRooms.value[random(0,allRooms.value.length)];
     issueDescription.text = "Testing Issues";
-    stepsTakenDescription.text = (("Test"*5) +'\n')*10;
+    stepsTakenDescription.text = ('${"Test"*5}\n')*10;
     issueStatus.value = hotelIssueStatusType[random(0, hotelIssueStatusType.length)];
     issueStatus.value = hotelIssueTypes[random(0, hotelIssueTypes.length)];
   }

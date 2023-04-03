@@ -3,13 +3,15 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 
-import 'dim_logic.dart';
+import '../values/localization/local_keys.dart';
+
 import '../../widgets/icons/app_icon.dart';
 import '../../widgets/text/big_text.dart';
 import '../../widgets/text/small_text.dart';
-
+import 'package:get/get.dart';
 
 bool isTimeDifferenceLessOrEqualTo(DateTime firstDate,DateTime secondDate, int differenceValue){
   int timeDifferenceInHours = firstDate.difference(secondDate).inHours;
@@ -76,28 +78,28 @@ class _CheckOutDateBoxState extends State<CheckOutDateBox> {
   Widget build(BuildContext context) {
     return Container(
       width: const Size.fromWidth(200).width,
-      height: 40,
+      height: 43,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.black),
-          color: Colors.white
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.black,width: 2.0),
+          color: ColorsManager.flutterGrey
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child:
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
             widget.selectedDate == null ? const SmallText(text: "Check Out Date") :
             BigText(text: extractDate(
                  widget.selectedDate!.add(
                 Duration(days: stringToInt(widget.liveNights.value.text))
               )
             )
-          ),
+            ),
+            SmallText(text: LocalKeys.kCheckout.tr)
+            //const AppIcon(icon: Icons.calendar_month,useBackground: true,)
+          ],
         ),
-          //const AppIcon(icon: Icons.calendar_month,useBackground: true,)
-        ],
       ),
     );
   }

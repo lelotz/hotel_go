@@ -48,7 +48,7 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             ElevatedButton(
                 style:style,
-                onPressed: (){Get.to(()=>const ReportsView());},
+                onPressed: (){Get.to(()=> ReportsView());},
                 child:  SmallText(text: LocalKeys.kReports.tr,color: ColorsManager.grey1,)
             ),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),

@@ -33,11 +33,24 @@ class HandoverFormController extends GetxController{
   Rx<List<Map<String,dynamic>>> laundryPayments = Rx<List<Map<String,dynamic>>>([]);
   Rx<List<Map<String,dynamic>>> roomDebtPayments = Rx<List<Map<String,dynamic>>>([]);
   Rx<List<Map<String,dynamic>>> otherPayments = Rx<List<Map<String,dynamic>>>([]);
+
   Rx<List<RoomTransaction>> roomsSoldInCurrentSession =Rx<List<RoomTransaction>>([]);
+  Rx<List<RoomTransaction>> paginatedRoomsSoldInCurrentSession =Rx<List<RoomTransaction>>([]);
+
   Rx<List<ServiceBooking>> conferenceActivityCurrentSession =Rx<List<ServiceBooking>>([]);
+  Rx<List<ServiceBooking>> paginatedConferenceActivityCurrentSession =Rx<List<ServiceBooking>>([]);
+
+
   Rx<List<CollectPayment>> laundryTransactionsInCurrentSession =Rx<List<CollectPayment>>([]);
+  Rx<List<CollectPayment>> paginatedLaundryTransactionsInCurrentSession =Rx<List<CollectPayment>>([]);
+
+
   Rx<List<CollectPayment>> roomServiceTransactionsInCurrentSession =Rx<List<CollectPayment>>([]);
+  Rx<List<CollectPayment>> paginatedRoomServiceTransactionsInCurrentSession =Rx<List<CollectPayment>>([]);
+
   Rx<List<HotelIssues>> hotelIssuesInCurrentSession = Rx<List<HotelIssues>>([]);
+  Rx<List<HotelIssues>> paginatedHotelIssuesInCurrentSession = Rx<List<HotelIssues>>([]);
+
   Rx<Map<String,dynamic>> inputBuffer = Rx<Map<String,dynamic>>({});
   TextEditingController roomNumberController = TextEditingController();
   TextEditingController conferencePaymentsCtr = TextEditingController();

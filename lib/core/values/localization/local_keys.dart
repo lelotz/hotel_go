@@ -68,6 +68,7 @@ class LocalKeys {
 
   /// General
   static const String kFilters = "Filters";
+  static const String kSoldX = "Sold X";
   static const String kClearFilters = "Clear Filters";
   static const String kSearchBy = "Search by";
   static const String kSearch = "Search";

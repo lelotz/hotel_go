@@ -72,7 +72,8 @@ class SalesView extends GetView<SalesController> {
                                   GridTableSummaryRow(
                                       columns: [
                                     const GridSummaryColumn(name: '', columnName: 'COLLECTED', summaryType: GridSummaryType.sum)
-                                  ], position: GridTableSummaryRowPosition.top)
+                                  ], position: GridTableSummaryRowPosition.top
+                                  )
                                 ],
                                 columns: <GridColumn>[
                                   GridColumn(
