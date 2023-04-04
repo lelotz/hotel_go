@@ -70,14 +70,21 @@ class SalesView extends GetView<SalesController> {
                                 source: salesTableSource,
                                 tableSummaryRows: [
                                   GridTableSummaryRow(
+                                    showSummaryInRow: true,
+                                      title: 'Amount collected for ${controller.filteredResultsCount.value} : {Sum collected}',
                                       columns: [
-                                    const GridSummaryColumn(name: '', columnName: 'COLLECTED', summaryType: GridSummaryType.sum)
+                                    const GridSummaryColumn(
+                                        name: 'Sum collected',
+                                        columnName: 'COLLECTED',
+                                        summaryType: GridSummaryType.sum
+                                    )
                                   ], position: GridTableSummaryRowPosition.top
                                   )
                                 ],
                                 columns: <GridColumn>[
                                   GridColumn(
                                       columnName: '#',
+                                      columnWidthMode: ColumnWidthMode.fitByCellValue,
                                       label: Container(
                                           padding: const EdgeInsets.all(16.0),
                                           alignment: Alignment.center,
@@ -119,17 +126,17 @@ class SalesView extends GetView<SalesController> {
                                           alignment: Alignment.center,
                                           child: SmallText(text:LocalKeys.kService.tr.toUpperCase()))),
                                   GridColumn(
-                                      columnName: 'COLLECTED',
-                                      label: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          alignment: Alignment.center,
-                                          child: SmallText(text:LocalKeys.kCollected.tr.toUpperCase()))),
-                                  GridColumn(
                                       columnName: 'PAY METHOD',
                                       label: Container(
                                           padding: const EdgeInsets.all(8.0),
                                           alignment: Alignment.center,
                                           child:  SmallText(text:LocalKeys.kPayMethod.tr.toUpperCase()))),
+                                  GridColumn(
+                                      columnName: 'COLLECTED',
+                                      label: Container(
+                                          padding: const EdgeInsets.all(8.0),
+                                          alignment: Alignment.center,
+                                          child: SmallText(text:LocalKeys.kCollected.tr.toUpperCase()))),
                                 ],
                               ),
                           ),

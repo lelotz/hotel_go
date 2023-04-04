@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
-
+import 'package:hotel_pms/app/modules/reports/table_sources/laundry_transactions_source.dart';
+import 'package:hotel_pms/app/modules/reports/table_sources/room_service_source.dart';
+import 'package:hotel_pms/core/utils/string_handlers.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/hotel_issues_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/room_transaction_repo.dart';
@@ -19,10 +22,12 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/services/table_services.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/utils/useful_math.dart';
+import '../../../../core/utils/utils.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:get/get.dart';
-
+import '../table_sources/conference_usage_source.dart';
+import '../table_sources/rooms_used_table_source.dart';
 class HandoverFormController extends GetxController {
 
   /// Title, description, value
@@ -72,6 +77,7 @@ class HandoverFormController extends GetxController {
   Rx<Map<String, dynamic>> inputBuffer = Rx<Map<String, dynamic>>({});
   TextEditingController roomNumberController = TextEditingController();
   TextEditingController conferencePaymentsCtr = TextEditingController();
+  TextEditingController conferenceAdvancePaymentsCtr = TextEditingController();
   TextEditingController roomPaymentsCtr = TextEditingController();
   TextEditingController roomDebtPaymentsCtr = TextEditingController();
   TextEditingController laundryPaymentsCtr = TextEditingController();
@@ -79,6 +85,9 @@ class HandoverFormController extends GetxController {
   TextEditingController totalDailyPaymentsCtr = TextEditingController();
 
   Rx<bool> isExporting = false.obs;
+
+  Rx<Map<String, dynamic>> summaryData = Rx<
+      Map<String, dynamic>>({});
 
 
   @override
@@ -90,10 +99,10 @@ class HandoverFormController extends GetxController {
     await getRoomServiceTransactionsInCurrentSession();
     await getHotelIssuesInCurrentSession();
 
-
-    conferencePaymentsCtr.text = random(0, 500000).toString();
-    update();
   }
+
+  // @override
+  // onReady(){update();}
 
   queTableKey(GlobalKey<SfDataGridState> key, String sheetName) {
     reportExportInfo.value.add({sheetName: key});
@@ -125,14 +134,48 @@ class HandoverFormController extends GetxController {
     String filePath = await FileManager().generateFileName(
         userName: loggedInUser.value.fullName ?? 'system',
         category: 'Reports');
-    ExcelWorkBook workBook = ExcelWorkBook(
+    ExcelWorkBook excelWorkBook = ExcelWorkBook(
         sheetProperties: reportExportInfo.value,
         excelFileName: filePath);
-    await workBook.createFileWithSheets(filePath);
+    setSummaryData();
+    Workbook workbook = excelWorkBook.createDailyReportSummary(summaryData.value);
+    await excelWorkBook.createFileWithSheetsFromSfTable(filePath,workbook);
 
     isExporting.value = false;
     reportExportInfo.value.clear();
+    summaryData.value.clear();
     tableKeys.clear();
+  }
+
+  setSummaryData(){
+    summaryData.value = {
+      LocalKeys.kRooms: strToDouble(roomPaymentsCtr.text),
+      '${LocalKeys.kRooms} ${LocalKeys.kDebts}': strToDouble(roomDebtPaymentsCtr.text),
+      LocalKeys.kConference: strToDouble(conferencePaymentsCtr.text),
+      '${LocalKeys.kConference} Advance' : strToDouble(conferenceAdvancePaymentsCtr.text),
+      LocalKeys.kRoomService : strToDouble(roomServicePaymentsCtr.text),
+      LocalKeys.kLaundry : strToDouble(laundryPaymentsCtr.text),
+    };
+  }
+
+  getSummaryData(String tableTitle,String summaryValue){
+
+    switch (tableTitle){
+      case RoomsUsedColumnNames.paid : roomPaymentsCtr.text = summaryValue;
+      break;
+      case RoomsUsedColumnNames.debt : roomDebtPaymentsCtr.text = summaryValue;
+      break;
+      case ConferenceTableColumnNames.advance : conferenceAdvancePaymentsCtr.text = summaryValue;
+      break;
+      case ConferenceTableColumnNames.totalCost : conferencePaymentsCtr.text = summaryValue;
+      break;
+      case LaundryTableColumnNames.amountPaid : laundryPaymentsCtr.text = summaryValue;
+      break;
+      case RoomsServiceColumnNames.amountPaid : roomServicePaymentsCtr.text = summaryValue;
+      break;
+      default : logger.w('Table name $tableTitle does not exist');
+
+    }
   }
 
 

@@ -1,12 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/client_user_repo.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
+import 'package:hotel_pms/app/data/models_n/client_user_model.dart';
+import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_data_controller.dart';
 import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_form_controller.dart';
+import 'package:hotel_pms/core/utils/date_formatter.dart';
 
 import 'package:hotel_pms/core/utils/string_handlers.dart';
+import 'package:hotel_pms/core/utils/useful_math.dart';
 import 'package:hotel_pms/core/utils/utils.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:uuid/uuid.dart';
@@ -14,11 +20,13 @@ import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/other_transactions_repo.dart';
 import '../../../data/local_storage/repository/room_transaction_repo.dart';
 import '../../../data/local_storage/repository/user_activity_repo.dart';
+import '../../../data/models_n/admin_user_model.dart';
 import 'guest_dashboard_controller.dart';
 
 
 class LaundryFormController extends GetxController{
   Rx<Map<String,dynamic>> get metaData => Get.find<GuestDashboardController>().metaData;
+  Rx<AdminUser> loggedInUser = Get.find<GuestDashboardController>().loggedInUser;
   Rx<List<UserActivity>> get userActivity => Get.find<GuestDashboardController>().userActivity;
   Rx<int> get userActivityCount => Get.find<GuestDashboardController>().userActivityCount;
   PaymentController paymentController = Get.put(PaymentController());
@@ -79,8 +87,8 @@ class LaundryFormController extends GetxController{
       transactionNotes: '${laundryQuantityCtrl.text}:${laundryDescriptionCtrl.text}',
       roomNumber: metaData.value[LocalKeys.kSelectedRoom].roomNumber,
       grandTotal: stringToInt(laundryQuantityCtrl.text) * AppConstants.laundryPrice,
-      amountPaid: 0,
-      outstandingBalance: stringToInt(laundryQuantityCtrl.text) * AppConstants.laundryPrice,
+      amountPaid: stringToInt(laundryQuantityCtrl.text) * AppConstants.laundryPrice,
+      outstandingBalance: 0,
     );
     receivedLaundryBuffer.value.add(newLaundry);
     update();
@@ -113,6 +121,7 @@ class LaundryFormController extends GetxController{
           RoomTransaction roomTransaction = metaData.value[LocalKeys.kRoomTransaction].value;
           roomTransaction.grandTotal = roomTransaction.grandTotal! + newLaundry.grandTotal!;
           roomTransaction.otherCosts = roomTransaction.otherCosts! + newLaundry.grandTotal!;
+          roomTransaction.amountPaid = roomTransaction.amountPaid! + newLaundry.amountPaid!;
           roomTransaction.outstandingBalance = roomTransaction.grandTotal! - roomTransaction.amountPaid!;
           await RoomTransactionRepository().updateRoomTransaction(roomTransaction.toJson());
           userActivity.value.add(laundryActivity);
@@ -121,6 +130,26 @@ class LaundryFormController extends GetxController{
           paymentController.calculateAllFees(isLaundryForm: true);
           //paymentController.calculateLaundryCost();
         });
+
+        await CollectedPaymentsRepository().createCollectedPayment(
+          CollectPayment(
+            id: const Uuid().v1(),
+            roomTransactionId: newLaundry.roomTransactionId,
+            employeeId: newLaundry.employeeId,
+            employeeName: metaData.value[LocalKeys.kLoggedInUser].value.fullName,
+            clientId: newLaundry.clientId,
+            clientName: await ClientUserRepository().getClientUser(newLaundry.clientId!).then((value) => ClientUser.fromJson(value![0]).fullName),
+            roomNumber: newLaundry.roomNumber,
+            amountCollected: newLaundry.amountPaid,
+            dateTime: DateTime.now().toIso8601String(),
+            date: extractDate(DateTime.now()),
+              time: extractTime(DateTime.now()),
+              service: LocalKeys.kLaundry,
+            payMethod: 'CASH',
+            receiptNumber: 'LND${random(0, 854552)}${DateTime.now().year}_${DateTime.now().month}'
+
+          ).toJson()
+        );
       });
     }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../../widgets/text/big_text.dart';
 import '../controller/handover_form_controller.dart';
 
 class ConferenceUsageSource extends DataGridSource{
@@ -54,7 +55,15 @@ class ConferenceUsageSource extends DataGridSource{
 
     return true;
   }
-
+  @override
+  Widget? buildTableSummaryCellWidget(
+      GridTableSummaryRow summaryRow,
+      GridSummaryColumn? summaryColumn,
+      RowColumnIndex rowColumnIndex,
+      String summaryValue) {
+    handoverFormController.getSummaryData(summaryColumn?.columnName ?? '',summaryValue);
+    return Center(child: BigText(text: summaryValue),);
+  }
 
 
   buildPaginatedDataGridRows() {
@@ -64,12 +73,21 @@ class ConferenceUsageSource extends DataGridSource{
 
       return DataGridRow(cells: [
         DataGridCell<String>(
-            columnName: 'NAME', value: dataGridRow.name),
-        DataGridCell<String>(columnName: 'EVENT TYPE', value: dataGridRow.bookingType),
-        DataGridCell<String>(columnName: 'ADVANCE', value: dataGridRow.advancePayment),
-        DataGridCell<int>(columnName: 'TOTAL COST', value: dataGridRow.serviceValue),
+            columnName: ConferenceTableColumnNames.name, value: dataGridRow.name),
+        DataGridCell<String>(columnName: ConferenceTableColumnNames.eventType, value: dataGridRow.bookingType),
+        DataGridCell<String>(columnName: ConferenceTableColumnNames.advance, value: dataGridRow.advancePayment),
+        DataGridCell<int>(columnName: ConferenceTableColumnNames.totalCost, value: dataGridRow.serviceValue),
         // DataGridCell<String>(columnName: 'GUEST', value: dataGridRow.clientId),
       ]);
     }).toList(growable: false);
   }
+}
+
+class ConferenceTableColumnNames{
+  static const String leading = "conference_";
+  static const String name = '${leading}name';
+  static const String eventType = '${leading}event_type';
+  static const String advance = '${leading}advance';
+  static const String totalCost = '${leading}total_cost';
+
 }

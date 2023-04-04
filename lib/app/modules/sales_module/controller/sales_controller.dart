@@ -75,7 +75,6 @@ class SalesController extends GetxController {
     await getAllPaymentTransactions();
     await getAmountCollectedToday();
     await getAllEmployees();
-    // setUpTableSource();
     isLoadingData.value = false;
     super.onReady();
   }
@@ -84,6 +83,7 @@ class SalesController extends GetxController {
     collectedPaymentsCount.value = collectedPayments.value.length;
     selectedFilters.refresh();
     selectedFiltersCount.value = selectedFilters.value.length;
+    update();
   }
 
   void exportSalesTable(GlobalKey<SfDataGridState> salesTableKey,
@@ -105,45 +105,7 @@ class SalesController extends GetxController {
     return await fileManager.generateFileName(category: 'Sales',userName: userName);
   }
 
-  List<DataGridRow> buildSalesRow() {
-    return List<DataGridRow>.generate(collectedPayments.value.length, (index) {
-      return DataGridRow(cells: [
-        DataGridCell<int>(columnName: '#', value: index),
-        DataGridCell<int>(
-            columnName: 'ROOM NUMBER',
-            value: collectedPayments.value[index].roomNumber),
-        DataGridCell<String>(
-            columnName: 'DATE', value: collectedPayments.value[index].date!),
-        DataGridCell<String>(
-            columnName: 'TIME', value: collectedPayments.value[index].time!),
-        DataGridCell<String>(
-            columnName: 'EMPLOYEE',
-            value: collectedPayments.value[index].employeeName),
-        DataGridCell<String>(
-            columnName: 'CLIENT',
-            value: collectedPayments.value[index].clientName),
-        DataGridCell<String>(
-            columnName: 'SERVICE',
-            value: collectedPayments.value[index].service!),
-        DataGridCell<int>(
-            columnName: 'COLLECTED',
-            value: collectedPayments.value[index].amountCollected),
-        DataGridCell<String>(
-            columnName: 'PAY METHOD',
-            value: collectedPayments.value[index].payMethod!),
-      ]);
-    });
-  }
 
-  // void setUpTableSource(){
-  //   List<DataGridRow> sourceData = buildSalesRow();
-  //   pagerDelegate = DataPagerDelegateSource(rows: collectedPayments.value, sourceData: sourceData, startRowIndex: 0, endRowIndex: 0, rowsPerPage: 8);
-  //   saleTableSource = SyncFusionDataSource(
-  //     buildRows: buildSalesRow,
-  //       sourceData: buildSalesRow(),
-  //   );
-  //   tableInitialized.value = true;
-  // }
 
   clearFilters() {
     startDate.value = DateTime.now();
@@ -204,6 +166,7 @@ class SalesController extends GetxController {
         updateUI();
         tableInitialized.value = true;
       }
+      filteredResultsCount.value = value?.length ?? 0;
       filterResultStatus.value =
           "Matches : ${value!.length} Displaying : ${collectedPaymentsCount.value}";
     });
@@ -215,6 +178,7 @@ class SalesController extends GetxController {
         .then((value) {
       if (value != null && value.isNotEmpty) {
         collectedPayments.value.addAll(value);
+        selectedFilters.value.add(extractDate(DateTime.now()));
         updateUI();
       }
     });
@@ -300,6 +264,7 @@ class SalesController extends GetxController {
       if (value != null && value.isNotEmpty) {
         collectedPayments.value.clear();
         collectedPayments.value = CollectPayment().fromJsonList(value);
+        filteredResultsCount.value = value.length;
         updateUI();
         logger.v({
           'title': 'SUCCESS Blind Filter ',
@@ -348,25 +313,22 @@ class SalesController extends GetxController {
         resetTimeInDateTime(endDate.value, toEndOfDay: true));
 
     /// Employee, Client, Date - Range, Room,Service,Pay Method
-    await SqlDatabase.instance
-        .read(
+    await SqlDatabase.instance.read(
       tableName: CollectedPaymentsTable.tableName,
       where: filters['where'],
       whereArgs: filters['whereArgs'],
-    )
-        .then((value) {
+    ).then((value) {
       if (value != null && value.isNotEmpty) {
         collectedPayments.value.clear();
         collectedPayments.value = CollectPayment().fromJsonList(value);
-        filteredResultsCount.value = value.length;
         updateUI();
 
       }
       tableInitialized.value = true;
       logger.i({'name': 'matches found ${value!.length}'});
-
       filterResultStatus.value =
           "Matches : ${value.length} Displaying : ${collectedPaymentsCount.value}";
+      filteredResultsCount.value = value.length;
     });
     // setUpTableSource();
   }

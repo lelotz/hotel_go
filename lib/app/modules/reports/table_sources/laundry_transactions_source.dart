@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:get/get.dart';
+import '../../../../widgets/text/big_text.dart';
 import '../controller/handover_form_controller.dart';
 
 class LaundryTransactionsSource extends DataGridSource{
@@ -52,19 +53,37 @@ class LaundryTransactionsSource extends DataGridSource{
     return true;
   }
 
-
+  @override
+  Widget? buildTableSummaryCellWidget(
+      GridTableSummaryRow summaryRow,
+      GridSummaryColumn? summaryColumn,
+      RowColumnIndex rowColumnIndex,
+      String summaryValue) {
+    handoverFormController.getSummaryData(summaryColumn?.columnName ?? '',summaryValue);
+    return Center(child: BigText(text: summaryValue),);
+  }
 
   buildPaginatedDataGridRows() {
     dataGridRows = handoverFormController
         .paginatedLaundryTransactionsInCurrentSession.value
         .map<DataGridRow>((dataGridRow) {
       return DataGridRow(cells: [
-        DataGridCell<int>(columnName: 'ROOM NUMBER', value: dataGridRow.roomNumber),
-        DataGridCell<String>(columnName: 'CLIENT', value: dataGridRow.clientName),
-        DataGridCell<int>(columnName: 'AMOUNT PAID', value: dataGridRow.amountCollected),
-        DataGridCell<String>(columnName: 'SERVICE', value: dataGridRow.service),
-        DataGridCell<String>(columnName: 'EMPLOYEE', value: dataGridRow.employeeName),
+        DataGridCell<int>(columnName: LaundryTableColumnNames.roomNumber, value: dataGridRow.roomNumber),
+        DataGridCell<String>(columnName: LaundryTableColumnNames.client, value: dataGridRow.clientName),
+        DataGridCell<String>(columnName: LaundryTableColumnNames.employee, value: dataGridRow.employeeName),
+        DataGridCell<int>(columnName: LaundryTableColumnNames.amountPaid, value: dataGridRow.amountCollected),
+        DataGridCell<String>(columnName: LaundryTableColumnNames.service, value: dataGridRow.service),
+
       ]);
     }).toList(growable: false);
   }
+}
+
+class LaundryTableColumnNames{
+  static const String leading = "laundry_";
+  static const String employee = '${leading}employee';
+  static const String roomNumber = '${leading}room_number';
+  static const String client = '${leading}client';
+  static const String service = '${leading}service';
+  static const String amountPaid = '${leading}amount_paid';
 }

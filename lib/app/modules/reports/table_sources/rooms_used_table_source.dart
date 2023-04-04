@@ -5,6 +5,8 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../widgets/text/big_text.dart';
+
 class RoomsUsedSource extends DataGridSource {
   RoomsUsedSource({this.rowsPerPage = 20}) {
     handoverFormController.paginatedRoomsSoldInCurrentSession.value =
@@ -66,6 +68,20 @@ class RoomsUsedSource extends DataGridSource {
 
     return adminUser;
   }
+  @override
+  Widget? buildTableSummaryCellWidget(
+      GridTableSummaryRow summaryRow,
+      GridSummaryColumn? summaryColumn,
+      RowColumnIndex rowColumnIndex,
+      String summaryValue) {
+    handoverFormController.getSummaryData(summaryColumn?.columnName ?? '',summaryValue);
+    return Padding(
+        padding: const EdgeInsets.all(3),
+      child: Center(
+        child:  BigText(text: summaryValue),
+      ),
+    );
+  }
 
   buildPaginatedDataGridRows() {
     dataGridRows = handoverFormController
@@ -73,13 +89,25 @@ class RoomsUsedSource extends DataGridSource {
         .map<DataGridRow>((dataGridRow) {
 
       return DataGridRow(cells: [
+        DataGridCell<String>(columnName: RoomsUsedColumnNames.employee, value: dataGridRow.employeeId),
         DataGridCell<int>(
-            columnName: 'ROOM NUMBER', value: dataGridRow.roomNumber),
-        DataGridCell<int>(columnName: 'AMOUNT', value: dataGridRow.roomCost!),
-        DataGridCell<String>(columnName: 'SOLD X', value: dataGridRow.time!),
-        DataGridCell<String>(columnName: 'EMPLOYEE', value: dataGridRow.employeeId),
+            columnName: RoomsUsedColumnNames.roomNumber, value: dataGridRow.roomNumber),
+        DataGridCell<int>(columnName: RoomsUsedColumnNames.value, value: dataGridRow.roomCost!),
+        DataGridCell<int>(columnName: RoomsUsedColumnNames.paid, value: dataGridRow.roomAmountPaid),
+        DataGridCell<int>(columnName: RoomsUsedColumnNames.debt, value: dataGridRow.roomOutstandingBalance),
+
         // DataGridCell<String>(columnName: 'GUEST', value: dataGridRow.clientId),
       ]);
     }).toList(growable: false);
+
   }
+}
+
+class RoomsUsedColumnNames{
+  static const String leading = "rooms_used_";
+  static const String employee = '${leading}employee';
+  static const String roomNumber = '${leading}room_number';
+  static const String value = '${leading}value';
+  static const String paid = '${leading}paid';
+  static const String debt = '${leading}debt';
 }

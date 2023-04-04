@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../../widgets/text/big_text.dart';
 import '../controller/handover_form_controller.dart';
 
 class RoomServiceSource extends DataGridSource{
@@ -53,19 +54,39 @@ class RoomServiceSource extends DataGridSource{
     return true;
   }
 
-
+  @override
+  Widget? buildTableSummaryCellWidget(
+      GridTableSummaryRow summaryRow,
+      GridSummaryColumn? summaryColumn,
+      RowColumnIndex rowColumnIndex,
+      String summaryValue) {
+    handoverFormController.getSummaryData(summaryColumn?.columnName ?? '',summaryValue);
+    return Container(
+      padding: const EdgeInsets.all(1.0),
+      child: Center(child: BigText(text: summaryValue),),
+    );
+  }
 
   buildPaginatedDataGridRows() {
     dataGridRows = handoverFormController
         .paginatedRoomServiceTransactionsInCurrentSession.value
         .map<DataGridRow>((dataGridRow) {
       return DataGridRow(cells: [
-        DataGridCell<int>(columnName: 'ROOM NUMBER', value: dataGridRow.roomNumber),
-        DataGridCell<String>(columnName: 'CLIENT', value: dataGridRow.clientName),
-        DataGridCell<int>(columnName: 'AMOUNT PAID', value: dataGridRow.amountCollected),
-        DataGridCell<String>(columnName: 'SERVICE', value: dataGridRow.service),
-        DataGridCell<String>(columnName: 'EMPLOYEE', value: dataGridRow.employeeName),
+        DataGridCell<int>(columnName: RoomsServiceColumnNames.roomNumber, value: dataGridRow.roomNumber),
+        DataGridCell<String>(columnName: RoomsServiceColumnNames.client, value: dataGridRow.clientName),
+        DataGridCell<String>(columnName: RoomsServiceColumnNames.employee, value: dataGridRow.employeeName),
+        DataGridCell<int>(columnName: RoomsServiceColumnNames.amountPaid, value: dataGridRow.amountCollected),
+        DataGridCell<String>(columnName: RoomsServiceColumnNames.service, value: dataGridRow.service),
       ]);
     }).toList(growable: false);
   }
+}
+
+class RoomsServiceColumnNames{
+  static const String leading = "rooms_service_";
+  static const String employee = '${leading}employee';
+  static const String roomNumber = '${leading}room_number';
+  static const String client = '${leading}client';
+  static const String service = '${leading}service';
+  static const String amountPaid = '${leading}amount_paid';
 }

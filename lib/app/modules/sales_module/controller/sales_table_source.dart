@@ -3,6 +3,8 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../widgets/text/big_text.dart';
+
 class SalesTableSource extends DataGridSource{
 
   SalesTableSource({this.rowsPerPage = 20}){
@@ -28,7 +30,17 @@ class SalesTableSource extends DataGridSource{
           );
         }).toList());
   }
-
+  @override
+  Widget? buildTableSummaryCellWidget(
+      GridTableSummaryRow summaryRow,
+      GridSummaryColumn? summaryColumn,
+      RowColumnIndex rowColumnIndex,
+      String summaryValue) {
+    return Container(
+      padding: const EdgeInsets.all(15.0),
+      child: BigText(text: summaryValue),
+    );
+  }
   @override
   Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
     num startIndex = newPageIndex * rowsPerPage;
@@ -57,8 +69,8 @@ class SalesTableSource extends DataGridSource{
         DataGridCell<String>(columnName: 'EMPLOYEE', value: dataGridRow.employeeName),
         DataGridCell<String>(columnName: 'CLIENT', value: dataGridRow.clientName),
         DataGridCell<String>(columnName: 'SERVICE', value: dataGridRow.service!),
-        DataGridCell<int>(columnName: 'COLLECTED', value: dataGridRow.amountCollected),
         DataGridCell<String>(columnName: 'PAY METHOD', value: dataGridRow.payMethod!),
+        DataGridCell<int>(columnName: 'COLLECTED', value: dataGridRow.amountCollected ?? -1),
       ]);
 
     }).toList(growable: false);

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import '../../../../widgets/text/big_text.dart';
 import '../controller/handover_form_controller.dart';
 
 class HotelIssuesSource extends DataGridSource{
@@ -39,6 +40,19 @@ class HotelIssuesSource extends DataGridSource{
   }
 
   @override
+  Widget? buildTableSummaryCellWidget(
+      GridTableSummaryRow summaryRow,
+      GridSummaryColumn? summaryColumn,
+      RowColumnIndex rowColumnIndex,
+      String summaryValue) {
+    handoverFormController.getSummaryData(summaryColumn?.columnName ?? '',summaryValue);
+    return Container(
+      padding: const EdgeInsets.all(15.0),
+      child: BigText(text: summaryValue),
+    );
+  }
+
+  @override
   Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
     num startIndex = newPageIndex * rowsPerPage;
     num endIndex = startIndex + rowsPerPage;
@@ -64,12 +78,21 @@ class HotelIssuesSource extends DataGridSource{
         .paginatedHotelIssuesInCurrentSession.value
         .map<DataGridRow>((dataGridRow) {
       return DataGridRow(cells: [
-        DataGridCell<int>(columnName: 'ROOM NUMBER', value: dataGridRow.roomNumber),
-        DataGridCell<String>(columnName: 'ISSUE TYPE', value: dataGridRow.issueType),
-        DataGridCell<String>(columnName: 'STATUS', value: dataGridRow.issueStatus),
-        DataGridCell<String>(columnName: 'DESCRIPTION', value: dataGridRow.issueDescription),
-        DataGridCell<String>(columnName: 'STEPS TAKEN', value: dataGridRow.stepsTaken),
+        DataGridCell<int>(columnName: HotelIssuesTableColumnNames.roomNumber, value: dataGridRow.roomNumber),
+        DataGridCell<String>(columnName: HotelIssuesTableColumnNames.issueType, value: dataGridRow.issueType),
+        DataGridCell<String>(columnName: HotelIssuesTableColumnNames.status, value: dataGridRow.issueStatus),
+        DataGridCell<String>(columnName: HotelIssuesTableColumnNames.description, value: dataGridRow.issueDescription),
+        DataGridCell<String>(columnName: HotelIssuesTableColumnNames.stepsTaken, value: dataGridRow.stepsTaken),
       ]);
     }).toList(growable: false);
   }
+}
+
+class HotelIssuesTableColumnNames{
+  static const String leading = "hotel_issues_";
+  static const String issueType = '${leading}issue_type';
+  static const String roomNumber = '${leading}room_number';
+  static const String status = '${leading}status';
+  static const String description = '${leading}description';
+  static const String stepsTaken = '${leading}steps_taken';
 }
