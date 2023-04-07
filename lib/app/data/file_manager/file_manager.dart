@@ -83,8 +83,9 @@ class FileManager{
   }
 
   Future<String> generateFileName({String userName="system",String category="none"}) async {
+    createFolder(category);
     String subfolder =
-    extractDate(DateTime.now().add(Duration(days: random(1, 10))))
+    extractDate(DateTime.now())
         .replaceAll('-', '_');
     String fileName = userName;
     fileName = fileName.replaceAll(' ', '');

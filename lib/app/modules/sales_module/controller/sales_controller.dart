@@ -105,6 +105,7 @@ class SalesController extends GetxController {
 
   Future<String> generateSalesFileName() async {
     FileManager fileManager = FileManager();
+    fileManager.createFolder('Sales');
     String userName = await loggedInUser.then((value) => value.value.fullName!);
 
     return await fileManager.generateFileName(category: 'Sales',userName: userName);
