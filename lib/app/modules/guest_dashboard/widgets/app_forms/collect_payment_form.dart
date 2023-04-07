@@ -1,35 +1,34 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
+import 'package:hotel_pms/widgets/forms/form_header.dart';
 import '../../../../../core/resourses/color_manager.dart';
-import '../../../../../core/utils/dim_logic.dart';
 import '../../../../../core/values/app_constants.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/dropdown_menu/custom_dropdown_menu.dart';
-import '../../../../../widgets/inputs/text_field_input.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import '../../controller/payment_form_controller.dart';
 
-import 'dialog_forms.dart';
+
 
 
 
 class CollectPaymentForm extends GetView<PaymentController> {
-  CollectPaymentForm({Key? key}) : super(key: key);
+  const CollectPaymentForm({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PaymentController>(
       init: PaymentController(),
         builder: (controller)=>Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+         // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
-         dialogFormHeader(LocalKeys.kCollectPaymentForm.tr),
-
+         // dialogFormHeader(LocalKeys.kCollectPaymentForm.tr),
+            buildFormHeader(LocalKeys.kCollectPaymentForm.tr),
+            SizedBox(height: const Size.fromHeight(20).height,),
          Obx(() => Padding(
            padding: const EdgeInsets.only(left: AppSize.size44),
            child: Table(
@@ -55,6 +54,7 @@ class CollectPaymentForm extends GetView<PaymentController> {
            ],
        ),
          ),),
+            SizedBox(height: const Size.fromHeight(50).height,),
             Obx(() => Padding(
               padding: const EdgeInsets.only(left: AppSize.size44),
               child: Table(
@@ -80,18 +80,17 @@ class CollectPaymentForm extends GetView<PaymentController> {
                 ],
               ),
             ),),
+            SizedBox(height: const Size.fromHeight(20).height,),
 
 
         /// Collect Payment
          Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              width: const Size.fromWidth(200).width,
-              child: TextFieldInput(
-                textEditingController: controller.collectedPaymentInputCtrl,
-                hintText:LocalKeys.kCollectPayment.tr,
-                textInputType: TextInputType.text,
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(11),
+                child: Obx(() => BigText(text: controller.collectedPaymentInput.value,))
               ),
             ),
 
@@ -111,6 +110,7 @@ class CollectPaymentForm extends GetView<PaymentController> {
             )
           ],
         ),
+            SizedBox(height: const Size.fromHeight(20).height,),
 
         /// Save and Cancel Button
         Align(
@@ -122,13 +122,13 @@ class CollectPaymentForm extends GetView<PaymentController> {
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.white24),
                 onPressed: (){
                   Navigator.of(context).pop();
+                  Get.delete<PaymentController>();
                 },
                 child: SmallText(text: LocalKeys.kCancel.tr,color: ColorsManager.black,),
               ),
               ElevatedButton(
-                onPressed: (){
-                  Navigator.of(context).pop();
-                  controller.payBill();
+                onPressed: ()async{
+                  await controller.payBill();
                 },
                 child: SmallText(text: LocalKeys.kCollectPayment.tr,color: Colors.white,),
               ),

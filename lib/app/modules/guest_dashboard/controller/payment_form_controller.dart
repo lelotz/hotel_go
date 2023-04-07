@@ -64,14 +64,15 @@ class PaymentController extends GetxController {
 
   Map<String, dynamic> allocatedPayments = {};
 
-  TextEditingController collectedPaymentInputCtrl = TextEditingController();
+  Rx<String> collectedPaymentInput = Rx<String>(LocalKeys.kSelectBillType);
 
-  Rx<String> selectedBill = Rx<String>("");
+  Rx<String> selectedBill = Rx<String>(LocalKeys.kSelectBillType.tr);
 
   @override
   Future<void> onInit() async {
     await getMetaData();
     await calculateAllFees();
+    collectedPaymentInput.value = LocalKeys.kSelectBillType.tr;
     super.onInit();
   }
 
@@ -88,7 +89,7 @@ class PaymentController extends GetxController {
   Future<void> updateGrandTotal() async {
     payDataController.roomTransaction.value.amountPaid =
         payDataController.roomTransaction.value.amountPaid! +
-            stringToInt(collectedPaymentInputCtrl.text);
+            stringToInt(collectedPaymentInput.value);
 
     payDataController.roomTransaction.value.outstandingBalance =
         payDataController.roomTransaction.value.grandTotal! -
@@ -153,20 +154,20 @@ class PaymentController extends GetxController {
 
 
   Future<void> updateRoomFees() async {
-    collectedPaymentInputCtrl.text = roomBalance.value.toString();
+    collectedPaymentInput.value = roomBalance.value.toString();
     RoomTransaction roomTransaction = payDataController.roomTransaction.value;
 
     /// Add the input new payment to the current [RoomTransaction] Object
     /// This updates the roomAmountPaid value of the [RoomTransaction] Object
     roomTransaction.roomAmountPaid = roomTransaction.roomAmountPaid! +
-        stringToInt(collectedPaymentInputCtrl.text);
+        stringToInt(collectedPaymentInput.value);
     roomTransaction.roomOutstandingBalance =
         roomTransaction.roomCost! - roomTransaction.roomAmountPaid!;
 
     roomTransaction.amountPaid = roomTransaction.amountPaid! +
-        stringToInt(collectedPaymentInputCtrl.text);
+        stringToInt(collectedPaymentInput.value);
     roomTransaction.outstandingBalance = roomTransaction.outstandingBalance! -
-        stringToInt(collectedPaymentInputCtrl.text);
+        stringToInt(collectedPaymentInput.value);
 
     payDataController.roomTransaction.value = roomTransaction;
 
@@ -184,14 +185,13 @@ class PaymentController extends GetxController {
           employeeName: loggedInUser.value.fullName,
           roomTransactionId: payDataController.roomTransaction.value.id,
           roomNumber: selectedRoom.roomNumber,
-          amountCollected: stringToInt(collectedPaymentInputCtrl.text),
+          amountCollected: stringToInt(collectedPaymentInput.value),
           dateTime: DateTime.now().toIso8601String(),
           date: extractDate(DateTime.now()),
           time: extractTime(DateTime.now()),
           service: LocalKeys.kRoom,
           payMethod: "CASH",
           receiptNumber: const Uuid().v1(),
-
         ).toDb();
       });
     });
@@ -226,7 +226,7 @@ class PaymentController extends GetxController {
 
       int paymentInput = roomServiceBalance.value;
       int currentRoomServiceTransactionCost = 0;
-      collectedPaymentInputCtrl.text = roomServiceBalance.value.toString();
+      collectedPaymentInput.value = roomServiceBalance.value.toString();
       for(OtherTransactions roomServiceTransaction in sessionTransactions.value[LocalKeys.kRoomService.toUpperCase()]!){
         if(roomServiceTransaction.outstandingBalance! > 0){
           currentRoomServiceTransactionCost = paymentInput - (paymentInput - roomServiceTransaction.grandTotal!);
@@ -246,7 +246,7 @@ class PaymentController extends GetxController {
         employeeName: loggedInUser.value.fullName,
         roomTransactionId: payDataController.roomTransaction.value.id,
         roomNumber: selectedRoom.roomNumber,
-        amountCollected: stringToInt(collectedPaymentInputCtrl.text),
+        amountCollected: stringToInt(collectedPaymentInput.value),
         dateTime: DateTime.now().toIso8601String(),
         date: extractDate(DateTime.now()),
         time: extractTime(DateTime.now()),
@@ -289,7 +289,7 @@ class PaymentController extends GetxController {
       await calculateLaundryCost();
       int paymentInput = laundryBalance.value;
       int currentLaundryTransactionCost = 0;
-      collectedPaymentInputCtrl.text = laundryBalance.value.toString();
+      collectedPaymentInput.value = laundryBalance.value.toString();
 
       for (OtherTransactions laundryTransaction in sessionTransactions.value[LocalKeys.kLaundry.toUpperCase()] ?? []) {
         if (laundryTransaction.outstandingBalance! > 0) {
@@ -311,7 +311,7 @@ class PaymentController extends GetxController {
         employeeName: loggedInUser.value.fullName,
         roomTransactionId: payDataController.roomTransaction.value.id,
         roomNumber: selectedRoom.roomNumber,
-        amountCollected: stringToInt(collectedPaymentInputCtrl.text),
+        amountCollected: stringToInt(collectedPaymentInput.value),
         dateTime: DateTime.now().toIso8601String(),
         date: extractDate(DateTime.now()),
         time: extractTime(DateTime.now()),
@@ -336,16 +336,16 @@ class PaymentController extends GetxController {
     selectedBill.value = billType;
     switch (billType) {
       case LocalKeys.kRoom:
-        collectedPaymentInputCtrl.text = roomBalance.value.toString();
+        collectedPaymentInput.value = roomBalance.value.toString();
         break;
       case LocalKeys.kLaundry :
-        collectedPaymentInputCtrl.text = laundryBalance.value.toString();
+        collectedPaymentInput.value = laundryBalance.value.toString();
         break;
       case LocalKeys.kRoomService :
-        collectedPaymentInputCtrl.text = roomServiceBalance.value.toString();
+        collectedPaymentInput.value = roomServiceBalance.value.toString();
         break;
       case LocalKeys.kAll :
-        collectedPaymentInputCtrl.text =
+        collectedPaymentInput.value =
             grandTotalOutstandingBalance.value.toString();
         break;
     }
@@ -365,7 +365,10 @@ class PaymentController extends GetxController {
       case LocalKeys.kAll :
         await payAllBills();
         break;
+
     }
+    Navigator.of(Get.overlayContext!).pop();
+    Get.delete<PaymentController>();
   }
 
 

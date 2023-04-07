@@ -9,8 +9,10 @@ class SalesTableSource extends DataGridSource{
 
   SalesTableSource({this.rowsPerPage = 20}){
     salesController.paginatedCollectedPayments.value = salesController.collectedPayments.value;
+    buildPaginatedDataGridRows();
+    print('paginatedSalesCount${salesController.paginatedCollectedPayments.value.length}');
   }
-  SalesController salesController = Get.put(SalesController(),permanent: true);
+  SalesController salesController = Get.put(SalesController());
 
   List<DataGridRow> dataGridRows = [];
 
@@ -43,15 +45,15 @@ class SalesTableSource extends DataGridSource{
   }
   @override
   Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
-    num startIndex = newPageIndex * rowsPerPage;
-    num endIndex = startIndex + rowsPerPage;
+    int startIndex = newPageIndex * rowsPerPage;
+    int endIndex = startIndex + rowsPerPage;
     if (startIndex < salesController.collectedPayments.value.length && endIndex <= salesController.collectedPayments.value.length) {
       salesController.paginatedCollectedPayments.value =
-          salesController.collectedPayments.value.getRange(startIndex as int, endIndex as int).toList(growable: false);
+          salesController.collectedPayments.value.getRange(startIndex, endIndex).toList(growable: false);
       buildPaginatedDataGridRows();
       notifyListeners();
     } else {
-      salesController.paginatedCollectedPayments.value = [];
+      // salesController.paginatedCollectedPayments.value = [];
     }
 
     return true;
@@ -74,6 +76,7 @@ class SalesTableSource extends DataGridSource{
       ]);
 
     }).toList(growable: false);
+    print('DataGridRowsCount'+ dataGridRows.length.toString());
   }
 
 }

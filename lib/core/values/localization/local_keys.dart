@@ -67,6 +67,9 @@ class LocalKeys {
   static const String kUserManagement = "User Management";
 
   /// General
+  static const String kSelectBillType = "Select Bill Type";
+  static const String kPettyCash = "Petty Cash";
+  static const String kHotelIssues = "Hotel Issues";
   static const String kConference = "Conference";
   static const String kFilters = "Filters";
   static const String kSoldX = "Sold X";

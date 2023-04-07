@@ -13,7 +13,7 @@ import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
-import 'package:hotel_pms/mock_data/mock_data_api.dart';
+import 'package:hotel_pms/core/values/localization/messages.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/utils/useful_math.dart';
@@ -48,7 +48,8 @@ class CheckInFormController extends GetxController{
   Future<String> get employeeId async => Get.find<AuthController>().adminUser.value.appId!;
   Future<String> get employeeIdName async => Get.find<AuthController>().adminUser.value.fullName!;
 
-
+  Rx<String> payMethod = Rx<String>('');
+  Rx<String> payMethodStatus = Rx<String>('');
   String userId = const Uuid().v1();
   final String transactionId = const Uuid().v1();
 
@@ -56,8 +57,7 @@ class CheckInFormController extends GetxController{
   Rx<int> outstandingBalance = Rx<int>(0);
   bool isReport;
   bool isTest;
-  int mockNameIndex = random(0,mockNames.length);
-  int mockCountriesIndex = random(0, mockCountries.length);
+
   String roomNumber;
 
   CheckInFormController({this.isReport = false,this.roomNumber = "101",this.isTest=false});
@@ -67,14 +67,15 @@ class CheckInFormController extends GetxController{
     super.onInit();
     adultsCtrl.text = "1";
     childrenCtrl.text = "0";
-    fullNameCtrl.text = mockNames[mockNameIndex];
-    goingToCtrl.text = mockCountries[mockCountriesIndex];
-    comingFromCtrl.text = mockCountries[mockCountriesIndex];
-    idNumberCtrl.text = random(111111, 9999999).toString();
-    idTypeCtrl.text = "PASSPORT";
-    countryOfBirthCtrl.text = mockCountries[mockCountriesIndex];
     nightsCtrl.text = "1";
     paidTodayCtrl.text = "0";
+    // fullNameCtrl.text = mockNames[mockNameIndex];
+    // goingToCtrl.text = mockCountries[mockCountriesIndex].split(' ')[1];
+    // comingFromCtrl.text = mockCountries[random(0, mockCountries.length)].split(' ')[1];
+    // idNumberCtrl.text = random(111111, 9999999).toString();
+    // idTypeCtrl.text = "PASSPORT";
+    // countryOfBirthCtrl.text = mockCountries[mockCountriesIndex];
+
     await initializeRoomData(roomNumber);
     stayCost();
     outstandingBalance();
@@ -99,6 +100,23 @@ class CheckInFormController extends GetxController{
 
   }
 
+  bool validatePayMethod(){
+    // bookingInitiated.value = true;
+
+    if(payMethod.value == ''){
+      payMethodStatus.value = 'Pay Method ${AppMessages.isNotEmpty}';
+      // bookingInitiated.value = false;
+      return false;
+    }else{
+      payMethodStatus.value = '';
+    }
+    // bookingInitiated.value = false;
+    return true;
+  }
+  setPayMethod(String method){
+    payMethod.value = method;
+    payMethod.refresh();
+  }
   stayCost(){
     int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType['VIP'] : AppConstants.roomType['STD'];
     roomCost.value = (stringToInt(nightsCtrl.text) ) * roomPrice;
@@ -109,7 +127,23 @@ class CheckInFormController extends GetxController{
   }
 
   calculateOutstandingBalance (){
-    outstandingBalance.value = roomCost.value - (stringToInt(paidTodayCtrl.text));
+    if(stringToInt(paidTodayCtrl.value.text) > -1 && stringToInt(paidTodayCtrl.value.text) <= roomCost.value){
+      outstandingBalance.value = roomCost.value - (stringToInt(paidTodayCtrl.text));
+    }
+
+  }
+
+  checkInFormIsValid(){
+
+  }
+
+
+  validateNightsStay(){
+    if(nightsCtrl.text.isNumericOnly == false){
+      return AppMessages.numericOnly.tr;
+    }
+
+    return null;
   }
 
   checkInGuest()async {
@@ -148,14 +182,14 @@ class CheckInFormController extends GetxController{
                     dateTime: DateTime.now().add(Duration(days: dayOffset)).toIso8601String(),
                     date: extractDate(DateTime.now().add(Duration(days: dayOffset))),
                     time: extractTime(DateTime.now()),
-                    payMethod: "CASH",
+                    payMethod: payMethod.value,
                     receiptNumber: const Uuid().v1(),
                   );
                   await collectPayment.toDb().then((value) async{
                     await homepageController?.refreshSelectedRoom();
                     checkInArtifacts[CheckInArtifactsKeys.collectedPaymentId] = collectPaymentId;
                     checkInArtifacts['${CheckInArtifactsKeys.collectedPaymentId}value'] = collectPayment.toJson();
-                    if(isReport && isTest == false)  await Get.find<HandoverFormController>().onInit();
+                    if(isReport && isTest == false)  await Get.find<ReportGeneratorController>().onInit();
                     //showSnackBar("Created CollectPayment", Get.context!);
                   });
                 }

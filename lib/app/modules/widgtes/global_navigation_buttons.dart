@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/modules/reports/view/reports_view.dart';
-import 'package:hotel_pms/app/modules/sandbox/syncfusion_table_example.dart';
+import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
+import 'package:hotel_pms/app/modules/reports/view/report_selector.dart';
 import 'package:hotel_pms/app/modules/user_management/views/user_management_view.dart';
-import 'package:hotel_pms/widgets/dialogs/dialod_builder.dart';
-import 'package:hotel_pms/widgets/illustrations/illustrations_example.dart';
+import 'package:hotel_pms/core/session_management/session_manager.dart';
 import '../../../core/resourses/color_manager.dart';
 import '../../../core/resourses/size_manager.dart';
 import '../../../core/values/localization/local_keys.dart';
-import '../../../widgets/tables/paged_table_example.dart';
 import '../../../widgets/text/big_text.dart';
 import '../../../widgets/text/small_text.dart';
 import '../book_service/view/book_service_view.dart';
 import '../sales_module/view/sales_view.dart';
-import '../book_service/widgtes/booking_calender.dart';
 import 'form_selector_pop_up.dart';
 
 
@@ -26,6 +23,7 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
       borderRadius: BorderRadius.circular(4),
     ),
   );
+  AuthController authController = Get.find<AuthController>();
   return   Padding(
     padding: EdgeInsets.symmetric(horizontal:  const Size.fromWidth(AppSize.size12).width),
     child: Row(
@@ -48,31 +46,19 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             ElevatedButton(
                 style:style,
-                onPressed: (){Get.to(()=> ReportsView());},
-                child:  SmallText(text: LocalKeys.kReports.tr,color: ColorsManager.grey1,)
-            ),
-            SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
-            ElevatedButton(
-                style:style,
                 onPressed: (){Get.to(()=>const BookServiceView());},
                 child: SmallText(text: LocalKeys.kBookService.tr,color: ColorsManager.grey1,)),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
-            ElevatedButton(
+            authController.adminUser.value.position == 'Admin' ? ElevatedButton(
                 style:style,
                 onPressed: (){Get.to(()=> const UserManagementView());},
-                child: SmallText(text: LocalKeys.kUserManagement.tr,color: ColorsManager.grey1,)),
+                child: SmallText(text: LocalKeys.kUserManagement.tr,color: ColorsManager.grey1,)): const SizedBox(),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             const FormSelector(),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
-            ElevatedButton(
-                style:style,
-                onPressed: (){Get.to(()=> const SyncFusionExample());},
-                child: const SmallText(text: "Exportable Table",color: ColorsManager.grey1,)),
-            SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
-            ElevatedButton(
-                style:style,
-                onPressed: (){Get.to(()=> PagedDataExample());},
-                child: const SmallText(text: "Paged Data Example",color: ColorsManager.grey1,)),
+            const ReportSelector(),
+            SizedBox(width: const Size.fromWidth(AppSize.size12).width,),
+
 
           ],
         ),

@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
-import 'package:hotel_pms/app/modules/user_management/controller/user_management_controller.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/admin_user_repo.dart';
 import '../../../data/local_storage/repository/encrypted_data_repo.dart';
 import '../../../data/models_n/encrypted_data_model.dart';
@@ -11,6 +11,8 @@ import '../../../data/models_n/encrypted_data_model.dart';
 class CreateUserController extends GetxController{
 
   TextEditingController fullNameController = TextEditingController();
+  TextEditingController userIdController = TextEditingController();
+
   TextEditingController phoneController = TextEditingController();
   TextEditingController passWordController = TextEditingController();
   Rx<String> newUserPosition = Rx<String>('');
@@ -18,7 +20,7 @@ class CreateUserController extends GetxController{
   //UserManagementController userManagementController = Get.find<UserManagementController>();
   Rx<bool> userSuccessfullyCreated = false.obs;
   Rx<bool> initiatedUserCreation = false.obs;
-  List<String> userPositions = ["Receptionist","Admin","Housekeeping","Accounting","Manager"];
+  List<String> userPositions = ["Receptionist","Admin",LocalKeys.kHouseKeeping,"Accounting","Manager"];
 
   Future<void> createNewEmployee({bool isNewAdmin=false})async{
     initiatedUserCreation.value = true;
@@ -27,16 +29,18 @@ class CreateUserController extends GetxController{
       fullName: fullNameController.text,
       phone: phoneController.text,
       position: newUserPosition.value,
+      status: 'ENABLED',
       roomsSold: 0,
     ).toJson()).then((value) async{
       if(value != null && value > 0) {
         await encryptNewUserPassword();
         userSuccessfullyCreated.value = true;
-        //if(isNewAdmin) userManagementController.getAllAdminUsers();
         Navigator.of(Get.overlayContext!).pop();
       }
 
     });
+    initiatedUserCreation.value = false;
+
   }
 
   setUserPosition(String position){

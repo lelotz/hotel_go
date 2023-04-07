@@ -68,7 +68,7 @@ class _TextFieldInputState extends State<TextFieldInput> {
 
     return TextFormField(
       validator: (value){
-        return widget.validation!(value);
+        return widget.validation != null ? widget.validation!(value) : null;
       },
       maxLines: widget.maxLines,
       controller: widget.textEditingController,

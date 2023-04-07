@@ -26,7 +26,7 @@ class PettyCashTableSource extends DataTableSource{
           paddedDataCell(text: BigText(text: extractDate(DateTime.parse(pettyCashTransactions[index].dateTime!)),size: 16,)),
           paddedDataCell(text: BigText(text: pettyCashTransactions[index].beneficiaryName!,size: 16)),
           paddedDataCell(text: BigText(text: pettyCashTransactions[index].transactionType!,size: 16)),
-          paddedDataCell(text: BigText(text: pettyCashTransactions[index].transactionValue!,size: 16)),
+          paddedDataCell(text: BigText(text: pettyCashTransactions[index].transactionValue.toString(),size: 16)),
           paddedDataCell(text: SmallText(text: pettyCashTransactions[index].description!,fontWeight: FontWeight.w600,)),
           paddedDataCell(text: BigText(text: pettyCashTransactions[index].employeeId!,size: 16)),
         ]

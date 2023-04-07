@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:hotel_pms/app/modules/login_screen/bindings/auth_bindings.dart';
 import 'package:hotel_pms/core/resourses/theme_manager.dart';
-import 'package:hotel_pms/mock_data/mock_data_api.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:get/get.dart';
 import 'app/routes/app_pages.dart';
@@ -13,7 +12,6 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
-  loadMockNamesAndCountries();
   runApp(const MyApp());
 
 }

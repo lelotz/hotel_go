@@ -1,9 +1,12 @@
+
+
 const String _kAssets = "assets/";
 const String _kImages = "${_kAssets}images/";
 
 class Assets {
   const Assets._();
   static const String kConnectionError = "${_kImages}no_internet.svg";
+  static const String kLoginBackground = "${_kImages}blue_lines.png";
   static const String kLogo = "${_kImages}whitemark_logo.png";
   static const String kSlogan = "${_kImages}slogan.png";
   static const String kOwnPackage = "${_kImages}own_package.png";

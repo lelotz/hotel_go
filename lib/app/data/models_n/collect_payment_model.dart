@@ -1,6 +1,9 @@
+import 'package:hotel_pms/app/data/local_storage/repository/user_activity_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
-
+import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
+import 'package:uuid/uuid.dart';
+import '../../../core/values/localization/local_keys.dart';
 import '../local_storage/repository/collected_payments_repo.dart';
 
 class CollectPayment {
@@ -80,6 +83,18 @@ class CollectPayment {
   }
 
   Future<int?> toDb()async{
+    await UserActivityRepository().createUserActivity(UserActivity(
+      activityId: const Uuid().v1(),
+      activityValue: amountCollected,
+      employeeId: employeeId,
+      employeeFullName: employeeName,
+      activityStatus: service,
+      guestId: clientId,
+      unit: 'Payment',
+      dateTime: dateTime,
+      description: LocalKeys.kCollectPayment,
+      roomTransactionId: roomTransactionId,
+    ).toJson());
    return await CollectedPaymentsRepository().createCollectedPayment(toJson());
   }
 

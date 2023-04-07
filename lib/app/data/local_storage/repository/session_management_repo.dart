@@ -114,6 +114,30 @@ class SessionManagementRepository  extends SqlDatabase{
     });
     return result;
   }
+
+  Future<List<SessionActivity>> getSessionActivityByTransactionTypeAndSessionId(String transactionType,String sessionId)async{
+    List<SessionActivity> result = [];
+    await SqlDatabase.instance.read(
+        tableName: SessionActivityTable.tableName,
+        where: '${SessionActivityTable.transactionType}=? AND ${SessionActivityTable.sessionId}=?',
+        whereArgs: [transactionType,sessionId]
+    ).then((value) {
+      result = SessionActivity().fromJsonList(value ?? []);
+    });
+    return result;
+  }
+
+  Future<List<SessionActivity>> getSessionActivityByTransactionTypeAndDateRange(String transactionType,String startDate,String endDate)async{
+    List<SessionActivity> result = [];
+    await SqlDatabase.instance.read(
+        tableName: SessionActivityTable.tableName,
+        where: '${SessionActivityTable.transactionType}=? AND ${SessionActivityTable.dateTime} BETWEEN ? AND ? ',
+        whereArgs: [transactionType,startDate,endDate]
+    ).then((value) {
+      result = SessionActivity().fromJsonList(value ?? []);
+    });
+    return result;
+  }
 }
 
 
@@ -143,6 +167,7 @@ class SessionActivityTable{
   static const String sessionId = "sessionId";
   static const String transactionId = "transactionId";
   static const String transactionType = "transactionType";
+  static const String dateTime = "dateTime";
 
   String sql =
   '''
@@ -150,6 +175,7 @@ class SessionActivityTable{
        $id TEXT PRIMARY KEY,
        $sessionId TEXT NOT NULL,
        $transactionId TEXT ,
+       $dateTime TEXT NOT NULL,
        $transactionType TEXT NOT NULL )
       ''';
 }

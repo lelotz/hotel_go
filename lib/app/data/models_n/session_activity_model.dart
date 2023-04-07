@@ -4,15 +4,17 @@ class SessionActivity {
   String? sessionId;
   String? transactionId;
   String? transactionType;
+  String? dateTime;
 
   SessionActivity(
-      {this.id, this.sessionId, this.transactionId, this.transactionType});
+      {this.id, this.sessionId, this.transactionId, this.transactionType,this.dateTime});
 
   SessionActivity.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     sessionId = json['sessionId'];
     transactionId = json['transactionId'];
     transactionType = json['transactionType'];
+    dateTime = json['dateTime'];
   }
 
   Map<String, dynamic> toJson() {
@@ -21,6 +23,7 @@ class SessionActivity {
     data['sessionId'] = sessionId;
     data['transactionId'] = transactionId;
     data['transactionType'] = transactionType;
+    data['dateTime'] = dateTime;
     return data;
   }
 

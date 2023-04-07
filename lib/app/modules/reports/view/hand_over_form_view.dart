@@ -1,30 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/check_in_screen/view/check_in_form_view.dart';
+import 'package:hotel_pms/app/modules/reports/view/handover_report_tables/petty_cash_table.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
-import 'package:hotel_pms/widgets/dialogs/dialod_builder.dart';
 import 'package:hotel_pms/widgets/inputs/text_field_input.dart';
 import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import 'package:hotel_pms/widgets/text/big_text.dart';
-import 'package:hotel_pms/widgets/text/small_text.dart';
-import '../../../../core/values/localization/local_keys.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../../../../widgets/buttons/my_outlined_button.dart';
 import '../../../../widgets/forms/form_header.dart';
-import '../../book_service/view/book_service_form.dart';
-
-import '../../widgtes/forms/hotel_issues_form.dart';
+import '../../../../widgets/icons/app_icon.dart';
+import '../../../../widgets/text/small_text.dart';
 import '../controller/handover_form_controller.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'handover_report_tables/conference_usage_table.dart';
+import 'handover_report_tables/hotel_issues_table.dart';
+import 'handover_report_tables/laundry_usage_table.dart';
+import 'handover_report_tables/room_service_table.dart';
+import 'handover_report_tables/rooms_used_table.dart';
 
-import '../table_sources/conference_usage_source.dart';
-import '../table_sources/hotel_issues_source.dart';
-import '../table_sources/laundry_transactions_source.dart';
-import '../table_sources/room_service_source.dart';
-import '../table_sources/rooms_used_table_source.dart';
+class HandoverReport extends GetView<ReportGeneratorController> {
+  HandoverReport({Key? key, required this.reportConfigs}) : super(key: key);
 
-class HandoverReport extends GetView<HandoverFormController> {
-  HandoverReport({Key? key}) : super(key: key);
+  final Map<String, dynamic> reportConfigs;
 
   final GlobalKey<SfDataGridState> hotelIssuesTableKey =
       GlobalKey<SfDataGridState>();
@@ -35,13 +34,20 @@ class HandoverReport extends GetView<HandoverFormController> {
   final GlobalKey<SfDataGridState> conferenceTableKey =
       GlobalKey<SfDataGridState>();
   final GlobalKey<SfDataGridState> roomsTableKey = GlobalKey<SfDataGridState>();
+  final GlobalKey<SfDataGridState> pettyCashTableKey = GlobalKey<SfDataGridState>();
+
+
+  // ReportGeneratorController reportGeneratorController = Get.put(ReportGeneratorController(),permanent: true);
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<HandoverFormController>(
-        init: HandoverFormController(),
+    return GetBuilder<ReportGeneratorController>(
+        init: ReportGeneratorController(reportConfigs: reportConfigs),
         builder: (controller) => Scaffold(
-              appBar: buildGlobalAppBar(context, appBarTitle: "Handover Form"),
+              appBar: buildGlobalAppBar(context, appBarTitle: "Handover Form",onBackButton: (){
+                Get.back();
+                Get.delete<ReportGeneratorController>();
+              }),
               body: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 8, horizontal: 200),
@@ -57,38 +63,51 @@ class HandoverReport extends GetView<HandoverFormController> {
                               ? loadingAnimation()
                               : IconButton(
                                   onPressed: () async {
-                                    controller.queTableKey(
-                                        roomsTableKey, "Rooms");
-                                    controller.queTableKey(
-                                        conferenceTableKey, "Conference");
-                                    controller.queTableKey(
-                                        roomServiceTableKey, "Room Service");
-                                    controller.queTableKey(
-                                        laundryTableKey, "Laundry");
-                                    controller.queTableKey(
-                                        hotelIssuesTableKey, "Hotel Issues");
-
-                                    await controller.processTableExports();
+                                    await controller.submitReport({
+                                      'Rooms': roomsTableKey,
+                                      'Conference': conferenceTableKey,
+                                      'Room Service': roomServiceTableKey,
+                                      'Laundry': laundryTableKey,
+                                      'Hotel Issues': hotelIssuesTableKey,
+                                      'Petty Cash' : pettyCashTableKey,
+                                    });
                                   },
                                   icon: const Icon(Icons.save_alt_outlined)))
                         ],
                       ),
-                      RoomsUsedSection(
-                        roomsTableKey: roomsTableKey,
-                      ),
-                      ConferenceUsageSection(
-                        conferenceTableKey: conferenceTableKey,
-                      ),
-                      LaundryUsageSection(
-                        laundryTableKey: laundryTableKey,
-                      ),
-                      RoomServiceTransactionsSection(
-                        roomServiceTableKey: roomServiceTableKey,
-                      ),
-                      HotelIssuesSection(
-                        hotelIssuesTableKey: hotelIssuesTableKey,
-                      ),
+                      const ReportConfigurationForm(),
+                      RoomsUsedSection(roomsTableKey: roomsTableKey,),
+                      ConferenceUsageSection(conferenceTableKey: conferenceTableKey,),
+                      LaundryUsageSection(laundryTableKey: laundryTableKey,),
+                      RoomServiceTransactionsSection(roomServiceTableKey: roomServiceTableKey,),
+                      PettyCashUsageSection(pettyCashTableKey: pettyCashTableKey),
+                      HotelIssuesSection(hotelIssuesTableKey: hotelIssuesTableKey,),
                       const HandoverDetailsForm(),
+                      Card(
+                        child: InkWell(
+                            hoverColor: ColorsManager.primaryAccent,
+                            onTap: () async {
+                              await controller.submitReport({
+                                'Rooms': roomsTableKey,
+                                'Conference': conferenceTableKey,
+                                'Room Service': roomServiceTableKey,
+                                'Laundry': laundryTableKey,
+                                'Hotel Issues': hotelIssuesTableKey,
+                                'Petty Cash' : pettyCashTableKey,
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Obx(
+                                () => controller.isExporting.value
+                                    ? loadingAnimation(
+                                        actionStatement: 'Exporting')
+                                    : const BigText(
+                                        text: 'Submit Report',
+                                      ),
+                              ),
+                            )),
+                      )
                     ],
                   ),
                 ),
@@ -97,13 +116,175 @@ class HandoverReport extends GetView<HandoverFormController> {
   }
 }
 
-class HandoverDetailsForm extends GetView<HandoverFormController> {
+class ReportConfigurationForm extends GetView<ReportGeneratorController> {
+  const ReportConfigurationForm({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<ReportGeneratorController>(
+        init: ReportGeneratorController(),
+        builder: (controller) => Card(
+              child: Column(
+                children: [
+                  buildFormHeader("Configure Report",
+                      enableCancelButton: false),
+                  SizedBox(
+                    height: const Size.fromHeight(20).height,
+                  ),
+
+                  /// Session Report CheckBox
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const SmallText(text: 'Report for current session only'),
+                            SizedBox(width: const Size.fromWidth(15).width,),
+                            Obx(() => Checkbox(
+                                  value: controller.isHandoverReport.value,
+                                  onChanged: controller.handleReportConfigurationOptions),
+                            )
+                          ],
+                        ),
+                        Card(
+                          child: InkWell(
+                            onTap: ()async{
+                              await controller.initData();
+                              controller.update();
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: BigText(text: 'Create Report',),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: const Size.fromHeight(20).height,),
+                  Obx(() => controller.isHandoverReport.value==false ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Column(
+                      children: [
+                        Row(children: [
+
+                          /// Start Date
+                          Container(
+                            width: const Size.fromWidth(200).width,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                border:
+                                Border.all(color: Colors.black, width: 2.0),
+                                color: ColorsManager.flutterGrey),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Obx(
+                                      () => Padding(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child:
+                                    controller.reportStartDate.value == null
+                                        ? const SmallText(
+                                        text: "Select Start Date")
+                                        : BigText(
+                                        text: extractDate(controller
+                                            .reportStartDate.value)),
+                                  ),
+                                ),
+                                const SmallText(text: 'Start Date'),
+                                InkWell(
+                                    onTap: () {
+                                     showDatePicker(
+                                          context: context,
+                                          initialDate: controller.reportStartDate.value,
+                                          firstDate: DateTime(2023),
+                                          lastDate: DateTime(2024))
+                                          .then((selectedDate) async{
+                                        if (selectedDate != null) {
+                                          controller.reportStartDate.value =
+                                              selectedDate;
+                                          controller.update();
+                                        }
+                                      });
+                                    },
+                                    child: const AppIcon(
+                                      icon: Icons.calendar_month,
+                                      useBackground: true,
+                                    ))
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: const Size.fromWidth(15).width,
+                          ),
+                          /// End Date
+                          Container(
+                            width: const Size.fromWidth(200).width,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                border:
+                                Border.all(color: Colors.black, width: 2.0),
+                                color: ColorsManager.flutterGrey),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: controller.reportEndDate.value == null
+                                      ? const SmallText(text: "Select End Date")
+                                      : BigText(
+                                      text: extractDate(
+                                          controller.reportEndDate.value)),
+                                ),
+                                const SmallText(text: 'End Date'),
+                                InkWell(
+                                    onTap: () {
+                                      showDatePicker(
+                                          context: context,
+                                          initialDate: controller
+                                              .reportEndDate.value,
+                                          firstDate: DateTime(2023),
+                                          lastDate: DateTime(2024))
+                                          .then((selectedDate) {
+                                        if (selectedDate != null) {
+                                          controller.reportEndDate.value =
+                                              selectedDate;
+                                          controller.update();
+                                        }
+                                      });
+                                    },
+                                    child: const AppIcon(
+                                      icon: Icons.calendar_month,
+                                      useBackground: true,
+                                    ))
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: const Size.fromWidth(15).width,
+                          )
+                        ]),
+                        SizedBox(
+                          height: const Size.fromHeight(20).height,
+                        ),
+                      ],
+                    ),
+                  ): const SizedBox(),)
+                ],
+              ),
+            ));
+  }
+}
+
+class HandoverDetailsForm extends GetView<ReportGeneratorController> {
   const HandoverDetailsForm({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<HandoverFormController>(
-        init: HandoverFormController(),
+    return GetBuilder<ReportGeneratorController>(
+        init: ReportGeneratorController(),
         builder: (controller) => Card(
               child: Column(
                 children: [
@@ -144,6 +325,9 @@ class HandoverDetailsForm extends GetView<HandoverFormController> {
                             //SizedBox(width: const Size.fromWidth(20).width,),
                           ],
                         ),
+                        SizedBox(
+                          height: const Size.fromHeight(20).height,
+                        ),
                         Row(
                           children: [
                             Expanded(
@@ -173,6 +357,27 @@ class HandoverDetailsForm extends GetView<HandoverFormController> {
                             //SizedBox(width: const Size.fromWidth(20).width,),
                           ],
                         ),
+                        SizedBox(
+                          height: const Size.fromHeight(20).height,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                                child: TextFieldInput(
+                              textEditingController:
+                                  controller.conferenceAdvancePaymentsCtr,
+                              hintText: 'Conference Advance',
+                            )),
+                            SizedBox(
+                              width: const Size.fromWidth(20).width,
+                            ),
+
+                            //SizedBox(width: const Size.fromWidth(20).width,),
+                          ],
+                        ),
+                        SizedBox(
+                          height: const Size.fromHeight(20).height,
+                        ),
                       ],
                     ),
                   ),
@@ -182,576 +387,13 @@ class HandoverDetailsForm extends GetView<HandoverFormController> {
   }
 }
 
-class HotelIssuesSection extends GetView<HandoverFormController> {
-  HotelIssuesSection({Key? key, required this.hotelIssuesTableKey})
-      : super(key: key);
-
-  final HotelIssuesSource _hotelIssuesSource = HotelIssuesSource();
-  final GlobalKey<SfDataGridState> hotelIssuesTableKey;
-
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<HandoverFormController>(
-        init: HandoverFormController(),
-        builder: (controller) => Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const BigText(
-                          text: 'Hotel Issues',
-                        ),
-                        reportEntryHeader(
-                            onRefreshEntries: controller.update,
-                            onSave: () async {
-                              controller.queTableKey(
-                                  hotelIssuesTableKey, "hotel_issues");
-                              await controller.processTableExports();
-                            },
-                            title: "Hotel Issues",
-                            onAddEntry: () {
-                              buildDialog(context, 'Hotel Issue',
-                                  const HotelIssuesForm(),
-                                  width: 400,
-                                  height: 600,
-                                  alignment: Alignment.center);
-                            },
-                            onConfirmEntry: () {})
-                      ],
-                    ),
-                    SfDataGrid(
-                        source: _hotelIssuesSource,
-                        key: hotelIssuesTableKey,
-                        columns: [
-                          GridColumn(
-                              columnName: HotelIssuesTableColumnNames.roomNumber,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kRoomNumber.tr
-                                          .toUpperCase()))),
-                          GridColumn(
-                              columnName: HotelIssuesTableColumnNames.issueType,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: const SmallText(text: "ISSUE TYPE"))),
-                          GridColumn(
-                              columnName: HotelIssuesTableColumnNames.status,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: const SmallText(text: "STATUS"))),
-                          GridColumn(
-                              columnName: HotelIssuesTableColumnNames.description,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kDescription.tr
-                                          .toUpperCase()))),
-                          GridColumn(
-                              columnName: HotelIssuesTableColumnNames.stepsTaken,
-                              columnWidthMode: ColumnWidthMode.fill,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: const SmallText(text: 'STEPS TAKEN'))),
-                        ]),
-                  ],
-                ),
-              ),
-            ));
-  }
-}
-
-class LaundryUsageSection extends GetView<HandoverFormController> {
-  LaundryUsageSection({Key? key, required this.laundryTableKey})
-      : super(key: key);
-
-  final LaundryTransactionsSource _laundryTransactionsSource =
-      LaundryTransactionsSource();
-  final GlobalKey<SfDataGridState> laundryTableKey;
-
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<HandoverFormController>(
-        init: HandoverFormController(),
-        builder: (controller) => Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const BigText(
-                          text: 'Laundry Transactions',
-                        ),
-                        reportEntryHeader(
-                            onRefreshEntries: controller.onInit,
-                            title: "Laundry Transactions",
-                            onSave: () async {
-                              controller.queTableKey(
-                                  laundryTableKey, "laundry");
-                              await controller.processTableExports();
-                            },
-                            onAddEntry: () {
-                              // buildDialog(
-                              //     context,
-                              //     'LAUNDRY',
-                              //     BookServiceForm(isRoom: 0,),
-                              //     width: 700,
-                              //     height: 600,
-                              //     alignment: Alignment.center
-                              // );
-                              // Get.to(()=>CheckInView());
-                            },
-                            onConfirmEntry: () {})
-                      ],
-                    ),
-                    SfDataGrid(
-                        key: laundryTableKey,
-                        source: _laundryTransactionsSource,
-                        tableSummaryRows: [
-                          GridTableSummaryRow(
-                              showSummaryInRow: false,
-                              title: '{Amount}{Service Count}',
-                              columns: [
-                                const GridSummaryColumn(
-                                    name: 'Amount',
-                                    columnName: LaundryTableColumnNames.amountPaid,
-                                    summaryType: GridSummaryType.sum
-                                ),
-                                const GridSummaryColumn(
-                                    name: 'Service Count',
-                                    columnName: LaundryTableColumnNames.service,
-                                    summaryType: GridSummaryType.count
-                                ),
-                              ],
-                              position: GridTableSummaryRowPosition.top
-                          )
-                        ],
-                        columns: [
-                          GridColumn(
-                              columnName: LaundryTableColumnNames.roomNumber,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kRoomNumber.tr
-                                          .toUpperCase()))),
-                          GridColumn(
-                              columnName: LaundryTableColumnNames.client,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text:
-                                      LocalKeys.kClient.tr.toUpperCase()))),
-
-                          GridColumn(
-                              columnName: LaundryTableColumnNames.employee,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kEmployee.tr
-                                          .toUpperCase()))),
-                          GridColumn(
-                              columnName: LaundryTableColumnNames.amountPaid,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text:
-                                      LocalKeys.kAmount.tr.toUpperCase()))),
-                          GridColumn(
-                              columnName: LaundryTableColumnNames.service,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kService.tr
-                                          .toUpperCase()))),
-                        ]),
-                  ],
-                ),
-              ),
-            ));
-  }
-}
-
-class RoomServiceTransactionsSection extends GetView<HandoverFormController> {
-  RoomServiceTransactionsSection({Key? key, required this.roomServiceTableKey})
-      : super(key: key);
-
-  final RoomServiceSource _roomServiceSource = RoomServiceSource();
-  final GlobalKey<SfDataGridState> roomServiceTableKey;
-
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<HandoverFormController>(
-        init: HandoverFormController(),
-        builder: (controller) => Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const BigText(text: 'Room Service Transactions'),
-                        reportEntryHeader(
-                            onRefreshEntries: controller.onInit,
-                            title: "Room Service Transactions",
-                            onSave: () async {
-                              controller.queTableKey(
-                                  roomServiceTableKey, 'Room Service');
-                              await controller.processTableExports();
-                            },
-                            onAddEntry: () {},
-                            onConfirmEntry: () {}),
-                      ],
-                    ),
-                    SfDataGrid(
-                        key: roomServiceTableKey,
-                        source: _roomServiceSource,
-                        tableSummaryRows: [
-                          GridTableSummaryRow(
-                            showSummaryInRow: false,
-                            title: '{Amount}{Service Count}',
-                              columns: [
-                                const GridSummaryColumn(
-                                    name: 'Amount',
-                                    columnName: RoomsServiceColumnNames.amountPaid,
-                                    summaryType: GridSummaryType.sum
-                                ),
-                                const GridSummaryColumn(
-                                    name: 'Service Count',
-                                    columnName: RoomsServiceColumnNames.service,
-                                    summaryType: GridSummaryType.count
-                                ),
-                              ],
-                              position: GridTableSummaryRowPosition.top
-                          )
-                        ],
-                        columns: [
-                          GridColumn(
-                              columnName: RoomsServiceColumnNames.roomNumber,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kRoomNumber.tr
-                                          .toUpperCase()))),
-                          GridColumn(
-                              columnName: RoomsServiceColumnNames.client,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text:
-                                          LocalKeys.kClient.tr.toUpperCase()))),
-
-                          GridColumn(
-                              columnName: RoomsServiceColumnNames.employee,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kEmployee.tr
-                                          .toUpperCase()))),
-                          GridColumn(
-                              columnName: RoomsServiceColumnNames.amountPaid,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text:
-                                      LocalKeys.kAmount.tr.toUpperCase()))),
-                          GridColumn(
-                              columnName: RoomsServiceColumnNames.service,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kService.tr
-                                          .toUpperCase()))),
-                        ]),
-                  ],
-                ),
-              ),
-            ));
-  }
-}
-
-class ConferenceUsageSection extends GetView<HandoverFormController> {
-  ConferenceUsageSection({Key? key, required this.conferenceTableKey})
-      : super(key: key);
-
-  final ConferenceUsageSource conferenceUsageSource = ConferenceUsageSource();
-  final GlobalKey<SfDataGridState> conferenceTableKey;
-
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<HandoverFormController>(
-        init: HandoverFormController(),
-        builder: (controller) => Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const BigText(text: "Conference Usage Today"),
-                        reportEntryHeader(
-                            onRefreshEntries: controller.onInit,
-                            title: "Conference Transactions",
-                            onSave: () async {
-                              controller.queTableKey(
-                                  conferenceTableKey, 'Conference');
-                              await controller.processTableExports();
-                            },
-                            onAddEntry: () {
-                              buildDialog(
-                                  context,
-                                  'CONFERENCE',
-                                  BookServiceForm(
-                                    isRoom: 0,
-                                  ),
-                                  width: 700,
-                                  height: 600,
-                                  alignment: Alignment.center);
-                              // Get.to(()=>CheckInView());
-                            },
-                            onConfirmEntry: () {}),
-                      ],
-                    ),
-                    SfDataGrid(
-                        key: conferenceTableKey,
-                        source: conferenceUsageSource,
-                        tableSummaryRows: [
-                          GridTableSummaryRow(
-                            showSummaryInRow: false,
-                            title: '{Client}',
-                              columns: [
-                                const GridSummaryColumn(
-                                    name: 'Client',
-                                    columnName: ConferenceTableColumnNames.eventType,
-                                    summaryType: GridSummaryType.count
-                                ),
-                                const GridSummaryColumn(
-                                    name: 'Advance',
-                                    columnName: ConferenceTableColumnNames.advance,
-                                    summaryType: GridSummaryType.sum,
-                                ),
-                                const GridSummaryColumn(
-                                    name: 'Value',
-                                    columnName: ConferenceTableColumnNames.totalCost,
-                                    summaryType: GridSummaryType.sum
-                                ),
-                              ],
-                              position: GridTableSummaryRowPosition.top
-                          )
-                        ],
-                        columns: [
-                          GridColumn(
-                              columnName: ConferenceTableColumnNames.name,
-                              columnWidthMode: ColumnWidthMode.fitByCellValue,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kFullName.tr
-                                          .toUpperCase()))),
-                          GridColumn(
-                              columnName: ConferenceTableColumnNames.eventType,
-                              columnWidthMode: ColumnWidthMode.fitByCellValue,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: const SmallText(text: 'EVENT TYPE'))),
-                          GridColumn(
-                              columnName: ConferenceTableColumnNames.advance,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: const SmallText(text: 'ADVANCE'))),
-                          GridColumn(
-                              columnName:ConferenceTableColumnNames.totalCost,
-                              columnWidthMode: ColumnWidthMode.fitByColumnName,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: SmallText(
-                                      text: LocalKeys.kTotalCost.tr
-                                          .toUpperCase()))),
-                        ]),
-                  ],
-                ),
-              ),
-            ));
-  }
-}
-
-class RoomsUsedSection extends GetView<HandoverFormController> {
-  RoomsUsedSection({Key? key, required this.roomsTableKey}) : super(key: key);
-
-  final RoomsUsedSource _roomSoldSource = RoomsUsedSource();
-  final GlobalKey<SfDataGridState> roomsTableKey;
-  final double minColumnWidth = 150;
-
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<HandoverFormController>(
-        init: HandoverFormController(),
-        builder: (controller) => Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    /// Table Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const BigText(text: "Rooms Sold Today"),
-                        reportEntryHeader(
-                            onRefreshEntries: controller.onInit,
-                            title: "Rooms Sold",
-                            onSave: () async {
-                              controller.queTableKey(roomsTableKey, 'Rooms');
-                              await controller.processTableExports();
-                            },
-                            onAddEntry: () {
-                              buildDialog(context, 'Used Rooms Form',
-                                  const RoomUsedForm(),
-                                  height: 200, width: 350);
-                              // Get.to(()=>CheckInView());
-                            },
-                            onConfirmEntry: () {}),
-                      ],
-                    ),
-                    controller.initialized
-                        ? SfDataGrid(
-                            key: roomsTableKey,
-                            headerGridLinesVisibility: GridLinesVisibility.none,
-                            isScrollbarAlwaysShown: true,
-                            source: _roomSoldSource,
-                            tableSummaryRows: [
-                              GridTableSummaryRow(
-                                  title: '{Rooms Sold}',
-                                  showSummaryInRow: false,
-                                  columns: const [
-                                    GridSummaryColumn(
-                                        name: "Rooms Sold",
-                                        columnName: RoomsUsedColumnNames.roomNumber,
-                                        summaryType: GridSummaryType.count),
-                                     GridSummaryColumn(
-                                        name: "Value",
-                                        columnName: RoomsUsedColumnNames.value,
-                                        summaryType: GridSummaryType.sum),
-                                     GridSummaryColumn(
-                                        name: "Paid",
-                                        columnName: RoomsUsedColumnNames.paid,
-                                        summaryType: GridSummaryType.sum),
-                                    GridSummaryColumn(
-                                        name: "Debts",
-                                        columnName: RoomsUsedColumnNames.debt,
-                                        summaryType: GridSummaryType.sum),
-                                  ],
-                                  position: GridTableSummaryRowPosition.top)
-                            ],
-                            columns: <GridColumn>[
-                              GridColumn(
-                                  columnWidthMode:
-                                      ColumnWidthMode.fitByColumnName,
-                                  columnName: RoomsUsedColumnNames.employee,
-                                  label: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      alignment: Alignment.center,
-                                      child: SmallText(
-                                          text: LocalKeys.kEmployee.tr
-                                              .toUpperCase()))),
-                              GridColumn(
-                                  columnWidthMode:
-                                      ColumnWidthMode.fitByColumnName,
-                                  columnName: RoomsUsedColumnNames.roomNumber,
-                                  label: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      alignment: Alignment.center,
-                                      child: SmallText(
-                                          text: LocalKeys.kRoomNumber.tr
-                                              .toUpperCase()))),
-                              GridColumn(
-                                  minimumWidth: minColumnWidth,
-                                  columnName: RoomsUsedColumnNames.value,
-                                  label: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      alignment: Alignment.center,
-                                      child: SmallText(
-                                          text: LocalKeys.kValue.tr
-                                              .toUpperCase()))),
-                              GridColumn(
-                                  // columnWidthMode: ColumnWidthMode.fitByCellValue,
-                                  minimumWidth: minColumnWidth,
-                                  columnName: RoomsUsedColumnNames.paid,
-                                  label: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      alignment: Alignment.center,
-                                      child: SmallText(
-                                          text: LocalKeys.kPaid.tr
-                                              .toUpperCase()))),
-                              GridColumn(
-                                // columnWidthMode: ColumnWidthMode.fitByCellValue,
-                                  minimumWidth: minColumnWidth,
-                                  columnName: RoomsUsedColumnNames.debt,
-                                  label: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      alignment: Alignment.center,
-                                      child: SmallText(
-                                          text: LocalKeys.kDebts.tr
-                                              .toUpperCase()))),
-                            ],
-                          )
-                        : loadingAnimation(actionStatement: 'Initializing')
-                  ],
-                ),
-              ),
-            ));
-  }
-}
-
-class RoomUsedForm extends GetView<HandoverFormController> {
+class RoomUsedForm extends GetView<ReportGeneratorController> {
   const RoomUsedForm({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<HandoverFormController>(
-        init: HandoverFormController(),
+    return GetBuilder<ReportGeneratorController>(
+        init: ReportGeneratorController(),
         builder: (controller) => Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -814,8 +456,8 @@ Widget reportEntryHeader(
           ),
 
           IconButton(
-              onPressed: () {
-                onRefreshEntries();
+              onPressed: () async{
+                await onRefreshEntries();
               },
               icon: const Icon(Icons.refresh)),
           IconButton(

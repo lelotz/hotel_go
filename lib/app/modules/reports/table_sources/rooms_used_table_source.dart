@@ -18,7 +18,7 @@ class RoomsUsedSource extends DataGridSource {
 
   }
 
-  HandoverFormController handoverFormController = Get.find<HandoverFormController>();
+  ReportGeneratorController handoverFormController = Get.find<ReportGeneratorController>();
 
   List<DataGridRow> dataGridRows = [];
 

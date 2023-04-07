@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/homepage_screen/views/homepage_view.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
+import 'package:hotel_pms/widgets/dropdown_menu/custom_dropdown_menu.dart';
 import 'package:hotel_pms/widgets/icons/app_icon.dart';
 import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import 'package:hotel_pms/widgets/mydividers.dart';
@@ -11,8 +12,6 @@ import '../../../../core/resourses/color_manager.dart';
 import '../../../../core/values/app_constants.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../controller/clear_controllers.dart';
-import '../widgets/app_forms/dialog_forms.dart';
-import '../widgets/app_forms/forms_dropdown_menu.dart';
 import '../widgets/cards/room_and_guest_card.dart';
 import '../../../../widgets/text/title_subtitle.dart';
 import 'package:get/get.dart';
@@ -28,7 +27,7 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
 
 
     return GetBuilder<GuestDashboardController>(
-      init: GuestDashboardController(),
+      init: GuestDashboardController(isTest: false),
       builder: (controller)=>
         Scaffold(
           appBar: AppBar(
@@ -61,7 +60,7 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                      Row(
                        children: [
                          ElevatedButton(
-                             onPressed: (){controller.checkOutGuest();},
+                             onPressed: ()async{ await controller.checkOutGuest();},
                              child: const SmallText(text: LocalKeys.kCheckout,color: ColorsManager.grey2,)),
                          SizedBox(width: const Size.fromWidth(AppSize.size12).width,),
                          ElevatedButton(
@@ -74,11 +73,12 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                          SizedBox(width: const Size.fromWidth(AppSize.size12).width,),
                          BigText(text: LocalKeys.kForms.tr),
                          SizedBox(width: const Size.fromWidth(AppSize.size12).width,),
-                         GuestActionsDropdown(
-                           menuItems: AppConstants.formNames.map((e) => e.tr).toList(),
-                           callback: actionsDialogForms,
-                           initialItem: AppConstants.formNames[0],
+                         GeneralDropdownMenu(
+                             menuItems: AppConstants.formNames,
+                             callback: controller.openDashboardForm,
+                             initialItem: AppConstants.formNames[0]
                          ),
+
                        ],
                      ),
                    ],

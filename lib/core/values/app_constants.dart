@@ -23,8 +23,32 @@ class TransactionTypes{
   static const String room = LocalKeys.kRoom;
   static const String roomServiceTransaction = LocalKeys.kRoomService;
   static const String hotelIssue = 'HotelIssue';
+  static const String pettyCash = LocalKeys.kPettyCash;
 
 
+}
+
+class HotelDepartments{
+  static const String kitchen = 'Kitchen';
+  static const String reception = 'Reception';
+  static const String housekeeping = LocalKeys.kHouseKeeping;
+  static const String restaurant = 'Restaurant';
+  static const String hotelStore = 'Hotel Store';
+  static const String technician = 'Technician';
+  static const String delivery = 'Delivery';
+}
+
+class PaymentMethods{
+  static const String cash = 'CASH';
+  static const String mPesa = 'MPESA';
+  static const String airtelMoney = 'AIRTELMONEY';
+  static const String tigoPesa = 'TIGOPESA';
+  static const String haloPesa = 'HALOPESA';
+  static const String card = 'CARD';
+
+  static List<String> toList(){
+    return [cash,mPesa,airtelMoney,tigoPesa,haloPesa,card];
+  }
 }
 
 class CheckInArtifactsKeys{
@@ -89,7 +113,7 @@ class AppConstants {
     300:'Receptionist',
   };
 
-  static  const Map<String,dynamic> serviceTypes = {
+  static  const Map<String,String> serviceTypes = {
     LocalKeys.kRoom:LocalKeys.kRoom,
     LocalKeys.kRoomService:LocalKeys.kRoomService,
     LocalKeys.kLaundry:LocalKeys.kLaundry,

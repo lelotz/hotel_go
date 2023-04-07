@@ -35,6 +35,14 @@ class AdminUserRepository{
     );
     return response;
   }
+  Future<List<Map<String, dynamic>>?> getAdminUserByPosition(String position)async{
+    List<Map<String, dynamic>>? response = await db.read(
+        tableName: AdminUsersTable.tableName,
+        where: '${AdminUsersTable.position} = ?',
+        whereArgs: [position]
+    );
+    return response;
+  }
 
 
   Future<int?> updateAdminUser(Map<String,dynamic> row) async{

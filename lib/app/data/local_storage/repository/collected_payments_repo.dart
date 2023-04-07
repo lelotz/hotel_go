@@ -20,7 +20,8 @@ class CollectedPaymentsRepository extends SqlDatabase{
             id: const Uuid().v1(),
             sessionId: sessionManager.currentSession.value.id,
             transactionId: payment[CollectedPaymentsTable.roomTransactionId],
-            transactionType: payment[CollectedPaymentsTable.service]
+            transactionType: payment[CollectedPaymentsTable.service],
+            dateTime: DateTime.now().toIso8601String()
       ).toJson()).then((value) {results = value ?? -1;});
     });
     return results;

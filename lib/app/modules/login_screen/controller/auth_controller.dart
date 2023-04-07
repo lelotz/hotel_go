@@ -26,7 +26,7 @@ class AuthController extends GetxController{
   Rx<AdminUser> adminUser = Rx<AdminUser>(AdminUser());
 
 
-  Rx<String> authResult = Rx<String>('Unknown Error');
+  Rx<String> authResult = Rx<String>('');
   Rx<String> logOutResult = Rx<String>('SUCCESS');
   Rx<bool> isLoading = Rx<bool>(false);
   Rx<List<String>> authorizedRoutes = Rx<List<String>>([]);
@@ -45,19 +45,6 @@ class AuthController extends GetxController{
 
   ];
   AuthController({this.isTest});
-
-  @override
-  void onInit() {
-    super.onInit();
-    //randomUserIndex = random(0, initAdminUsers.length);
-    // TODO: implement onInit
-    fullNameCtrl.text = initAdminUsers[randomUserIndex].fullName!;
-    adminUserPasswordCtrl.text = initAdminUsers[randomUserIndex].appId!;
-    adminUser.value = initAdminUsers[randomUserIndex];
-    // adminUser.value.fullName = fullNameCtrl.text;
-    // adminUser.value.appId = "00001WH";
-    // adminUser.value.status = "ENABLED";
-  }
 
 
   @override
@@ -85,16 +72,26 @@ class AuthController extends GetxController{
   /// Recommendations from Testing
   /// 1. Create [UserActivity] for login attempt
   /// 2. Ensure [CurrentSessionTable] is empty before creating a new session.
-  Future<bool> loginUser()async{
 
-    isLoading.value = true;
 
-    await AdminUserRepository().getAdminUserByName(fullNameCtrl.text).then((value) {
+  Future<bool> validateLoginAttempt()async{
+    await AdminUserRepository().getAdminUserById(adminUserPasswordCtrl.text).then((value) {
       if (value != null && value.isNotEmpty) {
         adminUser.value = AdminUser.fromJson(value[0]);
         // adminUser.refresh();
       }
     });
+    if(adminUser.value.appId == null){
+      authResult.value = 'Umekosea jina au password';
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<bool> loginUser()async{
+
+    isLoading.value = true;
 
     await authenticateUser();
 
@@ -112,7 +109,15 @@ class AuthController extends GetxController{
 
     if(isTest == false && isAuthenticated.value) Get.to(()=>HomePageView());
 
+    clearInputs();
+    authResult.value = '';
+
     return isAuthenticated.value;
+  }
+
+  clearInputs(){
+    adminUserPasswordCtrl.clear();
+    fullNameCtrl.clear();
   }
 
   Future<void> authenticateUser()async{
@@ -122,7 +127,7 @@ class AuthController extends GetxController{
         authResult.value = LocalKeys.kSuccess;
       }else if(value != null && value.isEmpty){
         authResult.value = LocalKeys.kInvalidCredentials;
-        logger.e({'failed to match encrypted data':'','toMatch':adminUser.value.appId,'given':value.first['userId']});
+        // logger.e({'failed to match encrypted data':'','toMatch':adminUser.value.appId,'given':value.first['userId']});
       }
     });
   }
@@ -147,7 +152,7 @@ class AuthController extends GetxController{
       displayLogOutError.value = true;
       isLoggedOut.value = true;
     }
-    if(isTest == false) Get.to(() => const LandingPage());
+    if(isTest == false) Get.to(() => LandingPage());
 
   }
 

@@ -64,6 +64,7 @@ class HotelIssuesFormController extends GetxController{
               sessionId: authController.sessionController.currentSession.value.id,
               transactionId: id,
               transactionType: TransactionTypes.hotelIssue,
+              dateTime: DateTime.now().toIso8601String()
         ).toJson());
       });
 

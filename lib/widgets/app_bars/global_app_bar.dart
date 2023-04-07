@@ -32,7 +32,7 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,
       ),
       onPressed: () {
         if (appBarTitle == "Whitemark Hotels") {
-          Get.to(() => const LandingPage());
+          Get.to(() => LandingPage());
         } else {
           if(onBackButton!=null){
             onBackButton();

@@ -8,7 +8,6 @@ import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:logger/logger.dart';
 import '../../../../core/logs/logger_instance.dart';
 import '../../../../core/services/table_services.dart';
-import '../../../../core/utils/useful_math.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../../widgets/tables/syncfusion_table_source.dart';
 import '../../../data/local_storage/repository/admin_user_repo.dart';
@@ -63,27 +62,33 @@ class SalesController extends GetxController {
     CollectedPaymentsTable.roomNumber,
   ];
 
-  // DataTableSource? saleTableSource;
-  late SyncFusionDataSource saleTableSource;
   DataPagerController pagerController = DataPagerController();
-  late DataPagerDelegate pagerDelegate;
+
+  @override
+  onInit(){
+    super.onInit();
+    logger.i('initializingSalesController');
+  }
+
 
   @override
   onReady() async {
+    super.onReady();
     tableInitialized.value = false;
     isExporting.value = false;
     await getAllPaymentTransactions();
     await getAmountCollectedToday();
     await getAllEmployees();
     isLoadingData.value = false;
-    super.onReady();
+    logger.i({'salesCount': collectedPayments.value.length});
+
   }
 
   updateUI() {
     collectedPaymentsCount.value = collectedPayments.value.length;
     selectedFilters.refresh();
     selectedFiltersCount.value = selectedFilters.value.length;
-    update();
+    // update();
   }
 
   void exportSalesTable(GlobalKey<SfDataGridState> salesTableKey,
@@ -118,8 +123,9 @@ class SalesController extends GetxController {
   }
 
   validateSearchCategory(String category) {
-    if (searchCategory.value == LocalKeys.kSelectSearchCategory)
+    if (searchCategory.value == LocalKeys.kSelectSearchCategory) {
       return "Search Category cannot be empty";
+    }
     return null;
   }
 

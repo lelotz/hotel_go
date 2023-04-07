@@ -61,33 +61,33 @@ List<AdminUser> initAdminUsers = [
     roomsSold: 0,
     status: 'ENABLED',
   ),
-  AdminUser(
-    appId: "00002WH",
-    fullName: "Asha Lloyd",
-    position: AppConstants.userRoles[300],
-    phone: "",
-    roomsSold: 0,
-      status: 'ENABLED',
-  ),
-  AdminUser(
-    appId: "00003WH",
-    fullName: "Salama Joachim",
-    position: AppConstants.userRoles[300],
-    phone: "",
-    roomsSold: 0,
-    status: 'ENABLED',
-
-
-  ),
-  AdminUser(
-    appId: "00004WH",
-    fullName: "Esther Ritva",
-    position: AppConstants.userRoles[300],
-    phone: "",
-    roomsSold: 0,
-    status: 'ENABLED',
-
-  ),
+  // AdminUser(
+  //   appId: "00002WH",
+  //   fullName: "Asha Lloyd",
+  //   position: AppConstants.userRoles[300],
+  //   phone: "",
+  //   roomsSold: 0,
+  //     status: 'ENABLED',
+  // ),
+  // AdminUser(
+  //   appId: "00003WH",
+  //   fullName: "Salama Joachim",
+  //   position: AppConstants.userRoles[300],
+  //   phone: "",
+  //   roomsSold: 0,
+  //   status: 'ENABLED',
+  //
+  //
+  // ),
+  // AdminUser(
+  //   appId: "00004WH",
+  //   fullName: "Esther Ritva",
+  //   position: AppConstants.userRoles[300],
+  //   phone: "",
+  //   roomsSold: 0,
+  //   status: 'ENABLED',
+  //
+  // ),
 ];
 
 List<RoomData> initRoomData = [
@@ -129,16 +129,6 @@ List<RoomData> initRoomData = [
   RoomData(
     roomNumber: 108,
     isVIP: 0,
-    currentTransactionId: "",
-  ),
-  RoomData(
-    roomNumber: 109,
-    isVIP: 0,
-    currentTransactionId: "",
-  ),
-  RoomData(
-    roomNumber: 200,
-    isVIP: 1,
     currentTransactionId: "",
   ),
   RoomData(
@@ -186,6 +176,16 @@ List<RoomData> initRoomData = [
     isVIP: 1,
     currentTransactionId: "",
   ),
+  RoomData(
+    roomNumber: 210,
+    isVIP: 1,
+    currentTransactionId: "",
+  ),
+  RoomData(
+    roomNumber: 211,
+    isVIP: 1,
+    currentTransactionId: "",
+  ),
 ];
 
 List<RoomStatusModel> initRoomStatus = [
@@ -229,16 +229,7 @@ List<RoomStatusModel> initRoomStatus = [
       code: LocalKeys.kStatusCode100.toString(),
       description: AppConstants.roomStatus[LocalKeys.kStatusCode100.toString()]
   ),
-  RoomStatusModel(
-      roomId: 109,
-      code: LocalKeys.kStatusCode100.toString(),
-      description: AppConstants.roomStatus[LocalKeys.kStatusCode100.toString()]
-  ),
-  RoomStatusModel(
-      roomId: 200,
-      code: LocalKeys.kStatusCode100.toString(),
-      description: AppConstants.roomStatus[LocalKeys.kStatusCode100.toString()]
-  ),
+
   RoomStatusModel(
       roomId: 201,
       code: LocalKeys.kStatusCode100.toString(),
@@ -281,6 +272,16 @@ List<RoomStatusModel> initRoomStatus = [
   ),
   RoomStatusModel(
       roomId: 209,
+      code: LocalKeys.kStatusCode100.toString(),
+      description: AppConstants.roomStatus[LocalKeys.kStatusCode100.toString()]
+  ),
+  RoomStatusModel(
+      roomId: 210,
+      code: LocalKeys.kStatusCode100.toString(),
+      description: AppConstants.roomStatus[LocalKeys.kStatusCode100.toString()]
+  ),
+  RoomStatusModel(
+      roomId: 211,
       code: LocalKeys.kStatusCode100.toString(),
       description: AppConstants.roomStatus[LocalKeys.kStatusCode100.toString()]
   ),

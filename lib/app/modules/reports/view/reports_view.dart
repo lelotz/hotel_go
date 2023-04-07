@@ -9,7 +9,6 @@ import 'package:hotel_pms/widgets/tables/paged_data_controller.dart';
 import 'package:hotel_pms/widgets/text/big_text.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
 import '../../../../core/utils/useful_math.dart';
-import '../../../../mock_data/mock_data_api.dart';
 import '../../../../widgets/buttons/icon_text_button.dart';
 import '../../../../widgets/cards/admin_user_card.dart';
 import '../../../../widgets/text/title_subtitle.dart';
@@ -83,7 +82,7 @@ class ReportsView extends GetView<ReportsController> {
                              children:  [
                                const PowerStatusCard(),
                                BookedServicesCard(),
-                               OperationsIssuesExpandable(),
+                               // OperationsIssuesExpandable(),
                                SessionTransactions()
 
                              ]
@@ -118,11 +117,11 @@ class OverviewRow extends GetView<ReportsController> {
                 SmallText(text: extractDate(DateTime.now()),size: 18,),
               ],
             ),
-            IconTextButton(
-              buttonLabel: 'Create Report', icon: Icons.add,
-              onPressed: (){Get.to(()=> HandoverReport());},buttonWidth: 200,backgroundColor: ColorsManager.primary,
-              iconColor: ColorsManager.grey1,textColor: ColorsManager.grey1,
-            ),
+            // IconTextButton(
+            //   buttonLabel: 'Create Report', icon: Icons.add,
+            //   onPressed: (){Get.to(()=> HandoverReport());},buttonWidth: 200,backgroundColor: ColorsManager.primary,
+            //   iconColor: ColorsManager.grey1,textColor: ColorsManager.grey1,
+            // ),
             IconTextButton(
               buttonLabel: 'Refresh', icon: Icons.add,
               onPressed: controller.onInit,buttonWidth: 200,backgroundColor: ColorsManager.primary,
@@ -229,43 +228,7 @@ class SessionTransactions extends GetView<ReportsController> {
   }
 }
 
-class OperationsIssuesExpandable extends GetView<ReportsController> {
-  OperationsIssuesExpandable({Key? key}) : super(key: key);
 
-  final List<Icon> issueIcon = [
-    Icon(Icons.bed,color: ColorsManager.error.withOpacity(0.6),),
-    Icon(Icons.account_balance,color: ColorsManager.error.withOpacity(0.6),),
-    Icon(Icons.restaurant,color: ColorsManager.error.withOpacity(0.6),)
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return ExpandablePanel(
-      header: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          BigText(text: 'Issues ',),
-          SizedBox(width: const Size.fromWidth(15).width,),
-          SmallText(text: '0'),
-        ],
-      ),
-        collapsed: const SizedBox(), expanded: Card(
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: List<Widget>.generate(3, (index) {
-              return  ListTile(
-                leading: issueIcon[index],
-                title: BigText(text: 'title',),
-                subtitle: const BigText(text: MockText.longText,maxLines: 3,),
-                trailing: BigText(text: 'trailing',),
-              );
-            }),
-          ),
-        ),
-    ));
-  }
-}
 
 class BookedServicesCard extends GetView<ReportsController> {
   BookedServicesCard({Key? key}) : super(key: key);

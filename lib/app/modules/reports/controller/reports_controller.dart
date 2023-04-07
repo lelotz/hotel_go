@@ -24,7 +24,7 @@ class ReportsController extends GetxController{
     beneficiaryId: '',
     beneficiaryName: 'Empty',
     transactionType: '',
-    transactionValue: '',
+    transactionValue: 0,
 
 
   );

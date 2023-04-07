@@ -97,7 +97,8 @@ class SessionManager extends GetxController{
           id: const Uuid().v1(),
           sessionId: currentSession.value.id,
           transactionId: transactionId,
-          transactionType: transactionType
+          transactionType: transactionType,
+          dateTime: DateTime.now().toIso8601String()
 
     ).toJson());
   }

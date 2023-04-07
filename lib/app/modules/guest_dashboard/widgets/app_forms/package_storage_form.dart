@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hotel_pms/core/services/data_validation.dart';
+import 'package:hotel_pms/widgets/forms/form_header.dart';
 import '../../../../../core/resourses/color_manager.dart';
 import '../../../../../core/resourses/size_manager.dart';
 import '../../../../../core/utils/dim_logic.dart';
@@ -16,7 +18,8 @@ import 'dialog_forms.dart';
 
 class StorePackageForm extends GetView<PackageFormController> {
 
-  const StorePackageForm({Key? key,}) : super(key: key);
+  StorePackageForm({Key? key,}) : super(key: key);
+  final packageStorageFormKey = GlobalKey<FormState>();
 
 
   @override
@@ -28,7 +31,9 @@ class StorePackageForm extends GetView<PackageFormController> {
           children: [
             /// Dialog Form Header
             /// Includes Room Number, Status, Guest Name, and Form Title
-            dialogFormHeader(LocalKeys.kStorePackageForm.tr),
+            // dialogFormHeader(LocalKeys.kStorePackageForm.tr),
+            buildFormHeader(LocalKeys.kStorePackageForm.tr),
+            SizedBox(height: const Size.fromHeight(20).height,),
 
 
             /// Receive and Return Buttons
@@ -58,7 +63,7 @@ class StorePackageForm extends GetView<PackageFormController> {
             ),),
 
             /// Input Stored Items
-            Obx(()=>controller.receivingPackage.value ? const InputPackagesToStore(): SizedBox(height: const Size.fromHeight(20).height,),),
+            Obx(()=>controller.receivingPackage.value ?InputPackagesToStore(formKey: packageStorageFormKey,): SizedBox(height: const Size.fromHeight(20).height,),),
 
             /// Display Stored Items
             Obx(()=> controller.receivingPackage.value ? controller.receivedPackagesBufferCount > 0 ? const DisplayNewPackageBuffer():SizedBox() : const DisplayStoredItems(),),
@@ -86,10 +91,11 @@ class StorePackageForm extends GetView<PackageFormController> {
 
                         /// Store Added Packages to Database
                         Obx(()=>ElevatedButton(
-                            onPressed: (){
-                              controller.receivingPackage.value ? controller.storeClientPackage():
-                              controller.returnClientPackage();
-
+                            onPressed: ()async{
+                              if(packageStorageFormKey.currentState!.validate()){
+                                controller.receivingPackage.value ? await controller.storeClientPackage():
+                                await controller.returnClientPackage();
+                              }
                             },
                             child: SmallText(text: controller.receivingPackage.value ?
                             '${LocalKeys.kReceive.tr} ${LocalKeys.kItem.tr}' :
@@ -110,57 +116,70 @@ class StorePackageForm extends GetView<PackageFormController> {
 }
 
 class InputPackagesToStore extends GetView<PackageFormController> {
-  const InputPackagesToStore({Key? key}) : super(key: key);
+  const InputPackagesToStore({Key? key,required this.formKey}) : super(key: key);
+
+  final GlobalKey<FormState> formKey;
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PackageFormController>(
       init: PackageFormController(),
-        builder: (controller)=>Column(
+        builder: (controller)=>Form(
+          key: formKey,
+          child: Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFieldInput(
-                  textEditingController: controller.packageDescriptionCtrl,
-                  hintText: LocalKeys.kDescription.tr,
-                  textInputType: TextInputType.text,
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFieldInput(
+                    textEditingController: controller.packageDescriptionCtrl,
+                    hintText: LocalKeys.kDescription.tr,
+                    textInputType: TextInputType.text,
+                    validation: DataValidation.isAlphabeticOnly,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFieldInput(
-                  textEditingController: controller.packageQuantityCtrl,
-                  hintText: LocalKeys.kUnit.tr,
-                  textInputType: TextInputType.text,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFieldInput(
+                    textEditingController: controller.packageQuantityCtrl,
+                    hintText: LocalKeys.kUnit.tr,
+                    textInputType: TextInputType.text,
+                    validation: DataValidation.isNotEmpty,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFieldInput(
-                  textEditingController: controller.packageValueCtrl,
-                  hintText: LocalKeys.kTotalCost.tr,
-                  textInputType: TextInputType.text,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFieldInput(
+                    textEditingController: controller.packageValueCtrl,
+                    hintText: LocalKeys.kTotalCost.tr,
+                    textInputType: TextInputType.text,
+                    validation: DataValidation.isNumeric,
+                  ),
                 ),
               ),
-            ),
 
-          ],
-        ),
-        /// Save New Item Button
-        ElevatedButton(
-            onPressed:controller.bufferNewStoredPackage,
-            child: SmallText(text: LocalKeys.kStore.tr,color: Colors.white,)
-        ),
-        thinDivider(),
+            ],
+          ),
+          /// Save New Item Button
+          ElevatedButton(
+              onPressed:(){
+                if(formKey.currentState!.validate()){
+                  controller.bufferNewStoredPackage();
+                }
+
+              },
+              child: SmallText(text: LocalKeys.kStore.tr,color: Colors.white,)
+          ),
+          thinDivider(),
       ],
-    ));
+    ),
+        ));
   }
 }
 
@@ -174,19 +193,25 @@ class DisplayNewPackageBuffer extends GetView<PackageFormController>{
       init: PackageFormController(),
         builder: (controller)=>
         Obx(() =>  SizedBox(
-          height: const Size.fromHeight(128).height,
+          height: const Size.fromHeight(320).height,
           child: controller.receivedPackagesBuffer.value.isNotEmpty ? GridView(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
-              childAspectRatio: 5,
+              childAspectRatio: 2,
             ),
             children: List<Widget>.generate(controller.receivedPackagesBufferCount.value, (index) {
               return Builder(builder: (BuildContext context){
-                return Obx(() => MyOutlinedButton(
-                  text: "${controller.receivedPackagesBuffer.value[index].unit}:${controller.receivedPackagesBuffer.value[index].description}",
-                  onClick: (){},backgroundColor: ColorsManager.grey2,textColor: ColorsManager.darkGrey,
-                  borderColor: ColorsManager.primary.withOpacity(0.5),
-
+                return Obx(() => Card(
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BigText(text: "Item  : ${controller.receivedPackagesBuffer.value[index].description}",),
+                        BigText(text: "Unit : ${controller.receivedPackagesBuffer.value[index].unit}",),
+                        BigText(text: "Value : ${controller.receivedPackagesBuffer.value[index].activityValue}",)
+                      ],
+                    ),
+                  ),
                 ));
               });
             }),

@@ -2,16 +2,13 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/user_management/controller/user_management_controller.dart';
 import 'package:hotel_pms/app/modules/user_management/widgets/forms/create_user_form.dart';
-import 'package:hotel_pms/app/modules/widgtes/admin_card_popup_actions.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
 import 'package:hotel_pms/widgets/inputs/text_field_input.dart';
 import 'package:hotel_pms/widgets/mydividers.dart';
 import 'package:hotel_pms/widgets/text/big_text.dart';
-import 'package:hotel_pms/widgets/text/small_text.dart';
 
-import '../../../../widgets/buttons/myElevatedButton.dart';
 import '../../../../widgets/buttons/my_outlined_button.dart';
 import '../../../../widgets/dialogs/dialod_builder.dart';
 import '../../../../widgets/text/title_subtitle.dart';
@@ -30,7 +27,6 @@ class UserManagementView extends GetView<UserManagementController> {
         body: SafeArea(
           child: SizedBox(
             width: currentWidth,
-
             child: ConstrainedBox(
               constraints: BoxConstraints.loose(const Size.fromWidth(1920)),
               child: Row(
@@ -108,7 +104,7 @@ class UserManagementView extends GetView<UserManagementController> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 MyOutlinedButton(text: "Add User", onClick:(){
-                                  buildDialog(context, 'Create User',const CreateUserForm(),width: 400,height: 600,alignment: Alignment.center);
+                                  buildDialog(context, 'Create User', CreateUserForm(),width: 400,height: 550,alignment: Alignment.center);
                                   },
                                   width: 120,height: 40,
                                   backgroundColor: ColorsManager.primary,borderColor: ColorsManager.primary,
@@ -128,15 +124,18 @@ class UserManagementView extends GetView<UserManagementController> {
                                   backgroundColor: ColorsManager.flutterGrey,textColor: ColorsManager.darkGrey,currentTextColor: ColorsManager.darkGrey,borderColor: ColorsManager.primary,
                                   height: 40,width: 100,borderRadius: AppBorderRadius.radius8,
                                 ),
-                                TextFieldInput(
-                                  inputFieldWidth: 250,
-                                  inputFieldHeight: 50,
-                                  textEditingController: controller.searchController,
-                                  hintText: "Search",
-                                  textInputType: TextInputType.text,
-                                  useBorder: true,
-                                  useIcon: true,
-                                  icon: Icons.search,
+                                SizedBox(
+                                  width: 300,
+                                  child: TextFieldInput(
+                                    inputFieldWidth: 250,
+                                    inputFieldHeight: 50,
+                                    textEditingController: controller.searchController,
+                                    hintText: "Search",
+                                    textInputType: TextInputType.text,
+                                    useBorder: true,
+                                    useIcon: true,
+                                    icon: Icons.search,
+                                  ),
                                 )
                               ],
                             ),

@@ -6,7 +6,8 @@ class InternalTransaction {
   String? description;
   String? dateTime;
   String? transactionType;
-  String? transactionValue;
+  int? transactionValue;
+  String? department;
 
 
   InternalTransaction(
@@ -17,6 +18,7 @@ class InternalTransaction {
         this.description,
         this.transactionType,
         this.transactionValue,
+        this.department,
         this.dateTime});
 
   InternalTransaction.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class InternalTransaction {
     beneficiaryId = json['beneficiaryId'];
     description = json['description'];
     transactionType = json['transactionType'];
+    department = json['department'];
     dateTime = json['dateTime'];
   }
   List<InternalTransaction> fromJsonList(List<Map<String, dynamic>> transactions){
@@ -46,6 +49,7 @@ class InternalTransaction {
     data['description'] = description;
     data['dateTime'] = dateTime;
     data['transactionValue']=transactionValue;
+    data['department'] = department;
     return data;
   }
 }

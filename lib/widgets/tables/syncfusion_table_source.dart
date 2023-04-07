@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/mock_data/mock_data_api.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 
@@ -24,7 +23,6 @@ class SyncFusionDataSource extends DataGridSource {
 
   @override
   Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
-    logger.i({'startRowIndex': startRowIndex,"endRowIndex":endRowIndex});
 
     startRowIndex = newPageIndex * rowsPerPage;
     endRowIndex = startRowIndex + rowsPerPage;
@@ -38,7 +36,6 @@ class SyncFusionDataSource extends DataGridSource {
     }else{
       _sourceData = [];
     }
-    logger.i({'updated':'','startRowIndex': startRowIndex,"endRowIndex":endRowIndex});
 
     return true;
   }
@@ -68,14 +65,11 @@ class DataPagerDelegateSource extends DataPagerDelegate{
 
   @override
  Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
-    logger.i({'startRowIndex': startRowIndex,"endRowIndex":endRowIndex});
     startRowIndex = newPageIndex * rowsPerPage;
     endRowIndex = startRowIndex + rowsPerPage;
     sourceData
     .getRange(startRowIndex, endRowIndex )
     .toList(growable: false);
-    logger.i({'startRowIndex': startRowIndex,"endRowIndex":endRowIndex});
-
 
    // notifyListeners();
   return true;

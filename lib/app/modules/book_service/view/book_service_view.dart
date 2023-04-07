@@ -18,7 +18,9 @@ class BookServiceView extends GetView<BookServiceController> {
     return GetBuilder<BookServiceController>(
       init: BookServiceController(),
         builder: (controller)=>Scaffold(
-          appBar: buildGlobalAppBar(context),
+          appBar: buildGlobalAppBar(context,appBarTitle:'Book Services',onBackButton: (){
+            Get.back();
+          }),
           body: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(

@@ -36,3 +36,9 @@ Map<String,dynamic> minAndMaxIntInList(List<int> intList){
 int random(int min,int max){
   return min + Random().nextInt(max);
 }
+
+int roundUp(int number, int factor){
+  if(factor < 1) throw RangeError.range(factor, 1, null,"factor");
+  number += factor -1;
+  return number - (number%factor);
+}

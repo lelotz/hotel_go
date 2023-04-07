@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
-import 'package:hotel_pms/app/modules/guest_dashboard/controller/package_form_controller.dart';
 import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_data_controller.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
@@ -34,8 +33,9 @@ class GuestDashboardController extends GetxController{
 
   Rx<List<UserActivity>> userActivity = Rx<List<UserActivity>>([]);
 
-  Rx<int> userActivityCount = Rx<int>(0);
 
+  Rx<int> userActivityCount = Rx<int>(0);
+  Rx<String> selectedForm = "".obs;
   Rx<String> checkInDate = "".obs;
   Rx<String> checkOutDate = "".obs;
   Rx<bool> isLoadingData = true.obs;
@@ -70,11 +70,7 @@ class GuestDashboardController extends GetxController{
 
   }
 
-  @override
-  void dispose(){
-    //print('Room Details Disposed');
-    super.dispose();
-  }
+
 
 
 
@@ -96,6 +92,10 @@ class GuestDashboardController extends GetxController{
   void parseCheckInOutDate(){
     checkInDate.value = extractDate(DateTime.parse(paymentDataController.roomTransaction.value.checkInDate!));
     checkOutDate.value = extractDate(DateTime.parse(paymentDataController.roomTransaction.value.checkOutDate!));
+  }
+
+  openDashboardForm(String formName){
+    actionsDialogForms(context:Get.context!, formName:formName,height: formName == LocalKeys.kCollectPayment ? 350 : 680);
   }
 
   Future<void> checkOutGuest()async{

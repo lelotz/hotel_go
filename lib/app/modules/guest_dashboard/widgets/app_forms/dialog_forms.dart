@@ -28,11 +28,11 @@ Widget fetchDialogWidget({required String dialogName}){
     }
     case LocalKeys.kLaundry : {
       //print("[FETCHED] $dialogName Widget");
-      return const LaundryForm();
+      return LaundryForm();
     }
     case LocalKeys.kStorePackage:{
       //print("[FETCHED] $dialogName Widget");
-      return const StorePackageForm();
+      return StorePackageForm();
     }
     case "Sale Summary":{
       return SaleSummary();
@@ -45,7 +45,7 @@ Widget fetchDialogWidget({required String dialogName}){
 }
 
 
-void actionsDialogForms({required BuildContext context, required String formName})async
+void actionsDialogForms({required BuildContext context, required String formName,double height = 500})async
 {
   await showDialog(
       context: context,
@@ -53,7 +53,7 @@ void actionsDialogForms({required BuildContext context, required String formName
         return  Dialog(
           elevation: 10,
           child:  Container(
-              height: const Size.fromHeight(680).height,
+              height:  Size.fromHeight(height).height,
               width: const Size.fromWidth(550).width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppBorderRadius.radius16),
@@ -79,9 +79,9 @@ Widget dialogFormHeader(String title){
         child: BigText(text: title),
       ),
       /// Display Room Number, Status, and, Guest Name
-      thinDivider(),
-      const RoomAndGuestCard(),
-      thinDivider(),
+      // thinDivider(),
+      // const RoomAndGuestCard(),
+      // thinDivider(),
     ],
   );
 }

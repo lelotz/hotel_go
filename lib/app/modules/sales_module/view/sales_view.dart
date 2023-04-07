@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/sales_module/controller/sales_controller.dart';
 import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import '../../../../core/resourses/size_manager.dart';
-import '../../../../core/services/table_services.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../../widgets/app_bars/global_app_bar.dart';
 import '../../../../widgets/text/small_text.dart';
@@ -15,6 +14,7 @@ class SalesView extends GetView<SalesController> {
   SalesView({Key? key}) : super(key: key);
   final GlobalKey<SfDataGridState> _key = GlobalKey<SfDataGridState>();
 
+
   SalesTableSource salesTableSource = SalesTableSource();
   ScrollController scrollController = ScrollController();
 
@@ -22,12 +22,10 @@ class SalesView extends GetView<SalesController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SalesController>(
-      init: SalesController(),
         builder: (controller)=>Scaffold(
           appBar: buildGlobalAppBar(context,appBarTitle: LocalKeys.kSales.tr,onTitleTap: controller.onReady,onBackButton: (){
             Get.back();
             Get.delete<SalesController>();
-
           }),
           body: Obx(() => controller.isLoadingData.value ? loadingAnimation(actionStatement: 'Loading Table Data') : Scrollbar(
             controller: scrollController,
@@ -70,7 +68,7 @@ class SalesView extends GetView<SalesController> {
                                 source: salesTableSource,
                                 tableSummaryRows: [
                                   GridTableSummaryRow(
-                                    showSummaryInRow: true,
+                                    showSummaryInRow: false,
                                       title: 'Amount collected for ${controller.filteredResultsCount.value} : {Sum collected}',
                                       columns: [
                                     const GridSummaryColumn(

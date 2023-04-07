@@ -29,7 +29,7 @@ class FileManager{
       appDirectory = '${directory.path}\\$defaultStoragePath';
       directory = Directory(appDirectory);
     }catch(e){
-      appDirectory = "C:\\Users\\Dereck\\Documents\\$defaultStoragePath";
+      appDirectory = "C:\\";
       directory = Directory(appDirectory);
       if(appDirectory != directory.path) logger.e({'error':'Failed to get app directory','defaultDirectory': appDirectory},e);
     }

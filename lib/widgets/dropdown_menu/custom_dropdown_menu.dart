@@ -3,21 +3,23 @@ import 'package:hotel_pms/core/resourses/color_manager.dart';
 import '../../core/resourses/size_manager.dart';
 import '../text/big_text.dart';
 import '../text/small_text.dart';
-
+import 'package:get/get.dart';
 class GeneralDropdownMenu extends StatefulWidget {
   String initialItem;
   String selectedValue;
   bool enabled;
   bool userBorder;
   String disabledHint;
-  List<dynamic> menuItems;
+  List<String> menuItems;
   Function callback;
   double borderRadius;
   int currentIndex;
   String header;
   Color? hintTextColor;
   Color? backgroundColor;
+  Color? borderColor;
   bool resetButton;
+  String? currentItem;
 
   GeneralDropdownMenu(
       {Key? key,
@@ -28,9 +30,11 @@ class GeneralDropdownMenu extends StatefulWidget {
         this.enabled = true,
         this.disabledHint = "Actions",
         this.userBorder = true,
-        this.hintTextColor,
+        this.hintTextColor = ColorsManager.darkGrey,
         this.resetButton = false,
         this.backgroundColor = ColorsManager.flutterGrey,
+        this.currentItem,
+        this.borderColor = ColorsManager.darkGrey,
         required this.menuItems,
         required this.callback,
         required this.initialItem,
@@ -45,7 +49,7 @@ class _GeneralDropdownMenuState extends State<GeneralDropdownMenu> {
 
   bool isExpanded = false;
   bool? refreshFlag;
-  String? currentItem;
+
   int index = 0;
   String selectedItem = "Actions";
 
@@ -58,7 +62,7 @@ class _GeneralDropdownMenuState extends State<GeneralDropdownMenu> {
   BoxDecoration getDecoration(bool useBorder){
     return useBorder?  BoxDecoration(
       color: widget.backgroundColor,
-        border: Border.all(color: ColorsManager.darkGrey,width: 2),
+        border: Border.all(color: widget.borderColor!,width: 2),
         borderRadius: BorderRadius.circular(widget.borderRadius)
     ): BoxDecoration(color: widget.backgroundColor,);
   }
@@ -83,33 +87,33 @@ class _GeneralDropdownMenuState extends State<GeneralDropdownMenu> {
           child: BigText(text: widget.disabledHint),
         ),
 
-        value: currentItem,
+        value: widget.currentItem,
         hint: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SmallText(text: widget.initialItem,fontWeight: FontWeight.w700,color: widget.hintTextColor,),
         ),
-        elevation: 0,
+        elevation: 1,
         underline: const Text(''),
         onChanged: (newValue){
           widget.callback(newValue.toString());
           setState(() {
-            currentItem = newValue.toString();
+            widget.currentItem = newValue.toString();
           });
         },
         borderRadius: BorderRadius.circular(widget.borderRadius),
         icon: const Icon(Icons.keyboard_arrow_down),
-        items: widget.menuItems.map((dynamic menuItem){
+        items: widget.menuItems.map((String menuItem){
           return  DropdownMenuItem(
             onTap: (){
               setState(() {
-                currentItem = menuItem.toString();
+                widget.currentItem = menuItem.toString();
               });
             },
             alignment: Alignment.center,
             value:menuItem,
             child: Padding(
               padding: const EdgeInsets.only(left: 8),
-              child: Center(child: BigText(text:menuItem.toString())),
+              child: Center(child: BigText(text: menuItem.tr.toString())),
             ),
           );
         }).toList(),

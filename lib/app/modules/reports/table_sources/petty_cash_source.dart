@@ -1,20 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-
+import 'package:flutter/material.dart';
 import '../../../../widgets/text/big_text.dart';
 import '../controller/handover_form_controller.dart';
+import 'package:get/get.dart';
 
-class ConferenceUsageSource extends DataGridSource{
-  ConferenceUsageSource({this.rowsPerPage = 20}) {
-    handoverFormController.paginatedConferenceActivityCurrentSession.value =
-        handoverFormController.conferenceActivityCurrentSession.value;
+
+class PettyCashTableSource extends DataGridSource{
+  PettyCashTableSource({this.rowsPerPage = 20}) {
+    handoverFormController.paginatedPettyCashTransactions.value =
+        handoverFormController.pettyCashTransactions.value;
     buildPaginatedDataGridRows();
   }
 
-  onInit()async{
 
-  }
 
   ReportGeneratorController handoverFormController = Get.find<ReportGeneratorController>();
 
@@ -41,20 +39,21 @@ class ConferenceUsageSource extends DataGridSource{
   Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
     num startIndex = newPageIndex * rowsPerPage;
     num endIndex = startIndex + rowsPerPage;
-    if (startIndex < handoverFormController.conferenceActivityCurrentSession.value.length &&
-        endIndex <= handoverFormController.conferenceActivityCurrentSession.value.length) {
-      handoverFormController.paginatedConferenceActivityCurrentSession.value =
-          handoverFormController.conferenceActivityCurrentSession.value
+    if (startIndex < handoverFormController.pettyCashTransactions.value.length &&
+        endIndex <= handoverFormController.pettyCashTransactions.value.length) {
+      handoverFormController.paginatedPettyCashTransactions.value =
+          handoverFormController.pettyCashTransactions.value
               .getRange(startIndex as int, endIndex as int)
               .toList(growable: false);
       buildPaginatedDataGridRows();
       notifyListeners();
     } else {
-      handoverFormController.paginatedConferenceActivityCurrentSession.value = [];
+      handoverFormController.paginatedPettyCashTransactions.value = [];
     }
 
     return true;
   }
+
   @override
   Widget? buildTableSummaryCellWidget(
       GridTableSummaryRow summaryRow,
@@ -65,29 +64,28 @@ class ConferenceUsageSource extends DataGridSource{
     return Center(child: BigText(text: summaryValue),);
   }
 
-
   buildPaginatedDataGridRows() {
     dataGridRows = handoverFormController
-        .paginatedConferenceActivityCurrentSession.value
+        .paginatedPettyCashTransactions.value
         .map<DataGridRow>((dataGridRow) {
-
       return DataGridRow(cells: [
-        DataGridCell<String>(
-            columnName: ConferenceTableColumnNames.name, value: dataGridRow.name),
-        DataGridCell<String>(columnName: ConferenceTableColumnNames.eventType, value: dataGridRow.bookingType),
-        DataGridCell<String>(columnName: ConferenceTableColumnNames.advance, value: dataGridRow.advancePayment),
-        DataGridCell<int>(columnName: ConferenceTableColumnNames.totalCost, value: dataGridRow.serviceValue),
-        // DataGridCell<String>(columnName: 'GUEST', value: dataGridRow.clientId),
+        DataGridCell<String>(columnName: PettyCashTableColumnNames.receiverName, value: dataGridRow.beneficiaryName),
+        DataGridCell<String>(columnName: PettyCashTableColumnNames.department, value: dataGridRow.department),
+        DataGridCell<String>(columnName: PettyCashTableColumnNames.employeeId, value: dataGridRow.employeeId),
+        DataGridCell<String>(columnName: PettyCashTableColumnNames.description, value: dataGridRow.description),
+        DataGridCell<int>(columnName: PettyCashTableColumnNames.amountPaid, value: dataGridRow.transactionValue),
+
+
       ]);
     }).toList(growable: false);
   }
 }
 
-class ConferenceTableColumnNames{
-  static const String leading = "conference_";
-  static const String name = '${leading}name';
-  static const String eventType = '${leading}event_type';
-  static const String advance = '${leading}advance';
-  static const String totalCost = '${leading}total_cost';
-
+class PettyCashTableColumnNames{
+  static const String leading = "petty_cash_";
+  static const String employeeId = '${leading}employee';
+  static const String receiverName = '${leading}receiver_name';
+  static const String department = '${leading}department';
+  static const String description = '${leading}description';
+  static const String amountPaid = '${leading}amount_paid';
 }

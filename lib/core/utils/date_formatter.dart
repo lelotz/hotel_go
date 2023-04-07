@@ -13,9 +13,14 @@ import '../../widgets/text/big_text.dart';
 import '../../widgets/text/small_text.dart';
 import 'package:get/get.dart';
 
-bool isTimeDifferenceLessOrEqualTo(DateTime firstDate,DateTime secondDate, int differenceValue){
+bool isTimeDifferenceLessOrEqualTo(DateTime firstDate,DateTime secondDate, int differenceValueInHours){
   int timeDifferenceInHours = firstDate.difference(secondDate).inHours;
-  return timeDifferenceInHours <= differenceValue ? true : false;
+  return timeDifferenceInHours <= differenceValueInHours ? true : false;
+}
+
+bool isDateDifferenceLessOrEqualTo(DateTime firstDate,DateTime secondDate, int differenceValueInDays){
+  int daysDifferenceInDays = firstDate.difference(secondDate).inDays;
+  return daysDifferenceInDays <= differenceValueInDays ? true : false;
 }
 
 String extractDate(DateTime? date,{String? dateFromString}){

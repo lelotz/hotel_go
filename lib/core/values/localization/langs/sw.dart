@@ -1,6 +1,18 @@
+import 'package:hotel_pms/core/values/localization/messages.dart';
+
 import '../local_keys.dart';
 
 Map<String, String> sw = {
+
+
+  /// Messages
+  AppMessages.numericOnly : 'Ingiza namba tu',
+  AppMessages.alphabeticOnly : 'Ingiza herufi tu',
+  AppMessages.nonNegative : 'Ingiza namba kubwa zaidi ya 0',
+  AppMessages.isNotEmpty : 'Haiwezi baki tupu',
+  AppMessages.valueNotGreater : 'Haiewezi kua kubwa zaidi ya ',
+  LocalKeys.kSelectBillType : "Chagua aina ya bili",
+
   /// Login
   LocalKeys.kLogin : 'Ingia',
   LocalKeys.kLogOut : 'Maliza Shift',
@@ -50,7 +62,7 @@ Map<String, String> sw = {
   LocalKeys.kTransactionNumber : "Namba ya Muamala",
   LocalKeys.kService : "Huduma",
   LocalKeys.kAmount : "Kiasi",
-  LocalKeys.kPayMethod: "Aina ya Malipo",
+
 
 
   /// General
@@ -92,7 +104,7 @@ Map<String, String> sw = {
   LocalKeys.kStored : "Iliohifadhiwa",
   LocalKeys.kBillType : "Huduma",
   LocalKeys.kAll : "Zote",
-  LocalKeys.kClothesGiven : "Idadi ya Nguo",
+  LocalKeys.kClothesGiven : "Aina ya Nguo",
   LocalKeys.kClient : 'Mteja',
   LocalKeys.kCost : "Gharama",
   LocalKeys.kCheckIn : "Check-In",

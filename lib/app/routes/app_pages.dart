@@ -35,18 +35,18 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.LOGIN_SCREEN,
-      page: () => const LandingPage(),
+      page: () => LandingPage(),
       binding: AuthBinding()
 
     ),
     GetPage(
         name: _Paths.LAUNDRY_FORM,
-        page: () => const LaundryForm(),
+        page: () =>  LaundryForm(),
         binding: LaundryFormBinding()
     ),
     GetPage(
       name: _Paths.PACKAGE_FORM,
-      page: () => const StorePackageForm(),
+      page: () =>  StorePackageForm(),
       binding: PackageFormBinding(),
     ),
     GetPage(
