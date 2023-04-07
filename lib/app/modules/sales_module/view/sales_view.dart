@@ -22,6 +22,7 @@ class SalesView extends GetView<SalesController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SalesController>(
+      init: SalesController(),
         builder: (controller)=>Scaffold(
           appBar: buildGlobalAppBar(context,appBarTitle: LocalKeys.kSales.tr,onTitleTap: controller.onReady,onBackButton: (){
             Get.back();

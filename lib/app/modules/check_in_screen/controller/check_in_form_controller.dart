@@ -150,9 +150,7 @@ class CheckInFormController extends GetxController{
     int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType[LocalKeys.kVip] : AppConstants.roomType[LocalKeys.kStd];
 
     roomCost.value = stringToInt(nightsCtrl.text) * roomPrice;
-    if(isTest == false){
-      paidTodayCtrl.text = roomCost.value.toString();
-    }
+
     outstandingBalance.value = roomCost.value - stringToInt(paidTodayCtrl.text);
 
     await createClientProfile().then((value) async{
@@ -164,9 +162,6 @@ class CheckInFormController extends GetxController{
             await updateAdminUserRoomsSold().then((value) {
               //showSnackBar("Updated Rooms Sold", Get.context!);
             }).then((value) async {
-              await createClientActivity().then((value) {
-               // showSnackBar("Created ClientActivity", Get.context!);
-              }).then((value) async{
                 if(int.tryParse(paidTodayCtrl.text) != null && int.tryParse(paidTodayCtrl.text) != 0){
                   final String collectPaymentId = const Uuid().v1();
                   CollectPayment collectPayment = CollectPayment(
@@ -193,8 +188,6 @@ class CheckInFormController extends GetxController{
                     //showSnackBar("Created CollectPayment", Get.context!);
                   });
                 }
-
-              });
             });
           });
         });
@@ -279,7 +272,7 @@ class CheckInFormController extends GetxController{
         roomTransactionId: transactionId,
         employeeId: await employeeId,
         employeeFullName: await employeeIdName,
-        activityValue: roomCost.value,
+        activityValue: stringToInt(paidTodayCtrl.text),
         activityStatus: LocalKeys.kCheckIn.capitalize,
         description: LocalKeys.kCheckIn.capitalize,
         unit: LocalKeys.kRoom.capitalize,

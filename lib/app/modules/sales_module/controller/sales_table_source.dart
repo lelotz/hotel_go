@@ -12,7 +12,7 @@ class SalesTableSource extends DataGridSource{
     buildPaginatedDataGridRows();
     print('paginatedSalesCount${salesController.paginatedCollectedPayments.value.length}');
   }
-  SalesController salesController = Get.put(SalesController());
+  SalesController salesController = Get.put(SalesController(),permanent: true);
 
   List<DataGridRow> dataGridRows = [];
 
