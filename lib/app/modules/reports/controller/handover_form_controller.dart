@@ -112,10 +112,14 @@ class ReportGeneratorController extends GetxController {
   }
 
   setReportConfigsFromReportSelector() {
-    bool isOneDayApart = isDateDifferenceLessOrEqualTo(
-        DateTime.parse(reportConfigs!['endDate']),
-        DateTime.parse(reportConfigs!['startDate']),
-        1);
+    bool isOneDayApart = true;
+    if(reportConfigs != null){
+      isOneDayApart = isDateDifferenceLessOrEqualTo(
+          DateTime.parse(reportConfigs!['endDate']),
+          DateTime.parse(reportConfigs!['startDate']),
+          1);
+    }
+
     if (reportConfigs != null && isOneDayApart == false) {
       reportStartDate.value = DateTime.parse(reportConfigs!['startDate']);
       reportEndDate.value = DateTime.parse(reportConfigs!['endDate']);
