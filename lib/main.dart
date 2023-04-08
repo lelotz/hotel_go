@@ -9,7 +9,7 @@ import 'core/services/dynamic_theme.dart';
 import 'core/values/localization/messages.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() async{
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
   runApp(const MyApp());

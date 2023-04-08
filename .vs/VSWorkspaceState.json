@@ -1,9 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\windows",
     "\\windows\\runner"
   ],
-  "SelectedNode": "\\windows\\CMakeLists.txt",
+  "SelectedNode": "\\pubspec.yaml",
   "PreviewInSolutionExplorer": false
 }

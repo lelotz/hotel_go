@@ -47,16 +47,6 @@ dependencies:
   syncfusion_flutter_datagrid_export: ^20.4.53-beta
   context_menus: ^1.0.2
   regexed_validator: ^2.0.0+1
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^2.0.0
   responsive_framework: ^0.2.0
   build_runner: ^2.3.3
@@ -67,6 +57,19 @@ dev_dependencies:
   path: ^1.8.2
   uuid: ^3.0.7
   bot_toast: ^4.0.3
+  msix: ^3.9.2
+  sqflite_common: ^2.4.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+
   test: ^1.22.0
 
 # For information on the generic Dart part of this file, see the
