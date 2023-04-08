@@ -5,13 +5,8 @@ import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/services/data_validation.dart';
 import 'package:hotel_pms/widgets/buttons/myElevatedButton.dart';
 import 'package:hotel_pms/widgets/dropdown_menu/custom_dropdown_menu.dart';
-import 'package:hotel_pms/widgets/forms/form_header.dart';
 import 'package:hotel_pms/widgets/inputs/text_field_input.dart';
-import 'package:hotel_pms/widgets/text/big_text.dart';
-import 'package:hotel_pms/widgets/text/small_text.dart';
 
-import '../../../../../widgets/dialogs/activity_status_dialog.dart';
-import '../../../../../widgets/dialogs/dialod_builder.dart';
 
 class CreateUserForm extends GetView<CreateUserController> {
   CreateUserForm({Key? key}) : super(key: key);

@@ -3,18 +3,14 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/core/services/data_validation.dart';
 import 'package:hotel_pms/widgets/forms/form_header.dart';
 import '../../../../../core/resourses/color_manager.dart';
-import '../../../../../core/resourses/size_manager.dart';
-import '../../../../../core/utils/dim_logic.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/buttons/decorated_text_button.dart';
-import '../../../../../widgets/buttons/my_outlined_button.dart';
 import '../../../../../widgets/inputs/text_field_input.dart';
 import '../../../../../widgets/mydividers.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import '../../controller/package_form_controller.dart';
 import '../tables/display_stored_items.dart';
-import 'dialog_forms.dart';
 
 class StorePackageForm extends GetView<PackageFormController> {
 

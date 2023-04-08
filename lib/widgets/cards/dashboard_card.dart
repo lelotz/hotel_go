@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
-import 'package:hotel_pms/core/utils/dim_logic.dart';
+
 import '../text/big_text.dart';
 import '../text/small_text.dart';
 

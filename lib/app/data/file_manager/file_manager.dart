@@ -31,6 +31,7 @@ class FileManager{
       appDirectory = "C:\\";
       directory = Directory(appDirectory);
       if(appDirectory != directory.path) logger.e({'error':'Failed to get app directory','defaultDirectory': appDirectory},e);
+      return directory;
     }
     return directory;
 

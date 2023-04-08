@@ -11,6 +11,7 @@ abstract class Routes {
   static const PACKAGE_FORM = _Paths.PACKAGE_FORM;
   static const ROOM_SERVICE_FORM = _Paths.ROOM_SERVICE_FORM;
   static const SALES_SCREEN = _Paths.SALES_SCREEN;
+  static const SPLASH_SCREEN = _Paths.SPLASH_SCREEN;
 }
 
 abstract class _Paths {
@@ -20,6 +21,7 @@ abstract class _Paths {
   static const LOGIN_SCREEN = '/login-screen';
   static const LAUNDRY_FORM = '/laundry-form';
   static const PAYMENT_FORM = '/payment-form';
+  static const SPLASH_SCREEN = '/splash-screen';
   static const PACKAGE_FORM = '/package-form';
   static const ROOM_SERVICE_FORM = '/room-service-form';
   static const SALES_SCREEN = '/sales-screen';

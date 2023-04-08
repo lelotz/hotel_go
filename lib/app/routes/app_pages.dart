@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/guest_dashboard/widgets/app_forms/room_service_form.dart';
 import 'package:hotel_pms/app/modules/login_screen/views/auth_screen.dart';
+import 'package:hotel_pms/app/modules/splash_screen/bindings/splash_screen_binding.dart';
 import '../modules/guest_dashboard/bindings/laundry_form_bindings.dart';
 import '../modules/guest_dashboard/bindings/package_form_bindings.dart';
 import '../modules/guest_dashboard/bindings/payment_binding.dart';
@@ -13,13 +14,14 @@ import '../modules/guest_dashboard/widgets/app_forms/package_storage_form.dart';
 import '../modules/homepage_screen/bindings/homepage_binding.dart';
 import '../modules/homepage_screen/views/homepage_view.dart';
 import '../modules/login_screen/bindings/auth_bindings.dart';
+import '../modules/splash_screen/view/splash_screen_view.dart';
 
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN_SCREEN;
+  static const INITIAL = Routes.SPLASH_SCREEN;
 
   static final routes = [
     GetPage(
@@ -56,8 +58,14 @@ class AppPages {
     ),
     GetPage(
         name: _Paths.PAYMENT_FORM,
-        page: () => CollectPaymentForm(),
+        page: () => const CollectPaymentForm(),
         binding: PaymentBinding(),
+    ),
+
+    GetPage(
+      name: _Paths.SPLASH_SCREEN,
+      page: () => const SplashScreen(),
+      binding: SplashScreenBinding(),
     ),
 
   ];

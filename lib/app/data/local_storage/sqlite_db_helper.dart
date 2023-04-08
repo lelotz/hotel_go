@@ -40,7 +40,6 @@ class SqlDatabase{
     try{
       Directory? directory = await FileManager().directoryPath;
       String path = join(directory!.path,_dbName);
-      //logger.e('initializing new db instance');
       return await databaseFactory.openDatabase(
           path,
           options: OpenDatabaseOptions(
@@ -50,7 +49,6 @@ class SqlDatabase{
 
     }catch(e){
       logger.e("INIT-DB-ERROR",e);
-      //print("[INIT-DB-ERROR] $e");
     }
 
     return null;
