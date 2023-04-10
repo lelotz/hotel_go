@@ -1,16 +1,18 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:hotel_pms/core/logs/logger_instance.dart';
+import 'package:logger/logger.dart';
 
 
 int stringToInt(String? givenString){
+  Logger logger = AppLogger.instance.logger;
   int result = 0;
   try{
     result = int.parse(givenString!);
   }catch(e){
-    if (kDebugMode) {
-      print(e.toString());
-    }
+    logger.e({'str->int ERROR': '','str': givenString},e);
+    return 0;
+
   }
 
   return result;

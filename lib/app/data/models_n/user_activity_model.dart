@@ -35,6 +35,16 @@ class UserActivity {
     dateTime = json['dateTime'];
   }
 
+  static List<UserActivity> fromJsonList(List<Map<String, dynamic>>? value){
+    List<UserActivity> data = [];
+    if(value!= null){
+      for(Map<String, dynamic> element in value){
+        data.add(UserActivity.fromJson(element));
+      }
+    }
+    return data;
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['activityId'] = activityId;

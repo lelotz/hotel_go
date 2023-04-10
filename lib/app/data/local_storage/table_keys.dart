@@ -4,6 +4,7 @@ import 'package:hotel_pms/app/data/local_storage/repository/client_user_repo.dar
 import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/conference_booking_details_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/encrypted_data_repo.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/guest_package_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/hotel_issues_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/internal_transaction_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/other_transactions_repo.dart';
@@ -26,8 +27,6 @@ List<String> dbTablesSql = [
   RoomTransactionsTable().sql,
   OtherTransactionsTable().sql,
   UserActivityTable().sql,
-  ReceivedPackagesTable().sql,
-  ReturnedPackagesTable().sql,
   CollectedPaymentsTable().sql,
   SessionTrackerTable().sql,
   SessionActivityTable().sql,
@@ -38,7 +37,8 @@ List<String> dbTablesSql = [
   HotelIssuesTable().sql,
   StatusManagerTable().sql,
   ShiftHandOverTable().sql,
-  ConferenceBookingDetailsTable().sql
+  ConferenceBookingDetailsTable().sql,
+  GuestPackageTable().sql,
 ];
 
 

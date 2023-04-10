@@ -20,37 +20,50 @@ class DisplayStoredItems extends GetView<PackageFormController> {
         builder: (controller)=>SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           scrollDirection: Axis.vertical,
-          child: Obx(()=>SizedBox(
-            height: const Size.fromHeight(320).height,
-            child: controller.storedPackagesView.value.isNotEmpty ? GridView(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 2,
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SmallText(text: 'Returning Packages'),
+                  Card(child: Padding(
+                    padding: EdgeInsets.all(8),
+                      child: SmallText(text: '${controller.returnedPackagesBufferCount}'))),
+                ],
               ),
-              children: List<Widget>.generate(controller.storedPackagesView.value.length, (index) {
-                return Builder(builder: (BuildContext context){
-                  return InkWell(
-                    onTap: (){
-                      controller.bufferReturnedPackage(controller.storedPackagesView.value[index]);
-                    },
-                    child: Obx(() => Card(
-                      color: controller.returnedPackagesBuffer.value.contains(controller.storedPackagesView.value[index]) ? ColorsManager.success : ColorsManager.white,
-                      child: Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            BigText(text: "Item  : ${controller.storedPackagesView.value[index].description}",),
-                            BigText(text: "Unit : ${controller.storedPackagesView.value[index].unit}",),
-                            BigText(text: "Value : ${controller.storedPackagesView.value[index].activityValue}",)
-                          ],
-                        ),
-                      ),
-                    )),
-                  );
-                });
-              }),
-            ): const Center(child: BigText(text: 'No Packages Stored',),),
-          )),
+              Obx(()=>SizedBox(
+                height: const Size.fromHeight(320).height,
+                child: controller.storedPackagesView.value.isNotEmpty ? GridView(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 2,
+                  ),
+                  children: List<Widget>.generate(controller.storedPackagesView.value.length, (index) {
+                    return Builder(builder: (BuildContext context){
+                      return InkWell(
+                        onTap: (){
+                          controller.bufferReturnedPackage(controller.storedPackagesView.value[index]);
+                        },
+                        child: Obx(() => Card(
+                          color: controller.returnedPackagesBuffer.value.contains(controller.storedPackagesView.value[index]) ? ColorsManager.success : ColorsManager.white,
+                          child: Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                BigText(text: "Item  : ${controller.storedPackagesView.value[index].description}",),
+                                BigText(text: "Unit : ${controller.storedPackagesView.value[index].unit}",),
+                                BigText(text: "Value : ${controller.storedPackagesView.value[index].value}",)
+                              ],
+                            ),
+                          ),
+                        )),
+                      );
+                    });
+                  }),
+                ): const Center(child: BigText(text: 'No Packages Stored',),),
+              )),
+            ],
+          ),
         ));
   }
 }

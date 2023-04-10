@@ -33,9 +33,8 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
           appBar: AppBar(
             leading: InkWell(
               onTap: ()async{
-                controller.homepageController.loadRoomData();
+                await controller.homepageController.loadRoomData();
                 Get.to(()=>HomePageView());
-                //Get.reset();
                 await deleteRoomControllers();
               },
               child: const AppIcon(
@@ -45,7 +44,7 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
             title: buildAppBarTitle("Guest Dashboard"),
           ),
 
-          body: Obx(()=> controller.isLoadingData.value ? loadingAnimation() :SingleChildScrollView(
+          body: Obx(()=> controller.isLoadingData.value ? loadingAnimation(size: 50) : SingleChildScrollView(
            child:  Padding(
              padding: const EdgeInsets.only(left: AppPadding.padding20*2,right: AppPadding.padding20*2,top: AppPadding.padding20),
              child: Column(
@@ -206,7 +205,7 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                                children: [
                                  Obx(() => BigText(text: "${LocalKeys.kGuestActivity.tr} : ${controller.userActivity.value.length}")),
                                  SizedBox(width: const Size.fromWidth(8).width,),
-                                 IconButton(
+                                 controller.fetchingUserActivity.value ? loadingAnimation(actionStatement: '',size: 20) : IconButton(
                                      onPressed: ()async{
                                        await controller.getUserActivity();
 

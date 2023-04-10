@@ -12,6 +12,7 @@ import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
 import 'package:logger/logger.dart';
 import '../../../../core/logs/logger_instance.dart';
+import '../../../../core/values/localization/messages.dart';
 import '../../../data/local_storage/repository/other_transactions_repo.dart';
 import '../../../data/local_storage/repository/room_transaction_repo.dart';
 import '../../../data/models_n/admin_user_model.dart';
@@ -47,7 +48,8 @@ class PaymentController extends GetxController {
       Map<String, List<OtherTransactions>>>({});
 
 
-
+  Rx<String> payMethod = Rx<String>('');
+  Rx<String> payMethodStatus = Rx<String>('');
   Rx<Map<String, dynamic>> metaData = Rx<Map<String, dynamic>>({});
 
 
@@ -69,6 +71,8 @@ class PaymentController extends GetxController {
   Rx<String> collectedPaymentInput = Rx<String>(LocalKeys.kSelectBillType);
 
   Rx<String> selectedBill = Rx<String>(LocalKeys.kSelectBillType.tr);
+
+  Rx<String> selectedPayMethod = Rx<String>('');
 
   @override
   Future<void> onInit() async {
@@ -100,6 +104,7 @@ class PaymentController extends GetxController {
     await RoomTransactionRepository().updateRoomTransaction(
         payDataController.roomTransaction.value.toJson()).then((value) async {
       await updateUI();
+      await payDataController.getCurrentRoomTransaction();
       assignGrandTotalValues();
     });
   }
@@ -213,9 +218,9 @@ class PaymentController extends GetxController {
             roomServiceCost.value += roomServiceTransaction.grandTotal!;
             roomServiceBalance.value += roomServiceTransaction.outstandingBalance!;
             roomServiceTransactions.add(roomServiceTransaction);
-            sessionTransactions.value.addAll({LocalKeys.kRoomService.toUpperCase():roomServiceTransactions});
           }
         }
+        sessionTransactions.value.addAll({LocalKeys.kRoomService.toUpperCase():roomServiceTransactions});
       }
     });
   }
@@ -255,7 +260,6 @@ class PaymentController extends GetxController {
         service: TransactionTypes.roomServiceTransaction,
         payMethod: "CASH",
         receiptNumber: const Uuid().v1(),
-
       ).toDb();
       Get.delete<PaymentController>();
     }
@@ -271,29 +275,66 @@ class PaymentController extends GetxController {
       if (value != null && value.isNotEmpty) {
         for (Map<String, dynamic> element in value) {
           OtherTransactions laundryTransaction = OtherTransactions.fromJson(element);
-          if (laundryTransaction.paymentNotes == LocalKeys.kLaundry.toUpperCase()) {
+          if (laundryTransaction.paymentNotes == AppConstants.laundryLabel) {
             laundryCost.value += laundryTransaction.grandTotal!;
             laundryBalance.value += laundryTransaction.outstandingBalance!;
             laundryTransactions.add(laundryTransaction);
-            sessionTransactions.value.addAll({LocalKeys.kLaundry.toUpperCase(): laundryTransactions});
+
           }
         }
+        sessionTransactions.value.addAll({AppConstants.laundryLabel: laundryTransactions});
+        logger.v('${sessionTransactions.value[AppConstants.laundryLabel]?.length ?? -1}');
       }else{
         logger.w('No laundry to calculate');
       }
     });
   }
+  setPayMethod(String method){
+    payMethod.value = method;
+    payMethod.refresh();
+  }
+  bool validateInputs(){
+    logger.i('validationg inputs');
+    if(collectedPaymentInput.value==LocalKeys.kSelectBillType) {
+      payMethodStatus.value = '${payMethodStatus.value}\n - ${AppMessages.cannotCollectZero}';
+      return false;
+    }
+    if( selectedBill.isNotEmpty &&
+        stringToInt(collectedPaymentInput.value) > 0 &&
+        validatePayMethod()
+      ) return true;
+
+    if(selectedBill== '') payMethodStatus.value = ' - . ${payMethodStatus.value}\n - . ${LocalKeys.kSelectBillType.tr} ${AppMessages.isNotEmpty}';
+
+    return false;
+  }
+
+  bool validatePayMethod(){
+
+
+    if(payMethod.value == ''){
+      payMethodStatus.value = 'Pay Method ${AppMessages.isNotEmpty}';
+      // bookingInitiated.value = false;
+      return false;
+    }else{
+      payMethodStatus.value = '';
+    }
+
+    return true;
+  }
+
+
 
 
   /// Update Laundry Fees with data form [CollectPaymentForm]
   updateLaundryFees({bool payingAllBills = false}) async {
-    if(sessionTransactions.value.keys.contains(LocalKeys.kLaundry.toUpperCase())){
+
       await calculateLaundryCost();
       int paymentInput = laundryBalance.value;
       int currentLaundryTransactionCost = 0;
       collectedPaymentInput.value = laundryBalance.value.toString();
-
-      for (OtherTransactions laundryTransaction in sessionTransactions.value[LocalKeys.kLaundry.toUpperCase()] ?? []) {
+      if(sessionTransactions.value[AppConstants.laundryLabel]==null || sessionTransactions.value[AppConstants.laundryLabel]!.isEmpty) logger.w('no laundry sessions');
+      for (OtherTransactions laundryTransaction in sessionTransactions.value[AppConstants.laundryLabel] ?? []) {
         if (laundryTransaction.outstandingBalance! > 0) {
           currentLaundryTransactionCost = paymentInput - (paymentInput - laundryTransaction.grandTotal!);
           laundryTransaction.amountPaid = currentLaundryTransactionCost;
@@ -318,12 +359,14 @@ class PaymentController extends GetxController {
         date: extractDate(DateTime.now()),
         time: extractTime(DateTime.now()),
         service: TransactionTypes.laundryPayment,
-        payMethod: "CASH",
+        payMethod: 'CASH',
         receiptNumber: const Uuid().v1(),
-      ).toDb();
+      ).toDb().then((value) {
+        logger.wtf('collected ${laundryBalance.value}');
+      });
       /// Updates [RoomTransaction]
       await updateGrandTotal();
-    }
+
 
 
   }

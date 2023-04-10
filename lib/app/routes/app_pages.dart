@@ -58,7 +58,7 @@ class AppPages {
     ),
     GetPage(
         name: _Paths.PAYMENT_FORM,
-        page: () => const CollectPaymentForm(),
+        page: () =>  CollectPaymentForm(),
         binding: PaymentBinding(),
     ),
 

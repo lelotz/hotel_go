@@ -12,17 +12,17 @@ import '../../controller/guest_dashboard_controller.dart';
 
 class UserActivityTableView extends GetView<GuestDashboardController> {
    const UserActivityTableView({Key? key}) : super(key: key);
-  //RoomDetailsController con = Get.put(RoomDetailsController());
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<GuestDashboardController>(
       init: GuestDashboardController(),
-        builder: (controller)=>SingleChildScrollView(
+        builder: (controller)=> SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.vertical,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Obx(()=>DataTable(
+        child: Obx(()=> controller.fetchingUserActivity.value ? SizedBox() : DataTable(
           border: TableBorder.all(
               color: ColorsManager.darkGrey,
               width: 1,

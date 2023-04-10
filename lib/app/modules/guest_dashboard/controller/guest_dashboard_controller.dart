@@ -33,7 +33,7 @@ class GuestDashboardController extends GetxController{
   Rx<Map<String,dynamic>>  metaData = Rx<Map<String,dynamic>>({});
 
   Rx<List<UserActivity>> userActivity = Rx<List<UserActivity>>([]);
-
+  Rx<bool> fetchingUserActivity = false.obs;
 
   Rx<int> userActivityCount = Rx<int>(0);
   Rx<String> selectedForm = "".obs;
@@ -96,7 +96,7 @@ class GuestDashboardController extends GetxController{
   }
 
   openDashboardForm(String formName){
-    actionsDialogForms(context:Get.context!, formName:formName,height: formName == LocalKeys.kCollectPayment ? 350 : 680);
+    actionsDialogForms(context:Get.context!, formName:formName,height: formName == LocalKeys.kCollectPayment ? 450 : 680);
   }
 
   Future<void> checkOutGuest()async{
@@ -173,6 +173,7 @@ class GuestDashboardController extends GetxController{
   }
 
   Future<void> getUserActivity()async{
+    fetchingUserActivity.value = true;
     logger.i({'user':clientUser.value.clientId!, 'roomTR':paymentDataController.roomTransaction.value.id!});
     userActivity.value.clear();
     await UserActivityRepository().getUserActivity(paymentDataController.roomTransaction.value.id!).then((response) {
@@ -182,6 +183,9 @@ class GuestDashboardController extends GetxController{
             }
           }
       });
+    updateUI();
+   // await Future.delayed(Duration(seconds: 3));
+    fetchingUserActivity.value = false;
 
   }
 

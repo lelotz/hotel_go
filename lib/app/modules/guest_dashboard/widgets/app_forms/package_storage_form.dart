@@ -208,7 +208,7 @@ class DisplayNewPackageBuffer extends GetView<PackageFormController>{
                       children: [
                         BigText(text: "Item  : ${controller.receivedPackagesBuffer.value[index].description}",),
                         BigText(text: "Unit : ${controller.receivedPackagesBuffer.value[index].unit}",),
-                        BigText(text: "Value : ${controller.receivedPackagesBuffer.value[index].activityValue}",)
+                        BigText(text: "Value : ${controller.receivedPackagesBuffer.value[index].value}",)
                       ],
                     ),
                   ),

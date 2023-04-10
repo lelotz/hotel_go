@@ -139,7 +139,7 @@ class LaundryForm extends GetView<LaundryFormController> {
                       ? GeneralDropdownMenu(
                           backgroundColor: ColorsManager.white,
                           menuItems: controller.houseKeepingStaffNames.value,
-                          callback: () {},
+                          callback: controller.selectHouseKeeper,
                           initialItem: 'Housekeeper')
                       : const SizedBox()),
                 ),

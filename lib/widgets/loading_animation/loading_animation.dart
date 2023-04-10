@@ -10,6 +10,7 @@ import '../text/big_text.dart';
 Widget loadingAnimation({Color loadingColor = ColorsManager.primaryAccent,double size=200, String actionStatement="Loading"}){
   return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           BigText(text: actionStatement),
           LoadingAnimationWidget.stretchedDots(

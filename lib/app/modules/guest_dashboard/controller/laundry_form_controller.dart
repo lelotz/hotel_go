@@ -75,15 +75,20 @@ class LaundryFormController extends GetxController{
       if(value!=null && value.isNotEmpty){
         houseKeepingStaff.value = AdminUser().fromJsonList(value);
         getHouseKeepingStaffName();
-        logger.i({'housekeppers': '${houseKeepingStaffNames.value.length}'});
+
       }
     });
+    logger.i({'housekeepers': '${houseKeepingStaffNames.value.length}'});
   }
 
   updateUI(){
     userActivityCount.value = userActivity.value.length;
     receivedLaundryViewCount.value = receivedLaundryView.value.length;
     receivedLaundryBufferCount.value = receivedLaundryBuffer.value.length;
+  }
+
+  selectHouseKeeper(String houseKeeper){
+    selectedHouseKeeper.value = houseKeeper;
   }
 
   Future<void> getOtherTransactions()async{
@@ -114,8 +119,8 @@ class LaundryFormController extends GetxController{
       transactionNotes: '${laundryQuantityCtrl.text}:${laundryDescriptionCtrl.text}',
       roomNumber: metaData.value[LocalKeys.kSelectedRoom].roomNumber,
       grandTotal: stringToInt(laundryPriceCtrl.text),
-      amountPaid: stringToInt(laundryPriceCtrl.text),
-      outstandingBalance: 0,
+      amountPaid: 0,
+      outstandingBalance: stringToInt(laundryPriceCtrl.text),
     );
     receivedLaundryBuffer.value.add(newLaundry);
     update();
@@ -148,7 +153,7 @@ class LaundryFormController extends GetxController{
           RoomTransaction roomTransaction = metaData.value[LocalKeys.kRoomTransaction].value;
           roomTransaction.grandTotal = roomTransaction.grandTotal! + newLaundry.grandTotal!;
           roomTransaction.otherCosts = roomTransaction.otherCosts! + newLaundry.grandTotal!;
-          roomTransaction.amountPaid = roomTransaction.amountPaid! + newLaundry.amountPaid!;
+          // roomTransaction.amountPaid = roomTransaction.amountPaid! + newLaundry.amountPaid!;
           roomTransaction.outstandingBalance = roomTransaction.grandTotal! - roomTransaction.amountPaid!;
           await RoomTransactionRepository().updateRoomTransaction(roomTransaction.toJson());
           userActivity.value.add(laundryActivity);
@@ -181,10 +186,9 @@ class LaundryFormController extends GetxController{
             receivedLaundryView.value.add(OtherTransactions.fromJson(element));
           }
         }
-        showSnackBar("Loaded Stored Laundry: ${receivedLaundryView.value.first.transactionNotes}", Get.context!);
+        showSnackBar("Loaded Stored Laundry: ${receivedLaundryView.value.length}", Get.context!);
       }else{
         showSnackBar("FAILED: To Load Stored Laundry", Get.context!);
-        print('FAILED: To Load Stored Laundry');
 
       }
     });

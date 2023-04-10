@@ -12,6 +12,7 @@ Map<String, String> sw = {
   AppMessages.isNotEmpty : 'Haiwezi baki tupu',
   AppMessages.valueNotGreater : 'Haiewezi kua kubwa zaidi ya ',
   LocalKeys.kSelectBillType : "Chagua aina ya bili",
+  AppMessages.cannotCollectZero : "Huwezi pokea 0 Tsh",
 
   /// Login
   LocalKeys.kLogin : 'Ingia',

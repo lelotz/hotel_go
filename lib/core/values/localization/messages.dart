@@ -27,5 +27,6 @@ class AppMessages{
   static const String nonNegative = "Value must be positive";
   static const String isNotEmpty = "Value cannot be empty";
   static const String valueNotGreater = "Value cannot be greater than ";
+  static const String cannotCollectZero = "Cannot collect 0 Tsh";
 }
 
