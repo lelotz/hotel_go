@@ -65,15 +65,8 @@ class SalesController extends GetxController {
   DataPagerController pagerController = DataPagerController();
 
   @override
-  onInit(){
+  onInit()async{
     super.onInit();
-    logger.i('initializingSalesController');
-  }
-
-
-  @override
-  onReady() async {
-    super.onReady();
     tableInitialized.value = false;
     isExporting.value = false;
     await getAllPaymentTransactions();
@@ -81,8 +74,23 @@ class SalesController extends GetxController {
     await getAllEmployees();
     isLoadingData.value = false;
     logger.i({'salesCount': collectedPayments.value.length});
-
+    update();
+   // logger.i('initializingSalesController');
   }
+
+
+  // @override
+  // onReady() async {
+  //   super.onReady();
+  //   tableInitialized.value = false;
+  //   isExporting.value = false;
+  //   await getAllPaymentTransactions();
+  //   await getAmountCollectedToday();
+  //   await getAllEmployees();
+  //   isLoadingData.value = false;
+  //   logger.i({'salesCount': collectedPayments.value.length});
+  //
+  // }
 
   updateUI() {
     collectedPaymentsCount.value = collectedPayments.value.length;

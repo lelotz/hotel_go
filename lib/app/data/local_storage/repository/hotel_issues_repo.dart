@@ -1,6 +1,5 @@
 
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
-
 import '../../models_n/hotel_issues_model.dart';
 
 class HotelIssuesRepository extends SqlDatabase{

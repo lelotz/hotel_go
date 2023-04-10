@@ -1,35 +1,45 @@
-
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 
-class UserActivityRepository extends SqlDatabase{
-
+class UserActivityRepository extends SqlDatabase {
   UserActivityRepository();
 
   /// User Activity
-  Future<int> createUserActivity(Map<String,dynamic> row,{String? tableName = UserActivityTable.tableName})async{
+  Future<int> createUserActivity(Map<String, dynamic> row,
+      {String? tableName = UserActivityTable.tableName}) async {
     int rowNumber = await create(tableName!, row);
     return rowNumber;
   }
 
   /// READ UserActivity
-  Future<List<Map<String, dynamic>>?> getUserActivity(String roomTransactionId,{String? tableName = UserActivityTable.tableName})async{
+  Future<List<Map<String, dynamic>>?> getUserActivity(String roomTransactionId,
+      {String? tableName = UserActivityTable.tableName}) async {
     return await read(
         tableName: tableName,
         where: '${UserActivityTable.roomTransactionId} = ?',
-        whereArgs: [roomTransactionId]
-    );
+        whereArgs: [roomTransactionId]);
   }
-  Future<List<Map<String, dynamic>>?> getUserActivityByActivityId(String activityId,{String? tableName = UserActivityTable.tableName})async{
+
+  Future<List<Map<String, dynamic>>?> getUserActivityByActivityId(
+      String activityId,
+      {String? tableName = UserActivityTable.tableName}) async {
     return await read(
         tableName: tableName,
         where: '${UserActivityTable.activityId} = ?',
-        whereArgs: [activityId]
-    );
+        whereArgs: [activityId]);
   }
 
-
+  Future<int> deleteUserActivity(Map<String, dynamic> row,
+      {String? tableName = UserActivityTable.tableName}) async {
+    int rowNumber = await delete(
+        tableName: tableName!,
+        where: '${UserActivityTable.activityId}=?',
+        whereArgs: [row[UserActivityTable.activityId]]
+    );
+    return rowNumber;
+  }
 }
-class ReceivedPackagesTable{
+
+class ReceivedPackagesTable {
   static const String tableName = "received_packages";
   static const String activityId = "activityId";
   static const String roomTransactionId = "roomTransactionId";
@@ -41,8 +51,7 @@ class ReceivedPackagesTable{
   static const String activityValue = "activityValue";
   static const String unit = "unit";
   static const String dateTime = "dateTime";
-  String sql =
-  '''
+  String sql = '''
       CREATE TABLE IF NOT EXISTS $tableName(
        $activityId TEXT PRIMARY KEY,
        $roomTransactionId TEXT,
@@ -57,7 +66,7 @@ class ReceivedPackagesTable{
       ''';
 }
 
-class ReturnedPackagesTable{
+class ReturnedPackagesTable {
   static const String tableName = "returned_packages";
   static const String activityId = "activityId";
   static const String roomTransactionId = "roomTransactionId";
@@ -69,8 +78,7 @@ class ReturnedPackagesTable{
   static const String activityValue = "activityValue";
   static const String unit = "unit";
   static const String dateTime = "dateTime";
-  String sql =
-  '''
+  String sql = '''
       CREATE TABLE IF NOT EXISTS $tableName(
        $activityId TEXT PRIMARY KEY,
        $roomTransactionId TEXT,
@@ -84,8 +92,9 @@ class ReturnedPackagesTable{
        $dateTime TEXT NOT NULL )
       ''';
 }
+
 /// User Activity
-class UserActivityTable{
+class UserActivityTable {
   static const String tableName = "user_activity";
   static const String activityId = "activityId";
   static const String roomTransactionId = "roomTransactionId";
@@ -97,8 +106,7 @@ class UserActivityTable{
   static const String activityValue = "activityValue";
   static const String unit = "unit";
   static const String dateTime = "dateTime";
-  String sql =
-  '''
+  String sql = '''
       CREATE TABLE IF NOT EXISTS $tableName(
        $activityId TEXT PRIMARY KEY,
        $roomTransactionId TEXT,

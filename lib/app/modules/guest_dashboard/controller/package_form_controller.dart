@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
+import 'package:hotel_pms/app/data/models_n/session_activity_model.dart';
 
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
+import 'package:hotel_pms/core/resourses/color_manager.dart';
+import 'package:hotel_pms/core/session_management/session_manager.dart';
 
 import 'package:hotel_pms/core/utils/string_handlers.dart';
-import 'package:hotel_pms/core/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/user_activity_repo.dart';
@@ -21,6 +24,7 @@ class PackageFormController extends GetxController{
   Rx<List<UserActivity>> receivedPackagesView = Rx<List<UserActivity>>([]);
   Rx<List<UserActivity>> receivedPackagesBuffer = Rx<List<UserActivity>>([]);
   Rx<List<UserActivity>> returnedPackagesBuffer = Rx<List<UserActivity>>([]);
+  Rx<List<UserActivity>> storedPackagesView = Rx<List<UserActivity>>([]);
 
   Rx<bool> returningPackage = Rx<bool>(false);
   Rx<bool> receivingPackage = Rx<bool>(true);
@@ -53,26 +57,29 @@ class PackageFormController extends GetxController{
     packageDescriptionCtrl.clear();
   }
 
-  Future<void> getStoredPackages()async{
+  Future<void> getStoredPackages({bool refresh=false})async{
     receivedPackagesView.value.clear();
+    storedPackagesView.value.clear();
     await UserActivityRepository().getUserActivity(
       tableName: ReceivedPackagesTable.tableName,
       metaData.value[LocalKeys.kRoomTransaction].value.id!,
     ).then((value)async {
       if(value != null && value.isNotEmpty){
         for(Map<String,dynamic> element in value){
-          userActivity.value.add(UserActivity.fromJson(element));
-          if(await packageIsReturned(element[UserActivityTable.activityId]) == false){
-            receivedPackagesView.value.add(UserActivity.fromJson(element));
-          }
-          //returnedPackages.value.add(UserActivity.fromJson(element));
+          receivedPackagesView.value.add(UserActivity.fromJson(element));
+          storedPackagesView.value.add(UserActivity.fromJson(element));
+          if(refresh==false) userActivity.value.add(UserActivity.fromJson(element));
         }
-      //  showSnackBar("Fetched Returned Packages : ${userActivity.value.length}", Get.context!);
-      }else{
-       // showSnackBar("FAILED: Fetch Returned Packages", Get.context!);
       }
     });
     updateUI();
+  }
+
+  Rx<Color> getSelectedPackageToReturn(UserActivity packageSelected){
+    if(receivedPackagesBuffer.value.contains(packageSelected)){
+      return ColorsManager.success.obs;
+    }
+    return ColorsManager.white.obs;
   }
 
   Future<bool> packageIsReturned(String packageId)async{
@@ -144,6 +151,15 @@ class PackageFormController extends GetxController{
         receivedPackagesView.value.add(element);
         userActivity.value.add(element);
       });
+      await SessionManagementRepository().createNewSessionActivity(
+          SessionActivity(
+              id: Uuid().v1().toString(),
+              sessionId: Get.find<SessionManager>().currentSession.value.id,
+              transactionId: element.activityId,
+              transactionType: LocalKeys.kStorePackage,
+              dateTime: DateTime.now().toIso8601String()
+          ).toJson()
+      );
 
     }
     //getUserActivity();
@@ -151,7 +167,6 @@ class PackageFormController extends GetxController{
     receivedPackagesBuffer.value.clear();
     updateUI();
     Get.find<GuestDashboardController>().updateUI();
-    //successAlert("Package Stored", LocalKeys.kSuccess.tr,context: Get.context!);
     Navigator.of(Get.overlayContext!).pop();
   }
 
@@ -162,7 +177,7 @@ class PackageFormController extends GetxController{
     package.dateTime = DateTime.now().toIso8601String();
     returnedPackagesBuffer.value.add(package);
     updateUI();
-    // showSnackBar("Returned package loaded to memory", Get.context!);
+    update();
   }
 
   Future<void> returnClientPackage()async{
@@ -173,6 +188,20 @@ class PackageFormController extends GetxController{
       ).then((value) {
         userActivity.value.add(package);
       });
+      await UserActivityRepository().deleteUserActivity(
+          package.toJson(),
+          tableName: ReceivedPackagesTable.tableName
+      );
+
+      await SessionManagementRepository().createNewSessionActivity(
+          SessionActivity(
+            id: Uuid().v1().toString(),
+            sessionId: Get.find<SessionManager>().currentSession.value.id,
+            transactionId: package.activityId,
+            transactionType: LocalKeys.kReturnPackage,
+              dateTime: DateTime.now().toIso8601String()
+          ).toJson()
+      );
     }
     updateUI();
     Navigator.of(Get.overlayContext!).pop();
@@ -186,7 +215,8 @@ class PackageFormController extends GetxController{
     returningPackage.value = false;
   }
 
-  returnPackage(){
+  returnPackage()async{
+    await getStoredPackages(refresh: true);
     receivingPackage.value = false;
     returningPackage.value = true;
   }

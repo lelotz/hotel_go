@@ -5,6 +5,7 @@ import 'package:hotel_pms/app/data/models_n/client_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
+import 'package:hotel_pms/app/modules/guest_dashboard/controller/guest_dashboard_controller.dart';
 import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_data_controller.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
@@ -37,6 +38,7 @@ class PaymentController extends GetxController {
   ClientUser clientUser = ClientUser();
 
   PaymentDataController payDataController = Get.find<PaymentDataController>();
+  GuestDashboardController guestDashboardController = Get.find<GuestDashboardController>();
 
   List<OtherTransactions> laundryTransactions = [];
   List<OtherTransactions> roomServiceTransactions = [];
@@ -367,6 +369,8 @@ class PaymentController extends GetxController {
         break;
 
     }
+    await guestDashboardController.getUserActivity();
+    guestDashboardController.update();
     Navigator.of(Get.overlayContext!).pop();
     Get.delete<PaymentController>();
   }

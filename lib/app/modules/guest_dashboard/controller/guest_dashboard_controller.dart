@@ -24,6 +24,7 @@ import '../widgets/app_forms/dialog_forms.dart';
 class GuestDashboardController extends GetxController{
   Logger logger = AppLogger.instance.logger;
   PaymentDataController paymentDataController = Get.put(PaymentDataController());
+  HomepageController homepageController = Get.find<HomepageController>();
   RoomData roomData = Get.find<HomepageController>().selectedRoomData.value;
   Rx<RoomData> selectedRoom = Rx<RoomData>(RoomData());
   Rx<AdminUser> loggedInUser = Get.find<AuthController>().adminUser;
@@ -179,11 +180,9 @@ class GuestDashboardController extends GetxController{
             for (Map<String, dynamic> element in response) {
               userActivity.value.add(UserActivity.fromJson(element));
             }
-            // showSnackBar("Fetched UserActivity", Get.context!);
-          }else{
-            showSnackBar("FAILED TO FETCH UserActivity", Get.context!);
           }
-    });
+      });
+
   }
 
   Future<void> receiveRoomKey()async{

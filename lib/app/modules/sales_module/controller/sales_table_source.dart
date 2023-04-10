@@ -12,7 +12,7 @@ class SalesTableSource extends DataGridSource{
     buildPaginatedDataGridRows();
     print('paginatedSalesCount${salesController.paginatedCollectedPayments.value.length}');
   }
-  SalesController salesController = Get.put(SalesController(),permanent: true);
+  SalesController salesController = Get.find<SalesController>();
 
   List<DataGridRow> dataGridRows = [];
 
@@ -47,7 +47,7 @@ class SalesTableSource extends DataGridSource{
   Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
     int startIndex = newPageIndex * rowsPerPage;
     int endIndex = startIndex + rowsPerPage;
-    if (startIndex < salesController.collectedPayments.value.length && endIndex <= salesController.collectedPayments.value.length) {
+    if (startIndex < salesController.collectedPayments.value.length && endIndex <= salesController.collectedPayments.value.length && startIndex >=0 && endIndex >=0) {
       salesController.paginatedCollectedPayments.value =
           salesController.collectedPayments.value.getRange(startIndex, endIndex).toList(growable: false);
       buildPaginatedDataGridRows();

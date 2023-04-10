@@ -23,48 +23,55 @@ class StorePackageForm extends GetView<PackageFormController> {
     return GetBuilder<PackageFormController>(
       init: PackageFormController(),
         builder: (controller)=>Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            /// Dialog Form Header
-            /// Includes Room Number, Status, Guest Name, and Form Title
-            // dialogFormHeader(LocalKeys.kStorePackageForm.tr),
-            buildFormHeader(LocalKeys.kStorePackageForm.tr),
-            SizedBox(height: const Size.fromHeight(20).height,),
-
-
-            /// Receive and Return Buttons
-            Obx(()=>Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    DecoratedTextButton(
-                      buttonLabel: '${LocalKeys.kReceive.tr} ${LocalKeys.kItem.tr}',
-                      onPressed: controller.receivePackage,
-                      backgroundColor: controller.receivingPackage.value ? Colors.blue : Colors.white24,
-                    ),
-                    DecoratedTextButton(
-                      buttonLabel: '${LocalKeys.kReturn.tr} ${LocalKeys.kItem.tr}',
-                      onPressed: controller.returnPackage,
-                      backgroundColor: controller.returningPackage.value ? Colors.blue:Colors.white24 ,
-                    ),
-                  ],
-                ),
+                /// Dialog Form Header
+                /// Includes Room Number, Status, Guest Name, and Form Title
+                // dialogFormHeader(LocalKeys.kStorePackageForm.tr),
+                buildFormHeader(LocalKeys.kStorePackageForm.tr),
                 SizedBox(height: const Size.fromHeight(20).height,),
-                BigText(text: controller.receivingPackage.value ? "${LocalKeys.kStore.tr} ${LocalKeys.kItems.tr}" : "${LocalKeys.kItems.tr} ${LocalKeys.kStored.tr} "),
-                thinDivider()
+
+
+                /// Receive and Return Buttons
+                Obx(()=>Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        DecoratedTextButton(
+                          buttonLabel: '${LocalKeys.kReceive.tr} ${LocalKeys.kItem.tr}',
+                          onPressed: controller.receivePackage,
+                          backgroundColor: controller.receivingPackage.value ? Colors.blue : Colors.white24,
+                        ),
+                        DecoratedTextButton(
+                          buttonLabel: '${LocalKeys.kReturn.tr} ${LocalKeys.kItem.tr}',
+                          onPressed: ()async{controller.returnPackage();},
+                          backgroundColor: controller.returningPackage.value ? Colors.blue:Colors.white24 ,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: const Size.fromHeight(20).height,),
+                    BigText(text: controller.receivingPackage.value ? "${LocalKeys.kStore.tr} ${LocalKeys.kItems.tr}" : "${LocalKeys.kItems.tr} ${LocalKeys.kStored.tr} : ${controller.receivedPackagesView.value.length}"),
+                    thinDivider()
+                  ],
+                ),),
+
+                /// Input Stored Items
+                Obx(()=>controller.receivingPackage.value ? InputPackagesToStore(formKey: packageStorageFormKey,): SizedBox(height: const Size.fromHeight(20).height,),),
+
+                /// Display Stored Items
+                Obx(()=> controller.receivingPackage.value ? controller.receivedPackagesBufferCount > 0 ? const DisplayNewPackageBuffer():SizedBox() : const DisplayStoredItems(),),
+
+
+
               ],
-            ),),
-
-            /// Input Stored Items
-            Obx(()=>controller.receivingPackage.value ?InputPackagesToStore(formKey: packageStorageFormKey,): SizedBox(height: const Size.fromHeight(20).height,),),
-
-            /// Display Stored Items
-            Obx(()=> controller.receivingPackage.value ? controller.receivedPackagesBufferCount > 0 ? const DisplayNewPackageBuffer():SizedBox() : const DisplayStoredItems(),),
-
-            /// Key Action and Stored Item Button
+            ),
+            /// Stored Item Button
             Align(
               alignment: Alignment.bottomCenter,
               child: Column(
@@ -88,10 +95,8 @@ class StorePackageForm extends GetView<PackageFormController> {
                         /// Store Added Packages to Database
                         Obx(()=>ElevatedButton(
                             onPressed: ()async{
-                              if(packageStorageFormKey.currentState!.validate()){
-                                controller.receivingPackage.value ? await controller.storeClientPackage():
-                                await controller.returnClientPackage();
-                              }
+                              controller.receivingPackage.value ? await controller.storeClientPackage():
+                              await controller.returnClientPackage();
                             },
                             child: SmallText(text: controller.receivingPackage.value ?
                             '${LocalKeys.kReceive.tr} ${LocalKeys.kItem.tr}' :
@@ -105,7 +110,6 @@ class StorePackageForm extends GetView<PackageFormController> {
                 ],
               ),
             ),
-
           ],
         ));
   }

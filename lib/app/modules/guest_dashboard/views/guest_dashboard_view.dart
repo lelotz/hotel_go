@@ -33,6 +33,7 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
           appBar: AppBar(
             leading: InkWell(
               onTap: ()async{
+                controller.homepageController.loadRoomData();
                 Get.to(()=>HomePageView());
                 //Get.reset();
                 await deleteRoomControllers();
@@ -206,7 +207,10 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                                  Obx(() => BigText(text: "${LocalKeys.kGuestActivity.tr} : ${controller.userActivity.value.length}")),
                                  SizedBox(width: const Size.fromWidth(8).width,),
                                  IconButton(
-                                     onPressed: controller.onInit, icon: const Icon(Icons.refresh_rounded))
+                                     onPressed: ()async{
+                                       await controller.getUserActivity();
+
+                                     }, icon: const Icon(Icons.refresh_rounded))
                                ],
                              ),
                              SizedBox(

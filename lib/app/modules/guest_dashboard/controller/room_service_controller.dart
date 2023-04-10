@@ -95,8 +95,8 @@ class RoomServiceFormController extends GetxController {
             activityValue: roomService.grandTotal,
             unit: '-',
             dateTime: DateTime.now().toIso8601String(),
-            activityStatus: 'SUCCESS',
-            description: LocalKeys.kRoomService,
+            activityStatus: LocalKeys.kRoomService,
+            description: roomService.transactionNotes,
             roomTransactionId: payDataController.roomTransaction.value.id,
           );
           await UserActivityRepository().createUserActivity(roomServiceActivity.toJson());
