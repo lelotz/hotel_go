@@ -46,6 +46,13 @@ class AuthController extends GetxController{
   ];
   AuthController({this.isTest});
 
+  @override
+  onInit(){
+    super.onInit();
+    fullNameCtrl.text = 'Dereck Olomi';
+    adminUserPasswordCtrl.text = '00001WH';
+  }
+
 
   @override
   dispose(){
@@ -75,6 +82,7 @@ class AuthController extends GetxController{
 
 
   Future<bool> validateLoginAttempt()async{
+
     await AdminUserRepository().getAdminUserById(adminUserPasswordCtrl.text).then((value) {
       if (value != null && value.isNotEmpty) {
         adminUser.value = AdminUser.fromJson(value[0]);

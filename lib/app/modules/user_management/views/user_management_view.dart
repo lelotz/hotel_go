@@ -11,6 +11,7 @@ import 'package:hotel_pms/widgets/text/big_text.dart';
 
 import '../../../../widgets/buttons/my_outlined_button.dart';
 import '../../../../widgets/dialogs/dialod_builder.dart';
+import '../../../../widgets/text/small_text.dart';
 import '../../../../widgets/text/title_subtitle.dart';
 
 class UserManagementView extends GetView<UserManagementController> {
@@ -52,31 +53,28 @@ class UserManagementView extends GetView<UserManagementController> {
                               ],
                             ),
                             thinDivider(),
-                            const LabeledText(title: "All Employees", subtitle: '10',dividerHeight: 6,switchProperties: true,),
-                            InkWell(
-                              onTap: (){},
-                                child: Row(
-                                  children: const [
-                                    LabeledText(title: "Receptionists", subtitle: '3',dividerHeight: 6,switchProperties: true),
-                                  ],
-                                )
-                            ),
-                            InkWell(
-                                onTap: (){},
-                                child: Row(
-                                  children: const [
-                                    LabeledText(title: "Housekeeping", subtitle: '3',dividerHeight: 6,switchProperties: true),
-                                  ],
-                                )
-                            ),
-                            InkWell(
-                                onTap: (){},
-                                child: Row(
-                                  children: const [
-                                    LabeledText(title: "Restaurant", subtitle: '4',dividerHeight: 6,switchProperties: true),
-                                  ],
-                                )
-                            ),
+                            Expanded(
+                              child: ListView(
+                                physics: AlwaysScrollableScrollPhysics(),
+                                children: [
+                                  ListTile(
+                                    leading: Icon(Icons.account_balance),
+                                    title: SmallText(text: 'Admin',),
+                                    subtitle: Obx(() => SmallText(text: controller.adminEmployees.value.length.toString(),fontStyle: FontStyle.italic,fontWeight: FontWeight.bold,)),
+                                  ),
+                                  ListTile(
+                                    leading: Icon(Icons.handshake_outlined),
+                                    title: SmallText(text: 'Receptionists',),
+                                    subtitle: Obx(() => SmallText(text: controller.receptionEmployees.value.length.toString(),fontStyle: FontStyle.italic,fontWeight: FontWeight.bold,)),
+                                  ),
+                                  ListTile(
+                                    leading: Icon(Icons.house_sharp),
+                                    title: SmallText(text: 'Housekeeping',),
+                                    subtitle: Obx(() => SmallText(text: controller.housekeepingEmployees.value.length.toString(),fontStyle: FontStyle.italic,fontWeight: FontWeight.bold,)),
+                                  ),
+                                ],
+                              ),
+                            )
 
                           ],
                         ),
@@ -95,9 +93,6 @@ class UserManagementView extends GetView<UserManagementController> {
                           crossAxisAlignment: CrossAxisAlignment.center,
 
                           children: [
-                            /// Title
-                            const BigText(text: "Manage employees"),
-                            SizedBox(height: const Size.fromHeight(20).height,),
 
                             /// Actions & Search Bar
                             Row(
@@ -108,21 +103,6 @@ class UserManagementView extends GetView<UserManagementController> {
                                   },
                                   width: 120,height: 40,
                                   backgroundColor: ColorsManager.primary,borderColor: ColorsManager.primary,
-                                ),
-                                MyOutlinedButton(
-                                  text: "Settings", onClick: (){},
-                                  backgroundColor: ColorsManager.flutterGrey,textColor: ColorsManager.darkGrey,currentTextColor: ColorsManager.darkGrey,borderColor: ColorsManager.primary,
-                                  height: 40,width: 100,borderRadius: AppBorderRadius.radius8,
-                                ),
-                                MyOutlinedButton(
-                                  text: "Settings", onClick: (){},
-                                  backgroundColor: ColorsManager.flutterGrey,textColor: ColorsManager.darkGrey,currentTextColor: ColorsManager.darkGrey,borderColor: ColorsManager.primary,
-                                  height: 40,width: 100,borderRadius: AppBorderRadius.radius8,
-                                ),
-                                MyOutlinedButton(
-                                  text: "Settings", onClick: (){},
-                                  backgroundColor: ColorsManager.flutterGrey,textColor: ColorsManager.darkGrey,currentTextColor: ColorsManager.darkGrey,borderColor: ColorsManager.primary,
-                                  height: 40,width: 100,borderRadius: AppBorderRadius.radius8,
                                 ),
                                 SizedBox(
                                   width: 300,
@@ -148,22 +128,22 @@ class UserManagementView extends GetView<UserManagementController> {
                                 showCheckboxColumn: true,
                                 columns: const [
                                   DataColumn(label: BigText(text: '#',)),
-                                  DataColumn(label: BigText(text: 'full name',)),
-                                  DataColumn(label: BigText(text: 'position',)),
-                                  DataColumn(label: BigText(text: 'rooms sold',)),
-                                  DataColumn(label: BigText(text: 'phone',)),
-                                  DataColumn(label: BigText(text: 'id',)),
+                                  DataColumn(label: BigText(text: 'Full name',)),
+                                  DataColumn(label: BigText(text: 'Position',)),
+                                  DataColumn(label: BigText(text: 'Rooms sold/Laundry Washed',)),
+                                  DataColumn(label: BigText(text: 'Phone',)),
+                                  DataColumn(label: BigText(text: 'Id',)),
 
                                 ],
                                 rows: List<DataRow>.generate(controller.allEmployees.value.length, (index) {
                                   return DataRow(
                                       cells: [
                                         DataCell(BigText(text: (index+1).toString(),)),
-                                        DataCell(BigText(text: controller.allEmployees.value[index].fullName!,)),
-                                        DataCell(BigText(text: controller.allEmployees.value[index].position!,)),
-                                        DataCell(BigText(text: controller.allEmployees.value[index].roomsSold.toString(),)),
-                                        DataCell(BigText(text: controller.allEmployees.value[index].phone!,)),
-                                        DataCell(BigText(text: controller.allEmployees.value[index].appId!,)),
+                                        DataCell(SmallText(text: controller.allEmployees.value[index].fullName!,)),
+                                        DataCell(SmallText(text: controller.allEmployees.value[index].position!,)),
+                                        DataCell(SmallText(text: controller.allEmployees.value[index].roomsSold.toString(),)),
+                                        DataCell(SmallText(text: controller.allEmployees.value[index].phone!,)),
+                                        DataCell(SmallText(text: controller.allEmployees.value[index].appId!,)),
                                       ]);
                                 }
                                 ),

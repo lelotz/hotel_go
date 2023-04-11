@@ -94,6 +94,7 @@ class SalesController extends GetxController {
 
   updateUI() {
     collectedPaymentsCount.value = collectedPayments.value.length;
+    collectedPayments.refresh();
     selectedFilters.refresh();
     selectedFiltersCount.value = selectedFilters.value.length;
     // update();
@@ -121,14 +122,16 @@ class SalesController extends GetxController {
 
 
 
-  clearFilters() {
+  clearFilters() async{
     startDate.value = DateTime.now();
     endDate.value = startDate.value;
     selectedFilters.value.clear();
     tableInitialized.value = false;
-    getAllPaymentTransactions();
     categoryDropdownIsReset.value = true;
     searchCategory.value = LocalKeys.kSelectSearchCategory;
+    await getAllPaymentTransactions();
+
+
   }
 
   validateSearchCategory(String category) {
@@ -179,12 +182,13 @@ class SalesController extends GetxController {
           collectedPayments.value.add(CollectPayment.fromJson(element));
         }
         updateUI();
-        tableInitialized.value = true;
+
       }
       filteredResultsCount.value = value?.length ?? 0;
       filterResultStatus.value =
-          "Matches : ${value!.length} Displaying : ${collectedPaymentsCount.value}";
+          "Matches : ${value!.length} Displaying : ${collectedPayments.value.length}";
     });
+    tableInitialized.value = true;
   }
 
   getTodaysTransactions() async {
@@ -218,6 +222,7 @@ class SalesController extends GetxController {
 
   filterCollectedPaymentsByCategory() async {
     tableInitialized.value = false;
+    collectedPayments.value.clear();
     String sql =
         " ${searchCategory.value} = ? AND ${CollectedPaymentsTable.dateTime} BETWEEN ? AND ? ";
     List<Object?> whereArgs = [
@@ -236,7 +241,7 @@ class SalesController extends GetxController {
             whereArgs: whereArgs)
         .then((value) {
       if (value != null && value.isNotEmpty) {
-        collectedPayments.value.clear();
+
         collectedPayments.value = CollectPayment().fromJsonList(value);
         updateUI();
         logger.v({
@@ -245,7 +250,7 @@ class SalesController extends GetxController {
           'data_length': collectedPayments.value.length,
           'whereArgs': whereArgs
         });
-        tableInitialized.value = true;
+
       } else {
         logger.w({
           'title': 'No results from Category Filter query',
@@ -253,14 +258,15 @@ class SalesController extends GetxController {
           'whereArgs': whereArgs
         });
       }
-      filterResultStatus.value =
-          "Matches :${value!.length} Displaying : ${collectedPaymentsCount.value}";
+      tableInitialized.value = true;      filterResultStatus.value =
+          "Matches :${value!.length} Displaying : ${collectedPayments.value.length}";
     });
     // setUpTableSource();
   }
 
   filterCollectedPaymentsBlindSearch() async {
     tableInitialized.value = false;
+    collectedPayments.value.clear();
     String sql =
         " ? IN(${CollectedPaymentsTable.clientName},${CollectedPaymentsTable.service},${CollectedPaymentsTable.employeeName},${CollectedPaymentsTable.roomNumber},${CollectedPaymentsTable.roomTransactionId},${CollectedPaymentsTable.payMethod},${CollectedPaymentsTable.amountCollected},${CollectedPaymentsTable.id},${CollectedPaymentsTable.clientId},${CollectedPaymentsTable.employeeId}) AND ${CollectedPaymentsTable.dateTime} BETWEEN ? AND ? ";
     List<Object?> whereArgs = [
@@ -277,7 +283,7 @@ class SalesController extends GetxController {
             whereArgs: whereArgs)
         .then((value) {
       if (value != null && value.isNotEmpty) {
-        collectedPayments.value.clear();
+
         collectedPayments.value = CollectPayment().fromJsonList(value);
         filteredResultsCount.value = value.length;
         updateUI();
@@ -287,7 +293,7 @@ class SalesController extends GetxController {
           'data_length': collectedPayments.value.length,
           'whereArgs': whereArgs
         });
-        tableInitialized.value = true;
+
       } else {
         logger.w({
           'title': 'No results from blind query',
@@ -295,6 +301,7 @@ class SalesController extends GetxController {
           'whereArgs': whereArgs
         });
       }
+      tableInitialized.value = true;
 
       filterResultStatus.value =
           "Matches : ${value!.length} Displaying : ${collectedPaymentsCount.value}";

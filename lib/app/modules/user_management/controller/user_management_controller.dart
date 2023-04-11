@@ -3,13 +3,18 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
+import 'package:hotel_pms/core/values/app_constants.dart';
 
+import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/admin_user_repo.dart';
 
 class UserManagementController extends GetxController{
 
   TextEditingController searchController = TextEditingController();
   Rx<List<AdminUser>> allEmployees = Rx<List<AdminUser>>([]);
+  Rx<List<AdminUser>> receptionEmployees = Rx<List<AdminUser>>([]);
+  Rx<List<AdminUser>> housekeepingEmployees = Rx<List<AdminUser>>([]);
+  Rx<List<AdminUser>> adminEmployees = Rx<List<AdminUser>>([]);
 
   @override
   void onReady() async{
@@ -19,6 +24,9 @@ class UserManagementController extends GetxController{
 
   updateUI(){
     allEmployees.refresh();
+    receptionEmployees.refresh();
+    housekeepingEmployees.refresh();
+    adminEmployees.refresh();
   }
 
   Future<void> getAllAdminUsers()async{
@@ -31,9 +39,21 @@ class UserManagementController extends GetxController{
         }
       }
     });
-
+    sortEmployees();
     updateUI();
 
+  }
+
+  sortEmployees(){
+    for(AdminUser employee in allEmployees.value){
+      if(employee.position == AppConstants.userRoles[1]){
+        adminEmployees.value.add(employee);
+      }else if (employee.position == AppConstants.userRoles[300]){
+        receptionEmployees.value.add(employee);
+      }else if(employee.position ==  AppConstants.userRoles[600]){
+        housekeepingEmployees.value.add(employee);
+      }
+    }
   }
 
 }

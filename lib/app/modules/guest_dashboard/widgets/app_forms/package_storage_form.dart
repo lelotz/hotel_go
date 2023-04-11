@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/core/services/data_validation.dart';
+import 'package:hotel_pms/core/utils/useful_math.dart';
 import 'package:hotel_pms/widgets/forms/form_header.dart';
+import 'package:hotel_pms/widgets/images/display_image.dart';
 import '../../../../../core/resourses/color_manager.dart';
+import '../../../../../core/values/assets.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/buttons/decorated_text_button.dart';
 import '../../../../../widgets/inputs/text_field_input.dart';
@@ -56,7 +59,7 @@ class StorePackageForm extends GetView<PackageFormController> {
                       ],
                     ),
                     SizedBox(height: const Size.fromHeight(20).height,),
-                    BigText(text: controller.receivingPackage.value ? "${LocalKeys.kStore.tr} ${LocalKeys.kItems.tr}" : "${LocalKeys.kItems.tr} ${LocalKeys.kStored.tr} : ${controller.receivedPackagesView.value.length}"),
+                    // BigText(text: controller.receivingPackage.value ? "${LocalKeys.kStore.tr} ${LocalKeys.kItems.tr}" : "${LocalKeys.kItems.tr} ${LocalKeys.kStored.tr} : ${controller.receivedPackagesView.value.length}"),
                     thinDivider()
                   ],
                 ),),
@@ -65,7 +68,7 @@ class StorePackageForm extends GetView<PackageFormController> {
                 Obx(()=>controller.receivingPackage.value ? InputPackagesToStore(formKey: packageStorageFormKey,): SizedBox(height: const Size.fromHeight(20).height,),),
 
                 /// Display Stored Items
-                Obx(()=> controller.receivingPackage.value ? controller.receivedPackagesBufferCount > 0 ? const DisplayNewPackageBuffer():SizedBox() : const DisplayStoredItems(),),
+                Obx(()=> controller.receivingPackage.value ?  DisplayNewPackageBuffer() : const DisplayStoredItems(),),
 
 
 
@@ -185,7 +188,9 @@ class InputPackagesToStore extends GetView<PackageFormController> {
 
 class DisplayNewPackageBuffer extends GetView<PackageFormController>{
 
-  const DisplayNewPackageBuffer({Key? key}): super(key:key);
+  DisplayNewPackageBuffer({Key? key}): super(key:key);
+
+  final int assetIndex = random(0, Assets.newPackageIllustrations.length);
 
   @override
   Widget build(BuildContext context){
@@ -194,7 +199,7 @@ class DisplayNewPackageBuffer extends GetView<PackageFormController>{
         builder: (controller)=>
         Obx(() =>  SizedBox(
           height: const Size.fromHeight(320).height,
-          child: controller.receivedPackagesBuffer.value.isNotEmpty ? GridView(
+          child: controller.receivedPackagesBuffer.value.length > 0 ? GridView(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               childAspectRatio: 2,
@@ -215,7 +220,7 @@ class DisplayNewPackageBuffer extends GetView<PackageFormController>{
                 ));
               });
             }),
-          ): const Center(child: BigText(text: '',),),
+          ) : displayImage(asset: Assets.newPackageIllustrations[assetIndex],statement: 'Fill form to get started')
         )))
     ;
   }

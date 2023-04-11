@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
+import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/admin_user_repo.dart';
@@ -20,7 +21,14 @@ class CreateUserController extends GetxController{
   //UserManagementController userManagementController = Get.find<UserManagementController>();
   Rx<bool> userSuccessfullyCreated = false.obs;
   Rx<bool> initiatedUserCreation = false.obs;
-  List<String> userPositions = ["Receptionist","Admin",LocalKeys.kHouseKeeping,"Accounting","Manager"];
+  List<String> userPositions = [
+    AppConstants.userRoles[1]!,
+    AppConstants.userRoles[200]!,
+    AppConstants.userRoles[300]!,
+    AppConstants.userRoles[400]!,
+    AppConstants.userRoles[500]!,
+    AppConstants.userRoles[600]!,
+  ];
 
   Future<void> createNewEmployee({bool isNewAdmin=false})async{
     initiatedUserCreation.value = true;

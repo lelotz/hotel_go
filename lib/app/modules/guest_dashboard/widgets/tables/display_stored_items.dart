@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hotel_pms/widgets/icons/app_icon.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
+import '../../../../../core/values/assets.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/text/big_text.dart';
 import 'package:get/get.dart';
@@ -60,7 +61,18 @@ class DisplayStoredItems extends GetView<PackageFormController> {
                       );
                     });
                   }),
-                ): const Center(child: BigText(text: 'No Packages Stored',),),
+                ): Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(image: AssetImage(Assets.kEmptyBox),fit: BoxFit.contain)
+                      ),
+                    ),
+                    Center(child: SmallText(text: 'No Packages Stored',),),
+                  ],
+                ),
               )),
             ],
           ),

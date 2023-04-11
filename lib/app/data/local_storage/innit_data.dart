@@ -61,6 +61,14 @@ List<AdminUser> initAdminUsers = [
     roomsSold: 0,
     status: 'ENABLED',
   ),
+  AdminUser(
+    appId: "00002WH",
+    fullName: "Housekeeper Example",
+    position: AppConstants.userRoles[600],
+    phone: "0755148965",
+    roomsSold: 0,
+    status: 'ENABLED',
+  ),
   // AdminUser(
   //   appId: "00002WH",
   //   fullName: "Asha Lloyd",

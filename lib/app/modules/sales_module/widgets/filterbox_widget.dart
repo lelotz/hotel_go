@@ -123,7 +123,9 @@ class FiltersBox extends GetView<SalesController> {
                     ),
                     MyOutlinedButton(
                       text: LocalKeys.kClearFilters.tr,
-                      onClick: controller.clearFilters,
+                      onClick: ()async{
+                        await controller.clearFilters();
+                      },
                       width: 120,
                       height: 40,
                       backgroundColor: ColorsManager.primary,
@@ -134,7 +136,7 @@ class FiltersBox extends GetView<SalesController> {
                 ),
               ),
               expanded: Container(
-                color: ColorsManager.primaryAccent,
+                color: ColorsManager.primaryAccent.withOpacity(0.5),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -151,7 +153,7 @@ class FiltersBox extends GetView<SalesController> {
                                 hintText:
                                     '${LocalKeys.kEnter.tr} ${LocalKeys.kRoomNumber.tr}',
                                 textInputType: TextInputType.text,
-                                hintTextColor: ColorsManager.white,
+                                hintTextColor: ColorsManager.darkGrey
                               ),
                             ),
                           ],
@@ -165,7 +167,7 @@ class FiltersBox extends GetView<SalesController> {
                                 hintText:
                                     '${LocalKeys.kEnter.tr} ${LocalKeys.kClient.tr}',
                                 textInputType: TextInputType.text,
-                                hintTextColor: ColorsManager.white,
+                                hintTextColor: ColorsManager.darkGrey,
                               ),
                             ),
                           ],
@@ -184,7 +186,7 @@ class FiltersBox extends GetView<SalesController> {
                                 initialItem: "select",
                                 userBorder: true,
                                 borderRadius: 2,
-                                hintTextColor: ColorsManager.white,
+                                hintTextColor: ColorsManager.darkGrey,
                               )),
                         ),
                         buildFilterBoxItem(
@@ -199,7 +201,7 @@ class FiltersBox extends GetView<SalesController> {
                             initialItem: "select",
                             userBorder: true,
                             borderRadius: 2,
-                            hintTextColor: ColorsManager.white,
+                            hintTextColor: ColorsManager.darkGrey,
                           ),
                         ),
                       ],
@@ -216,7 +218,7 @@ class FiltersBox extends GetView<SalesController> {
                             initialItem: "select",
                             userBorder: true,
                             borderRadius: 2,
-                            hintTextColor: ColorsManager.white,
+                            hintTextColor: ColorsManager.darkGrey,
                           ),
                         ),
                         buildFilterBoxItem(
@@ -305,12 +307,15 @@ class FiltersBox extends GetView<SalesController> {
                             "",
                             MyOutlinedButton(
                               text: LocalKeys.kClearFilters.tr,
-                              onClick: controller.clearFilters,
+                              onClick: ()async{
+                                await controller.clearFilters();
+                              },
                               width: 70,
                               height: 40,
                               backgroundColor: ColorsManager.white,
                               textColor: ColorsManager.darkGrey,
                               borderColor: ColorsManager.primary,
+                              currentTextColor: ColorsManager.darkGrey,
                             ),
                             width: 250),
                       ],

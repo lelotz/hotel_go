@@ -110,6 +110,7 @@ class AppConstants {
     500: 'Hotel Owner',
     200:'Client',
     400:'Finance',
+    600: LocalKeys.kHouseKeeping,
     300:'Receptionist',
   };
 

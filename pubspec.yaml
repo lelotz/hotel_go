@@ -52,6 +52,7 @@ dependencies:
   bot_toast: ^4.0.3
   msix: ^3.9.2
   sqflite_common: ^2.4.3
+  flutter_logs: ^2.1.10
 
 
 dev_dependencies:

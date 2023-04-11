@@ -89,25 +89,26 @@ class ExcelWorkBook{
     sheet.getRangeByName('C6').setText('COLLECTED PAYMENT');
 
     sheet.getRangeByName('B7').setText(LocalKeys.kRooms);
-    sheet.getRangeByName('B8').setText('${LocalKeys.kRooms} ${LocalKeys.kDebts}');
+    sheet.getRangeByName('B8').setText(LocalKeys.kLaundry);
     sheet.getRangeByName('B9').setText(LocalKeys.kConference);
     sheet.getRangeByName('B10').setText('${LocalKeys.kConference} Advance');
     sheet.getRangeByName('B11').setText(LocalKeys.kRoomService);
-    sheet.getRangeByName('B12').setText(LocalKeys.kLaundry);
+    sheet.getRangeByName('B12').setText('${LocalKeys.kRooms} ${LocalKeys.kDebts}');
     sheet.getRangeByName('B13').setText(LocalKeys.kPettyCash);
 
     sheet.getRangeByName('B15').setText('TOTAL');
     sheet.getRangeByName('B15:C15').cellStyle.bold = true;
     sheet.getRangeByName('C15').cellStyle.numberFormat = '###,###,##0.00';
-    sheet.getRangeByName('C15').setFormula('=SUM(C7:C13)');
+    sheet.getRangeByName('C15').setFormula('=SUM(C7:C11)');
 
     sheet.getRangeByName('C7').setNumber(excelData[LocalKeys.kRooms]);
-    sheet.getRangeByName('C8').setNumber(excelData['${LocalKeys.kRooms} ${LocalKeys.kDebts}']);
-    sheet.getRangeByName('C8').cellStyle.fontColor = '#ff0000';
+    sheet.getRangeByName('C8').setNumber(excelData[LocalKeys.kLaundry]);
+
     sheet.getRangeByName('C9').setNumber(excelData[LocalKeys.kConference]);
     sheet.getRangeByName('C10').setNumber(excelData['${LocalKeys.kConference} Advance']);
     sheet.getRangeByName('C11').setNumber(excelData[LocalKeys.kRoomService]);
-    sheet.getRangeByName('C12').setNumber(excelData[LocalKeys.kLaundry]);
+    sheet.getRangeByName('C12').setNumber(excelData['${LocalKeys.kRooms} ${LocalKeys.kDebts}']);
+    sheet.getRangeByName('C12').cellStyle.fontColor = '#ff0000';
     sheet.getRangeByName('C13').setNumber(excelData[LocalKeys.kPettyCash]);
     sheet.getRangeByName('C13').cellStyle.fontColor = '#ff0000';
     sheet.getRangeByName('C7:C13').cellStyle.numberFormat = '###,###,##0.00';

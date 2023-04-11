@@ -121,12 +121,13 @@ class PackageFormController extends GetxController {
   }
 
   void bufferReturnedPackage(GuestPackage package) {
-    package.returnedEmployeeId = metaData.value[LocalKeys.kLoggedInUser].value.appId;
-    package.dateReturned = DateTime.now().toIso8601String();
 
     if(returnedPackagesBuffer.value.contains(package)){
       returnedPackagesBuffer.value.remove(package);
     }else{
+      package.returnedEmployeeId = metaData.value[LocalKeys.kLoggedInUser].value.appId;
+      package.dateReturned = DateTime.now().toIso8601String();
+
       returnedPackagesBuffer.value.add(package);
     };
     updateUI();

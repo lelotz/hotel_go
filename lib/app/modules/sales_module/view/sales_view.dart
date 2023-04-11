@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/sales_module/controller/sales_controller.dart';
 import 'package:hotel_pms/app/modules/sales_module/view/sales_table.dart';
+import 'package:hotel_pms/widgets/images/display_image.dart';
 import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import '../../../../core/resourses/size_manager.dart';
+import '../../../../core/utils/useful_math.dart';
+import '../../../../core/values/assets.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../../widgets/app_bars/global_app_bar.dart';
 import '../widgets/filterbox_widget.dart';
@@ -40,7 +43,13 @@ class SalesView extends GetView<SalesController> {
                     FiltersBox(),
                     SizedBox(height: const Size.fromHeight(20).height,),
                     /// Room Sales Table
-                   controller.initialized ? SalesTable() : loadingAnimation(actionStatement: 'Initializing')
+                    Obx(() =>    controller.initialized ?
+                            controller.collectedPayments.value.length > 0 ? SalesTable() :
+                            displayImage(
+                                asset: Assets.noDataIllustrations[random(0,Assets.noDataIllustrations.length)],
+                                fit: BoxFit.fitHeight,height: 400,borderRadius: 20) :
+                                loadingAnimation(actionStatement: 'Initializing')
+                    )
                   ],
                 ),
               ),
