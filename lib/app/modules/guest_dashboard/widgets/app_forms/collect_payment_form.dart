@@ -26,117 +26,113 @@ class CollectPaymentForm extends GetView<PaymentController> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
-             // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                buildFormHeader(LocalKeys.kCollectPaymentForm.tr),
-                SizedBox(height: const Size.fromHeight(20).height,),
-                Obx(() => Padding(
-               padding: const EdgeInsets.only(left: AppSize.size44),
-               child: Table(
-
-               children:  [
-
-                 TableRow(
-                     children: [
-                       SmallText(text: LocalKeys.kRoom.tr,),
-                       SmallText(text: LocalKeys.kRoomService.tr,),
-                       SmallText(text: LocalKeys.kLaundry.tr,),
-                       SmallText(text: LocalKeys.kTotal.tr,)
-                     ]
-                 ),
-                 TableRow(
-                     children:[
-                       BigText(text: controller.roomCost.toString(),),
-                       BigText(text: controller.roomServiceCost.value.toString(),),
-                       BigText(text: controller.laundryCost.value.toString(),),
-                       BigText(text: controller.grandTotal.value.toString(),)
-                     ]
-                 ),
-               ],
-       ),
-             ),),
-                SizedBox(height: const Size.fromHeight(50).height,),
-                Obx(() => Padding(
-                  padding: const EdgeInsets.only(left: AppSize.size44),
-                  child: Table(
-
-                    children:  [
-
-                      TableRow(
-                          children: [
-                            SmallText(text: LocalKeys.kBalance.tr,),
-                            SmallText(text: LocalKeys.kBalance.tr,),
-                            SmallText(text: LocalKeys.kBalance.tr,),
-                            SmallText(text: LocalKeys.kBalance.tr,)
-                          ]
-                      ),
-                      TableRow(
-                          children:[
-                            BigText(text: controller.roomBalance.value.toString(),),
-                            BigText(text: controller.roomServiceBalance.value.toString(),),
-                            Obx(() => BigText(text: controller.laundryBalance.value.toString(),),),
-                            BigText(text: controller.grandTotalOutstandingBalance.value.toString(),)
-                          ]
-                      ),
-                    ],
-                  ),
-                ),),
-                SizedBox(height: const Size.fromHeight(20).height,),
-
-
-                /// Collect Payment
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Column(
                   children: [
-                    Expanded(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(11),
-                          child: Obx(() => BigText(text: controller.collectedPaymentInput.value,))
-                        ),
-                      ),
-                    ),
+                    buildFormHeader(LocalKeys.kCollectPaymentForm.tr),
+                    SizedBox(height: const Size.fromHeight(20).height,),
+                    Obx(() => Padding(
+                      padding: const EdgeInsets.only(left: AppSize.size44),
+                      child: Table(
 
-                    SizedBox(width: const Size.fromWidth(10).width,),
+                   children:  [
 
-                    Expanded(
-                      child: Column(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SmallText(text: LocalKeys.kBillType.tr),
-                          SizedBox(width: const Size.fromWidth(10).width,),
-                          GeneralDropdownMenu(
-                              menuItems: AppConstants.serviceTypes.values.toList(),
-                              callback: controller.selectBill,
-                                initialItem: LocalKeys.kRoom.tr
+                     TableRow(
+                         children: [
+                           SmallText(text: LocalKeys.kRoom.tr,),
+                           SmallText(text: LocalKeys.kRoomService.tr,),
+                           SmallText(text: LocalKeys.kLaundry.tr,),
+                           SmallText(text: LocalKeys.kTotal.tr,)
+                         ]
+                     ),
+                     TableRow(
+                         children:[
+                           BigText(text: controller.roomCost.toString(),),
+                           BigText(text: controller.roomServiceCost.value.toString(),),
+                           BigText(text: controller.laundryCost.value.toString(),),
+                           BigText(text: controller.grandTotal.value.toString(),)
+                         ]
+                     ),
+                   ],
+       ),
+                    ),),
+                    SizedBox(height: const Size.fromHeight(50).height,),
+                    Obx(() => Padding(
+                      padding: const EdgeInsets.only(left: AppSize.size44),
+                      child: Table(
 
+                        children:  [
+
+                          TableRow(
+                              children: [
+                                SmallText(text: LocalKeys.kBalance.tr,),
+                                SmallText(text: LocalKeys.kBalance.tr,),
+                                SmallText(text: LocalKeys.kBalance.tr,),
+                                SmallText(text: LocalKeys.kBalance.tr,)
+                              ]
+                          ),
+                          TableRow(
+                              children:[
+                                BigText(text: controller.roomBalance.value.toString(),),
+                                BigText(text: controller.roomServiceBalance.value.toString(),),
+                                Obx(() => BigText(text: controller.laundryBalance.value.toString(),),),
+                                BigText(text: controller.grandTotalOutstandingBalance.value.toString(),)
+                              ]
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(width: const Size.fromWidth(10).width,),
-                    Expanded(
-                      child: Obx(() => GeneralDropdownMenu(
-                        menuItems: PaymentMethods.toList(),
-                        callback: controller.setPayMethod,
-                        initialItem: "Pay Method",
-                        borderColor:
-                        controller.payMethodStatus.value == ''
-                            ? ColorsManager.darkGrey
-                            : ColorsManager.error,
+                    ),),
 
-                      )),
-                    ),
+                    ],
+                  ),
+                SizedBox(height: const Size.fromHeight(20).height,),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: GeneralDropdownMenu(
+                                menuItems: AppConstants.serviceTypes.values.toList(),
+                                callback: controller.selectBill,
+                                initialItem: LocalKeys.kRoom.tr
 
+                            ),
+                          ),
+                          SizedBox(width: const Size.fromWidth(15).width,),
+                          Expanded(
+                            child: Obx(() => GeneralDropdownMenu(
+                              menuItems: PaymentMethods.toList(),
+                              callback: controller.setPayMethod,
+                              initialItem: "Pay Method",
+                              borderColor:
+                              controller.payMethodStatus.value == ''
+                                  ? ColorsManager.darkGrey
+                                  : ColorsManager.error,
+
+                            )),
+                          ),
+
+
+                        ],
+                      ),
+                    ),
+                    Card(
+                      child: Padding(
+                          padding: const EdgeInsets.all(11),
+                          child: Obx(() => BigText(text: controller.collectedPaymentInput.value,))
+                      ),
+                    ),
                   ],
                 ),
-                SizedBox(height: const Size.fromHeight(20).height,),
 
-            ///
-         ],
-        ),
+
+
+              ],
+            ),
 
             /// Save and Cancel Button
             Align(

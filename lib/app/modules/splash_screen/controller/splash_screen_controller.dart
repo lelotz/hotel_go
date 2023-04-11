@@ -21,7 +21,7 @@ class SplashScreenController extends GetxController{
     if(appDirectory.value != '') appDirectoryFound.value = true;
 
     if(appDirectoryFound.value){
-      Future.delayed(const Duration(seconds: 5), (){Get.to(()=>LandingPage());});
+      Future.delayed(const Duration(seconds: 2), (){Get.to(()=>LandingPage());});
 
     }
   }
