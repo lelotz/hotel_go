@@ -7,6 +7,7 @@ import 'package:hotel_pms/app/modules/user_management/views/user_management_view
 import 'package:hotel_pms/core/session_management/session_manager.dart';
 import '../../../core/resourses/color_manager.dart';
 import '../../../core/resourses/size_manager.dart';
+import '../../../core/values/app_constants.dart';
 import '../../../core/values/localization/local_keys.dart';
 import '../../../widgets/text/big_text.dart';
 import '../../../widgets/text/small_text.dart';
@@ -42,10 +43,6 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
           children: [
             ElevatedButton(
                 style:style,
-                onPressed: ()async{await logTest();},
-                child:  SmallText(text: 'LogTest',color: ColorsManager.grey1,)),
-            ElevatedButton(
-                style:style,
                 onPressed: (){Get.to(transition: Transition.noTransition,duration: const Duration(milliseconds: 500), ()=> SalesView());},
                 child:  SmallText(text: LocalKeys.kSales.tr,color: ColorsManager.grey1,)),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
@@ -54,7 +51,7 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
                 onPressed: (){Get.to(()=>const BookServiceView());},
                 child: SmallText(text: LocalKeys.kBookService.tr,color: ColorsManager.grey1,)),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
-            authController.adminUser.value.position == 'Admin' ? ElevatedButton(
+            authController.adminUser.value.position == AppConstants.userRoles[1] ? ElevatedButton(
                 style:style,
                 onPressed: (){Get.to(()=> const UserManagementView());},
                 child: SmallText(text: LocalKeys.kUserManagement.tr,color: ColorsManager.grey1,)): const SizedBox(),
@@ -62,7 +59,7 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
             const FormSelector(),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             const ReportSelector(),
-            SizedBox(width: const Size.fromWidth(AppSize.size12).width,),
+            SizedBox(width: const Size.fromWidth(36).width,),
 
 
           ],

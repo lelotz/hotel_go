@@ -18,6 +18,7 @@ class Assets {
   static const String kStorePackage1 = "${_kImages}woman_smile_pk.jpg";
   static const String kStorePackage2 = "${_kImages}woman_store_pg.jpeg";
   static const String kStorePackage3 = "${_kImages}woman_store_pg_2.png";
+  static const String kRoomService = "${_kImages}room_service.jpg";
 
   static const List<String> newPackageIllustrations = [kStorePackage,kStorePackage1,kStorePackage2,kStorePackage3];
   static const List<String> newLaundryIllustrations = [kClothesRope,kLaundryPole];

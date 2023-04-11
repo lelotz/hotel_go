@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/core/services/data_validation.dart';
+import 'package:hotel_pms/core/values/assets.dart';
 import 'package:hotel_pms/widgets/forms/form_header.dart';
+import 'package:hotel_pms/widgets/images/display_image.dart';
 import 'package:hotel_pms/widgets/inputs/text_field_input.dart';
 import 'package:hotel_pms/widgets/mydividers.dart';
 import '../../../../../core/resourses/color_manager.dart';
@@ -165,10 +167,6 @@ class DisplayRoomServiceBuffer extends GetView<RoomServiceFormController> {
                       });
                     }),
                   )
-                : const Center(
-                    child: BigText(
-                      text: '',
-                    ),
-                  ))));
+                : displayImage(asset: Assets.kRoomService))));
   }
 }

@@ -9,7 +9,6 @@ import 'package:logger/logger.dart';
 import '../../../../core/logs/logger_instance.dart';
 import '../../../../core/services/table_services.dart';
 import '../../../../core/values/localization/local_keys.dart';
-import '../../../../widgets/tables/syncfusion_table_source.dart';
 import '../../../data/local_storage/repository/admin_user_repo.dart';
 import '../../../data/local_storage/repository/collected_payments_repo.dart';
 import '../../../data/models_n/admin_user_model.dart';
@@ -123,6 +122,7 @@ class SalesController extends GetxController {
 
 
   clearFilters() async{
+    selectedFilters.value.clear();
     startDate.value = DateTime.now();
     endDate.value = startDate.value;
     selectedFilters.value.clear();

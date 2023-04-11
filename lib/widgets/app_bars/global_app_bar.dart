@@ -77,7 +77,8 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,
                 child: InkWell(
                   onTap: () {
                     buildDialog(context, '', AdminCardPopUp(),
-                        alignment: Alignment.topRight);
+                        alignment: Alignment.topRight,height: 175
+                    );
                   },
                   child: AdminUserCard(),
                 ),
