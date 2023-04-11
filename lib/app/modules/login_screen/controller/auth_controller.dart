@@ -46,12 +46,12 @@ class AuthController extends GetxController{
   ];
   AuthController({this.isTest});
 
-  @override
-  onInit(){
-    super.onInit();
-    fullNameCtrl.text = 'Dereck Olomi';
-    adminUserPasswordCtrl.text = '00001WH';
-  }
+  // @override
+  // onInit(){
+  //   super.onInit();
+  //   fullNameCtrl.text = 'Dereck Olomi';
+  //   adminUserPasswordCtrl.text = '00001WH';
+  // }
 
 
   @override
