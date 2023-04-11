@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:hotel_pms/app/modules/reports/view/report_selector.dart';
 import 'package:hotel_pms/app/modules/user_management/views/user_management_view.dart';
@@ -39,6 +40,10 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            ElevatedButton(
+                style:style,
+                onPressed: ()async{await logTest();},
+                child:  SmallText(text: 'LogTest',color: ColorsManager.grey1,)),
             ElevatedButton(
                 style:style,
                 onPressed: (){Get.to(transition: Transition.noTransition,duration: const Duration(milliseconds: 500), ()=> SalesView());},

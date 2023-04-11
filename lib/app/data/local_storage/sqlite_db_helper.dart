@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
+import 'package:hotel_pms/core/logs/local_logger.dart';
 import 'package:logger/logger.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:path/path.dart';
@@ -12,6 +13,7 @@ import 'innit_data.dart';
 
 class SqlDatabase{
   Logger logger = AppLogger.instance.logger;
+  LocalLogger Log = LocalLogger.instance;
   static const _dbName = "whitemark_pms.db";
   static const _dbVersion = 1;
 
@@ -125,13 +127,15 @@ class SqlDatabase{
     {
     List<Map<String,dynamic>>? result;
     Database? db = await instance.database;
+
     try{
       result =  readAll ? await db?.query(tableName!):
                           await db?.query(tableName!,where: where,whereArgs: whereArgs,orderBy: orderBy);
-      //if(tableName! == RoomsTable.tableName){ logger.i({'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,"tableName": tableName});}
 
     }catch(e){
-      logger.e({'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
+      Map<String,dynamic> errorInfo = {'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
+      logger.e(errorInfo,e.toString());
+      await Log.exportLog(data: errorInfo, error: e.toString());
     }
     //await db?.close();
 
@@ -149,7 +153,9 @@ class SqlDatabase{
       result = await db?.query(tableName!,where: where,whereArgs: whereArgs,orderBy: orderBy);
       //logger.i({'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result});
     }catch(e){
-      logger.e({'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
+      Map<String,dynamic> errorInfo = {'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
+      logger.e(errorInfo,e.toString());
+      await Log.exportLog(data: errorInfo, error: e.toString());
     }
     //await db?.close();
 
@@ -179,7 +185,9 @@ class SqlDatabase{
       result = await db?.update(tableName,row,where: where,whereArgs: whereArgs);
       //logger.i({'title': 'UPDATE DB','where':where,'whereArgs':whereArgs,'date': row,'response':result});
     }catch(e){
-      logger.e({'title': 'UPDATE','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
+      Map<String,dynamic> errorInfo = {'title': 'UPDATE','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
+      logger.e(errorInfo,e.toString());
+      await Log.exportLog(data: errorInfo, error: e.toString());
     }
     //await db?.close();
 
@@ -205,7 +213,9 @@ class SqlDatabase{
       result = deleteAll ? await db?.delete(tableName) ?? -1  : await db?.delete(tableName,where: where,whereArgs: whereArgs) ?? -1;
       //logger.i({'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result});
     }catch(e){
-      logger.e({'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName},e.toString());
+      Map<String,dynamic> errorInfo = {'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
+      logger.e(errorInfo,e.toString());
+      await Log.exportLog(data: errorInfo, error: e.toString());
 
     }
     //await db?.close();

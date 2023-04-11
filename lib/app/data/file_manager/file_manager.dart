@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
+
 import '../../../core/logs/logger_instance.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/utils/useful_math.dart';
@@ -54,10 +55,10 @@ class FileManager{
 
   }
 
-  Future<File> writeFile(List<int> bytes,{required String filePath,FileMode fileMode = FileMode.write})async{
+  Future<File> writeFile(List<int> bytes,{required String filePath,FileMode fileMode = FileMode.write,bool append=false})async{
     File file = File(filePath);
     try{
-      file = await file.writeAsBytes(bytes, flush: true,mode: FileMode.write);
+      file = await file.writeAsBytes(bytes, flush: true,mode: append ? FileMode.append : FileMode.write );
     }on PathNotFoundException catch(e) {
       logger.e({'':'writeFile','pathNotFound': filePath}, e);
     }catch (otherError){
@@ -72,10 +73,10 @@ class FileManager{
     return '${directory!.path}\\' ;
   }
 
-  File? getNewFile(String path){
-    File? file;
+  Future<File> getNewFile(String path)async{
+    late File file;
     try{
-      file = File(path);
+      file = await File(path).create(recursive: true);
     }catch (e){
       logger.e('',e);
     }
@@ -125,4 +126,14 @@ class FileManager{
     return data;
   }
 
+}
+
+Future<void> logTest ()async{
+  FileManager fileManager = FileManager();
+  String baseDirectory = await fileManager.directoryPath.then((value) => value!.path);
+  String logFileName = 'roomTransactions_'+ extractDate(DateTime.now())+'.txt';
+  String logPath = 'Logs\\${extractDate(DateTime.now())}\\';
+  await fileManager.createFolder(logPath);
+  File currentLogFile = await fileManager.getNewFile(baseDirectory + logPath + logFileName);
+   await fileManager.writeFile(await currentLogFile.exists() ? '\nappednd'.codeUnits:'helloWorld'.codeUnits, filePath: currentLogFile.path,append: await currentLogFile.exists() ? true:false);
 }
