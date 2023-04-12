@@ -37,7 +37,6 @@ class HandoverReport extends GetView<ReportGeneratorController> {
   final GlobalKey<SfDataGridState> pettyCashTableKey = GlobalKey<SfDataGridState>();
 
 
-  // ReportGeneratorController reportGeneratorController = Get.put(ReportGeneratorController(),permanent: true);
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +121,7 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportGeneratorController>(
-        init: ReportGeneratorController(),
+        init: ReportGeneratorController(reportConfigs: Get.find<ReportGeneratorController>().reportConfigs),
         builder: (controller) => Card(
               child: Column(
                 children: [

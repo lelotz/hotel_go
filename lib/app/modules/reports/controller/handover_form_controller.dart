@@ -116,7 +116,7 @@ class ReportGeneratorController extends GetxController {
     if(reportConfigs !=null && reportConfigs!.keys.contains('endDate') && reportConfigs!.keys.contains('startDate')){
       isOneDayApart = isDateDifferenceLessOrEqualTo(
           DateTime.parse(reportConfigs!['endDate']),
-          DateTime.parse(reportConfigs!['startDate']),
+          DateTime.parse(reportConfigs! ['startDate']),
           1);
     }
 

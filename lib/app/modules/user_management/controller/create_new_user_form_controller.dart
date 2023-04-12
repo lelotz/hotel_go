@@ -33,7 +33,7 @@ class CreateUserController extends GetxController{
   Future<void> createNewEmployee({bool isNewAdmin=false})async{
     initiatedUserCreation.value = true;
     await AdminUserRepository().createAdminUser(AdminUser(
-      appId: newUserId.value,
+      appId: userIdController.text,
       fullName: fullNameController.text,
       phone: phoneController.text,
       position: newUserPosition.value,
