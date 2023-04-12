@@ -11,6 +11,8 @@ class GlobalCalculations {
   }
 }
 
+
+
 Map<String,dynamic> minAndMaxIntInList(List<int> intList){
   var largestValue = intList[0];
   var smallestValue = intList[0];

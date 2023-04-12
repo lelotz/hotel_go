@@ -100,12 +100,12 @@ class RoomServiceFormController extends GetxController {
             roomTransactionId: payDataController.roomTransaction.value.id,
           );
           await UserActivityRepository().createUserActivity(roomServiceActivity.toJson());
-          userActivity.value.add(roomServiceActivity);
         });
       });
     }
     receivedRoomServiceBuffer.value.clear();
     paymentController.calculateAllFees();
+    await Get.find<GuestDashboardController>().getUserActivity();
     Get.find<GuestDashboardController>().updateUI();
     updateUI();
   }

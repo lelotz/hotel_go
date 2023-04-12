@@ -167,9 +167,8 @@ class LaundryFormController extends GetxController {
             // roomTransaction.amountPaid = roomTransaction.amountPaid! + newLaundry.amountPaid!;
             roomTransaction.outstandingBalance =
                 roomTransaction.grandTotal! - roomTransaction.amountPaid!;
-            await RoomTransactionRepository()
-                .updateRoomTransaction(roomTransaction.toJson());
-            userActivity.value.add(laundryActivity);
+            await RoomTransactionRepository().updateRoomTransaction(roomTransaction.toJson());
+            // userActivity.value.add(laundryActivity);
             receivedLaundryView.value.add(newLaundry);
             Get.find<PaymentDataController>().getCurrentRoomTransaction();
             paymentController.calculateAllFees(isLaundryForm: true);
@@ -195,6 +194,7 @@ class LaundryFormController extends GetxController {
       receivedLaundryBuffer.value.clear();
       clearLaundryFormInputs();
       updateUI();
+      await Get.find<GuestDashboardController>().getUserActivity();
       Get.find<GuestDashboardController>().updateUI();
     }
   }
@@ -282,7 +282,7 @@ class LaundryFormController extends GetxController {
             unit: laundryObject.transactionNotes!.split(":")[0],
             dateTime: DateTime.now().toIso8601String(),
           );
-          userActivity.value.add(returnActivity);
+          // userActivity.value.add(returnActivity);
 
           await UserActivityRepository()
               .createUserActivity(returnActivity.toJson())
@@ -296,6 +296,8 @@ class LaundryFormController extends GetxController {
       showSnackBar("${laundryObject.transactionNotes}", Get.context!);
     }
     clearLaundryFormInputs();
+    await Get.find<GuestDashboardController>().getUserActivity();
+    Get.find<GuestDashboardController>().updateUI();
     Navigator.of(Get.overlayContext!);
     updateUI();
   }

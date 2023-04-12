@@ -88,6 +88,7 @@ class GuestDashboardController extends GetxController{
   void updateUI(){
     userActivityCount.value = userActivity.value.length;
     userActivity.refresh();
+   // userActivity.value = userActivity.value.reversed.toList();
   }
 
   void parseCheckInOutDate(){
@@ -179,7 +180,11 @@ class GuestDashboardController extends GetxController{
     await UserActivityRepository().getUserActivity(paymentDataController.roomTransaction.value.id!).then((response) {
           if(response != null) {
             for (Map<String, dynamic> element in response) {
+
               userActivity.value.add(UserActivity.fromJson(element));
+             //  userActivity.value = userActivity.value.reversed.toList();
+
+              userActivity.value.sort((a,b)=> DateTime.parse(b.dateTime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateTime!).millisecondsSinceEpoch));
             }
           }
       });
@@ -207,9 +212,25 @@ class GuestDashboardController extends GetxController{
         receiveKeyActivity.toJson()
     ).then((value) {
       userActivity.value.add(receiveKeyActivity);
+      userActivity.value.sort((a,b)=> DateTime.parse(b.dateTime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateTime!).millisecondsSinceEpoch));
+
       updateUI();
       // showSnackBar("RECEIVED KEY", Get.context!);
     });
+  }
+
+  List<UserActivity> sortUserActivity(List<UserActivity> userActivity){
+    List<UserActivity> sortedActivity = [];
+    DateTime now = DateTime.now();
+    DateTime yesterday = DateTime.now().add(Duration(days: -1));
+    DateTime tommorow = DateTime.now().add(Duration(days: 1));
+
+    now.millisecondsSinceEpoch.compareTo(yesterday.millisecondsSinceEpoch);
+
+
+
+
+    return sortedActivity;
   }
 
   Future<void> returnRoomKey()async{
@@ -229,6 +250,7 @@ class GuestDashboardController extends GetxController{
         returnKeyActivity.toJson()
     ).then((value) {
       userActivity.value.add(returnKeyActivity);
+      userActivity.value.sort((a,b)=> DateTime.parse(b.dateTime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateTime!).millisecondsSinceEpoch));
       updateUI();
       // showSnackBar("RETURNED KEY", Get.context!);
     });
