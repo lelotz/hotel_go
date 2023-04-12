@@ -138,20 +138,20 @@ class LandingPage extends StatelessWidget {
                   ),
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.only(
-                      left: AppPadding.padding40, right: AppPadding.padding40),
-                  child: ContainerTextButton(
-                      onClick: () {
-                        buildDialog(context, 'Create User', CreateUserForm(),
-                            width: 400,
-                            height: 600,
-                            alignment: Alignment.center);
-                      },
-                      text: 'CREATE USER',
-                      backgroundColor: ColorsManager.darkGrey,
-                      textColor: ColorsManager.darkGrey),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.only(
+                //       left: AppPadding.padding40, right: AppPadding.padding40),
+                //   child: ContainerTextButton(
+                //       onClick: () {
+                //         buildDialog(context, 'Create User', CreateUserForm(),
+                //             width: 400,
+                //             height: 600,
+                //             alignment: Alignment.center);
+                //       },
+                //       text: 'CREATE USER',
+                //       backgroundColor: ColorsManager.darkGrey,
+                //       textColor: ColorsManager.darkGrey),
+                // ),
               ],
             ),
           ),

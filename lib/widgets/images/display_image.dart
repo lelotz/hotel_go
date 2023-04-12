@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../text/small_text.dart';
 
-Widget displayImage({required String asset,double height=200,BoxFit fit = BoxFit.contain,double borderRadius=200,String statement=''}){
+Widget displayImage({required String asset,double height=200,BoxFit fit = BoxFit.contain,double borderRadius=20,String statement=''}){
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [

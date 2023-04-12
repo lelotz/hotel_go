@@ -45,7 +45,9 @@ class PackageFormController extends GetxController {
     receivedPackagesViewCount.value = receivedPackagesView.value.length;
     receivedPackagesBufferCount.value = receivedPackagesBuffer.value.length;
     returnedPackagesBufferCount.value = returnedPackagesBuffer.value.length;
-    returnedPackagesBufferCount.value = returnedPackagesBuffer.value.length;
+    receivedPackagesBuffer.refresh();
+    returnedPackagesBuffer.refresh();
+    receivedPackagesViewCount.refresh();
     guestDashboardController.updateUI();
 
 
@@ -127,8 +129,8 @@ class PackageFormController extends GetxController {
     }else{
       package.returnedEmployeeId = metaData.value[LocalKeys.kLoggedInUser].value.appId;
       package.dateReturned = DateTime.now().toIso8601String();
-
       returnedPackagesBuffer.value.add(package);
+
     };
     updateUI();
     update();

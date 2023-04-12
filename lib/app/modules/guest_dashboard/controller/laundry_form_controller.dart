@@ -89,6 +89,10 @@ class LaundryFormController extends GetxController {
     userActivityCount.value = userActivity.value.length;
     receivedLaundryViewCount.value = receivedLaundryView.value.length;
     receivedLaundryBufferCount.value = receivedLaundryBuffer.value.length;
+    receivedLaundryView.refresh();
+    receivedLaundryBuffer.refresh();
+    returnedLaundryBuffer.refresh();
+
   }
 
   selectHouseKeeper(String houseKeeper) {
@@ -129,7 +133,7 @@ class LaundryFormController extends GetxController {
     receivedLaundryBuffer.value.add(newLaundry);
 
     update();
-    receivedLaundryBuffer.refresh();
+    // receivedLaundryBuffer.refresh();
     updateUI();
   }
 
