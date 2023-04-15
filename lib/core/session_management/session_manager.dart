@@ -62,7 +62,6 @@ class SessionManager extends GetxController {
     if (rogueSessions.value.length > 0) {
       buildDialog(Get.context!, '', ConfirmCurrentSession(),
           backgroundColor: ColorsManager.transparent);
-      await updateRogueSessions(rogueSessions.value, userId);
       logger.i('Confirming current Session');
     } else {
       await setCurrentSession(userId: userId);
@@ -73,9 +72,15 @@ class SessionManager extends GetxController {
       {SessionTracker? fromExistingSession, String? userId}) async {
     if (fromExistingSession != null && fromExistingSession.id != null) {
       await createSession(existingSession: fromExistingSession.toJson(), isNewSession: false);
-    } else {
+      rogueSessions.value.remove(fromExistingSession);
+      await updateRogueSessions(rogueSessions.value, fromExistingSession.employeeId!);
+
+    } else if(userId!=null){
       await createSession(userId: userId);
+      await updateRogueSessions(rogueSessions.value, userId);
+
     }
+
     if (currentSession.value.sessionStatus != null &&
         currentSession.value.sessionStatus == SessionStatusTypes.instance.currentSession) {
       Get.to(() => HomePageView());

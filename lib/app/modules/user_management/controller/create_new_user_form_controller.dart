@@ -57,7 +57,7 @@ class CreateUserController extends GetxController{
   }
 
   encryptNewUserPassword()async{
-    await EncryptedDataRepository().createEncryptedData(EncryptedData(userId: newUserId.value,data: passWordController.text).toJson());
+    await EncryptedDataRepository().createEncryptedData(EncryptedData(userId: userIdController.text,data: passWordController.text).toJson());
   }
 
 }
