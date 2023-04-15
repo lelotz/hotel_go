@@ -31,7 +31,7 @@ Future<void> sessionManagerUnitTest()async{
         employeeId: '00001WH',
         dateCreated: dateTime,
       );
-      String sessionId = await sessionManager.createNewSession(sessionTracker.employeeId!) ?? '';
+      String sessionId = await sessionManager.validateNewSession(sessionTracker.employeeId!) ?? '';
        await SessionManagementRepository().getSessionTracker(sessionId).then((value) {
         if(value.isNotEmpty && value.length == 1 && value.first.sessionStatus==SessionStatusTypes.instance.currentSession) {
           createdSessionInStorage = value[0];

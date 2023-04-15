@@ -93,13 +93,13 @@ class UserActivityTableView extends GetView<GuestDashboardController> {
                       DataCell(
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: SmallText(text: controller.userActivity.value[index].description!),
+                          child: SmallText(text: controller.userActivity.value[index].description!.tr),
                         ),
                       ),
                       DataCell(
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: SmallText(text: controller.userActivity.value[index].unit!),
+                          child: SmallText(text: controller.userActivity.value[index].unit!.tr),
                         ),
                       ),
                       DataCell(

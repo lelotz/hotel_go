@@ -120,7 +120,7 @@ class CheckInFormController extends GetxController{
     int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType['VIP'] : AppConstants.roomType['STD'];
     roomCost.value = (stringToInt(nightsCtrl.text) ) * roomPrice;
     //roomCost.value = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType['VIP'] : AppConstants.roomType['STD'];
-    checkOutDate.value.add(Duration(days: stringToInt(nightsCtrl.text)));
+    checkOutDate.value = checkOutDate.value.add(Duration(days: stringToInt(nightsCtrl.text)));
     roomCost.refresh();
     update();
   }

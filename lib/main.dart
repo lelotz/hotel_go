@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
       getPages: AppPages.routes,
       navigatorObservers: [BotToastNavigatorObserver()],
       translations: Messages(),
-      locale: Get.locale,
+      locale: Messages.fallbackLocale,
       enableLog: true,
       initialBinding: SplashScreenBinding(),
       builder: (context, child) {

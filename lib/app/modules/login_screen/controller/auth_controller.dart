@@ -18,13 +18,12 @@ import '../../../data/local_storage/repository/user_activity_repo.dart';
 import '../../../routes/app_pages.dart';
 import '../../homepage_screen/views/homepage_view.dart';
 
-
-class AuthController extends GetxController{
-  SessionManager sessionController = Get.put(SessionManager(isTest: false),permanent: true);
+class AuthController extends GetxController {
+  SessionManager sessionController =
+      Get.put(SessionManager(isTest: false), permanent: true);
   TextEditingController adminUserPasswordCtrl = TextEditingController();
   TextEditingController fullNameCtrl = TextEditingController();
   Rx<AdminUser> adminUser = Rx<AdminUser>(AdminUser());
-
 
   Rx<String> authResult = Rx<String>('');
   Rx<String> logOutResult = Rx<String>('SUCCESS');
@@ -40,10 +39,8 @@ class AuthController extends GetxController{
   bool? isTest = false;
   Logger logger = AppLogger.instance.logger;
 
+  List<String> routes = [];
 
-  List<String> routes = [
-
-  ];
   AuthController({this.isTest});
 
   // @override
@@ -53,23 +50,24 @@ class AuthController extends GetxController{
   //   adminUserPasswordCtrl.text = '00001WH';
   // }
 
-
   @override
-  dispose(){
+  dispose() {
     super.dispose();
     adminUserPasswordCtrl.dispose();
     fullNameCtrl.dispose();
   }
 
-  getAuthorizedRoutes()async{
-    if(adminUser.value.position == AppConstants.userRoles[300]){
-      authorizedRoutes.value.addAll([Routes.HOME,Routes.SALES_SCREEN]);
-    }else{
+  getAuthorizedRoutes() async {
+    if (adminUser.value.position == AppConstants.userRoles[300]) {
+      authorizedRoutes.value.addAll([Routes.HOME, Routes.SALES_SCREEN]);
+    } else {
       authorizedRoutes.value.addAll([
-        Routes.HOME,Routes.SALES_SCREEN,
+        Routes.HOME,
+        Routes.SALES_SCREEN,
       ]);
     }
   }
+
   /// Authentication has 3 main steps
   ///
   /// 1. Fetch [AdminUser] by Name TODO: Change to by appId
@@ -80,16 +78,16 @@ class AuthController extends GetxController{
   /// 1. Create [UserActivity] for login attempt
   /// 2. Ensure [CurrentSessionTable] is empty before creating a new session.
 
-
-  Future<bool> validateLoginAttempt()async{
-
-    await AdminUserRepository().getAdminUserById(adminUserPasswordCtrl.text).then((value) {
+  Future<bool> validateLoginAttempt() async {
+    await AdminUserRepository()
+        .getAdminUserById(adminUserPasswordCtrl.text)
+        .then((value) {
       if (value != null && value.isNotEmpty) {
         adminUser.value = AdminUser.fromJson(value[0]);
         // adminUser.refresh();
       }
     });
-    if(adminUser.value.appId == null){
+    if (adminUser.value.appId == null) {
       authResult.value = 'Umekosea jina au password';
       return false;
     }
@@ -97,52 +95,48 @@ class AuthController extends GetxController{
     return true;
   }
 
-  Future<bool> loginUser()async{
-
+  Future<bool> loginUser() async {
     isLoading.value = true;
 
     await authenticateUser();
 
-    if(isAuthenticated.value) {
-      await sessionController.createNewSession(adminUser.value.appId!);
+    if (isAuthenticated.value) {
+      await sessionController.validateNewSession(adminUser.value.appId!);
       sessionTracker.value = sessionController.currentSession.value;
-
-    }else{
+    } else {
       logger.w({'failed to auth user': adminUser.value.toJson()});
     }
 
-    await createLoginAttemptActivity(adminUser.value, isAuthenticated.value);
-
     isLoading.value = false;
-
-    if(isTest == false && isAuthenticated.value) Get.to(()=>HomePageView());
-
     clearInputs();
     authResult.value = '';
 
     return isAuthenticated.value;
   }
 
-  clearInputs(){
+  clearInputs() {
     adminUserPasswordCtrl.clear();
     fullNameCtrl.clear();
   }
 
-  Future<void> authenticateUser()async{
-    await EncryptedDataRepository().getEncryptedDataByUserId(adminUser.value.appId!).then((value) async{
-      if(value != null && value.length == 1 && value.first['userId'] == adminUser.value.appId){
+  Future<void> authenticateUser() async {
+    await EncryptedDataRepository()
+        .getEncryptedDataByUserId(adminUser.value.appId!)
+        .then((value) async {
+      if (value != null &&
+          value.length == 1 &&
+          value.first['userId'] == adminUser.value.appId) {
         isAuthenticated.value = true;
         authResult.value = LocalKeys.kSuccess;
-      }else if(value != null && value.isEmpty){
+      } else if (value != null && value.isEmpty) {
         authResult.value = LocalKeys.kInvalidCredentials;
-        // logger.e({'failed to match encrypted data':'','toMatch':adminUser.value.appId,'given':value.first['userId']});
       }
     });
+
+    await createLoginAttemptActivity(adminUser.value, isAuthenticated.value);
   }
 
-
-
-  Future<void> logOutUser()async{
+  Future<void> logOutUser() async {
     hasInitiatedLogout.value = true;
     int? activityStatus = -1;
 
@@ -155,18 +149,20 @@ class AuthController extends GetxController{
     isLoggedOut.value = true;
     hasInitiatedLogout.value = false;
 
-    if(adminUser.value.appId != AdminUser().appId) {
+    if (adminUser.value.appId != AdminUser().appId) {
       logOutResult.value = "Error logging out";
       displayLogOutError.value = true;
       isLoggedOut.value = true;
     }
-    if(isTest == false) Get.to(() => LandingPage());
-
+    if (isTest == false) Get.to(() => LandingPage());
   }
 
-  Future<void> updateAdminUser()async{
-    if(sessionController.initialized && sessionController.currentSession.value.employeeId != null){
-      await AdminUserRepository().getAdminUserById(sessionController.currentSession.value.employeeId!).then((value) {
+  Future<void> updateAdminUser() async {
+    if (sessionController.initialized &&
+        sessionController.currentSession.value.employeeId != null) {
+      await AdminUserRepository()
+          .getAdminUserById(sessionController.currentSession.value.employeeId!)
+          .then((value) {
         if (value != null && value.isNotEmpty) {
           adminUser(AdminUser.fromJson(value[0]));
           adminUser.value = AdminUser.fromJson(value[0]);
@@ -176,27 +172,25 @@ class AuthController extends GetxController{
     }
   }
 
-  Future<int> createLoginAttemptActivity(AdminUser adminUser,bool wasSuccess)async{
+  Future<int> createLoginAttemptActivity(
+      AdminUser adminUser, bool wasSuccess) async {
     return await UserActivityRepository().createUserActivity(UserActivity(
-      activityId: const Uuid().v1(),
-      activityStatus: wasSuccess ? 'SUCCESSFUL' : 'ERROR',
-      activityValue: 0,
-      employeeId: adminUser.appId,
-      employeeFullName:adminUser.fullName ,
-      description: 'logInAttempt',
-      dateTime: DateTime.now().toIso8601String(),
-      guestId: '',
-      unit: ''
-    ).toJson());
+            activityId: const Uuid().v1(),
+            activityStatus: wasSuccess ? 'SUCCESSFUL' : 'ERROR',
+            activityValue: 0,
+            employeeId: adminUser.appId,
+            employeeFullName: adminUser.fullName,
+            description: 'logInAttempt',
+            dateTime: DateTime.now().toIso8601String(),
+            guestId: '',
+            unit: '')
+        .toJson());
   }
 
-
-
-
-  Future<int> createLogOutUserActivity()async{
+  Future<int> createLogOutUserActivity() async {
     return await UserActivityRepository().createUserActivity(UserActivity(
       activityId: const Uuid().v1(),
-      employeeId:adminUser.value.appId,
+      employeeId: adminUser.value.appId,
       employeeFullName: adminUser.value.fullName,
       guestId: '-',
       activityValue: 0,

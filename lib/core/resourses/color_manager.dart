@@ -6,6 +6,8 @@ class ColorsManager {
   static const Color darkGrey = Color(0xFF484859);
   static const Color flutterGrey = Color(0xFFf7f5f5);
   static const Color grey = Color.fromARGB(255, 163, 163, 163);
+  static const Color transparent = Color.fromARGB(100, 22, 44, 33);
+
   static const Color lightGrey = Color(0xFFBDBDBD);
   static const Color grey1 = Color(0xFFF5F5F5);
   static const Color grey2 = Color(0xFFEEEEEE);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hotel_pms/app/modules/guest_dashboard/widgets/cards/house_keeping_status.dart';
 import 'package:hotel_pms/app/modules/homepage_screen/views/homepage_view.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
@@ -51,7 +52,7 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                children: [
 
                  /// Forms Row
-                 Row(
+                 Obx(() => controller.isCheckedOut.value ?  SizedBox() : Row(
                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                    children:  [
                      Center(
@@ -82,10 +83,11 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                        ],
                      ),
                    ],
-                 ),
+                 )),
                  thinDivider(),
 
                  Row(
+                   crossAxisAlignment: CrossAxisAlignment.start,
                    children: [
                      /// Guest Info Card
                      Expanded(
@@ -162,7 +164,7 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                                  padding: const EdgeInsets.only(top: AppPadding.padding40*2,right: AppPadding.padding8,left: AppPadding.padding8,bottom: AppPadding.padding8),
                                  child: Container(
                                    decoration: BoxDecoration(
-                                       color: Colors.black87,
+                                       color: Colors.black87.withOpacity(0.8),
                                        border: Border.all(color: ColorsManager.darkGrey),
                                        borderRadius: const BorderRadius.all(Radius.circular(AppBorderRadius.radius16))
                                    ),
@@ -173,13 +175,18 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                                         Obx(()=> Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            LabeledText(title: LocalKeys.kTotalCost.tr, isNumber: true,subtitle: controller.paymentDataController.roomTransaction.value.grandTotal.toString(),subtitleColor: Colors.white,titleSize: AppSize.size16,subtitleSize: AppSize.size20,),
+                                            LabeledText(title: LocalKeys.kTotalCost.tr, isNumber: true,subtitle: controller.paymentDataController.roomTransaction.value.grandTotal.toString(),subtitleColor: Colors.white,titleColor: ColorsManager.white.withOpacity(.8),titleSize: AppSize.size16,subtitleSize: AppSize.size20,),
                                             SizedBox(width:const Size.fromWidth(20).width,),
-                                            LabeledText(title: LocalKeys.kPaid.tr,isNumber: true, subtitle: controller.paymentDataController.roomTransaction.value.amountPaid.toString(),titleSize: AppSize.size16,subtitleSize: AppSize.size20,),
+                                            LabeledText(title: LocalKeys.kPaid.tr,isNumber: true,
+                                                subtitle: controller.paymentDataController.roomTransaction.value.amountPaid.toString(),
+                                                subtitleColor: ColorsManager.success,
+                                                titleSize: AppSize.size16,subtitleSize: AppSize.size20,
+                                                titleColor: ColorsManager.white.withOpacity(.8)),
                                             SizedBox(width: const Size.fromWidth(20).width,),
-                                            LabeledText(title: LocalKeys.kBalance.tr,isNumber: true,subtitle: controller.paymentDataController.roomTransaction.value.outstandingBalance.toString(),titleSize: AppSize.size16,
+                                            LabeledText(title: LocalKeys.kBalance.tr,isNumber: true,
+                                              subtitle: controller.paymentDataController.roomTransaction.value.outstandingBalance.toString(),titleSize: AppSize.size16,titleColor: ColorsManager.white.withOpacity(.8),
                                               subtitleSize: AppSize.size20,
-                                              subtitleColor: controller.paymentDataController.roomTransaction.value.outstandingBalance! > 0 ? ColorsManager.grey2 :ColorsManager.darkGrey,
+                                              subtitleColor: controller.paymentDataController.roomTransaction.value.outstandingBalance! > 0 ? ColorsManager.error :ColorsManager.darkGrey,
                                             ),
 
                                           ],
@@ -195,10 +202,10 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                          )
                      ),
 
-                     /// Activity Table
+                     /// Activity Table or Housekeeping form
                      Expanded(
                          flex: 6,
-                         child: Column(
+                         child: Obx(() => controller.isCheckedOut.value ? HouseKeepingRoomStatus() : Column(
                            children:  [
                              Row(
                                mainAxisAlignment: MainAxisAlignment.center,
@@ -213,12 +220,12 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                                ],
                              ),
                              SizedBox(
-                                 height: const Size.fromHeight(500).height,
+                                 height: const Size.fromHeight(700).height,
                                  child: const UserActivityTableView()
                              ),
                            ],
-                         )
-                     ),
+                         ))
+                     )
 
                    ],
                  )

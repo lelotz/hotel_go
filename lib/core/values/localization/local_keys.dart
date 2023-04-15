@@ -67,6 +67,9 @@ class LocalKeys {
   static const String kUserManagement = "User Management";
 
   /// General
+  static const String kNewShift = "New Shift";
+  static const String kContinue = "Continue";
+
   static const String kSelectBillType = "Select Bill Type";
   static const String kPettyCash = "Petty Cash";
   static const String kHotelIssues = "Hotel Issues";
@@ -181,7 +184,6 @@ class LocalKeys {
   static const String kEmailInvalid = "kEmailInvalid";
 
   static const String kOptional = "kOptional";
-  static const String kContinue = "Continue";
   static const String kSubmit = "Submit";
   static const String kAdd = "ADD";
   static const String kEdit = "Edit";

@@ -26,10 +26,7 @@ class PettyCashFormController extends GetxController {
   Rx<bool> creatingTransaction = false.obs;
 
   List<String> departments = [
-    HotelDepartments.restaurant,
     HotelDepartments.hotelStore,
-    HotelDepartments.housekeeping,
-    HotelDepartments.kitchen,
     HotelDepartments.reception,
     HotelDepartments.technician,
     HotelDepartments.delivery

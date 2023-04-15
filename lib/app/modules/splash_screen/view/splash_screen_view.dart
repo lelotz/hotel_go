@@ -4,8 +4,11 @@ import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import 'package:hotel_pms/app/modules/splash_screen/controller/splash_screen_controller.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
 
+import '../../../../core/values/localization/localization_controller.dart';
+
 class SplashScreen extends GetView<SplashScreenController> {
-  const SplashScreen({Key? key}) : super(key: key);
+  SplashScreen({Key? key}) : super(key: key);
+  final LocalizationController langController = Get.put(LocalizationController(),permanent: true);
 
   @override
   Widget build(BuildContext context) {

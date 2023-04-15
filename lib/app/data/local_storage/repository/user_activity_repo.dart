@@ -1,4 +1,5 @@
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
+import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 
 class UserActivityRepository extends SqlDatabase {
   UserActivityRepository();
@@ -28,6 +29,46 @@ class UserActivityRepository extends SqlDatabase {
         whereArgs: [activityId]);
   }
 
+  Future<List<UserActivity>> getUserActivityByDescription(
+      String description,
+      {String? tableName = UserActivityTable.tableName}) async {
+    List<UserActivity> userActivity = [];
+    await read(
+        tableName: tableName,
+        where: '${UserActivityTable.description} = ?',
+        whereArgs: [description]).then((value) {
+          userActivity = UserActivity.fromJsonList(value?? []);
+    });
+
+    return userActivity;
+  }
+
+  Future<List<UserActivity>> getUserActivityByRoomTransactionId(
+      String roomTransactionId,
+      {String? tableName = UserActivityTable.tableName}) async {
+    List<UserActivity> userActivity = [];
+    await read(
+        tableName: tableName,
+        where: '${UserActivityTable.roomTransactionId} = ?',
+        whereArgs: [roomTransactionId]).then((value) {
+      userActivity = UserActivity.fromJsonList(value?? []);
+    });
+
+    return userActivity;
+  }
+  Future<List<UserActivity>> getUserActivityByRoomTransactionIdAndDescription(
+      String roomTransactionId,String description,
+      {String? tableName = UserActivityTable.tableName}) async {
+    List<UserActivity> userActivity = [];
+    await read(
+        tableName: tableName,
+        where: '${UserActivityTable.roomTransactionId} = ? AND ${UserActivityTable.description} = ?',
+        whereArgs: [roomTransactionId,description]).then((value) {
+      userActivity = UserActivity.fromJsonList(value?? []);
+    });
+
+    return userActivity;
+  }
   Future<int> deleteUserActivity(Map<String, dynamic> row,
       {String? tableName = UserActivityTable.tableName}) async {
     int rowNumber = await delete(

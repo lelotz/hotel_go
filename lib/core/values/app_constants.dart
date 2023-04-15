@@ -29,10 +29,7 @@ class TransactionTypes{
 }
 
 class HotelDepartments{
-  static const String kitchen = 'Kitchen';
   static const String reception = 'Reception';
-  static const String housekeeping = LocalKeys.kHouseKeeping;
-  static const String restaurant = 'Restaurant';
   static const String hotelStore = 'Hotel Store';
   static const String technician = 'Technician';
   static const String delivery = 'Delivery';
@@ -40,14 +37,11 @@ class HotelDepartments{
 
 class PaymentMethods{
   static const String cash = 'CASH';
-  static const String mPesa = 'MPESA';
-  static const String airtelMoney = 'AIRTELMONEY';
-  static const String tigoPesa = 'TIGOPESA';
-  static const String haloPesa = 'HALOPESA';
+  static const String lipaNumber = 'LIPA NAMBA';
   static const String card = 'CARD';
 
   static List<String> toList(){
-    return [cash,mPesa,airtelMoney,tigoPesa,haloPesa,card];
+    return [cash,lipaNumber,card];
   }
 }
 
@@ -121,11 +115,11 @@ class AppConstants {
     LocalKeys.kAll :LocalKeys.kAll
   };
   static  Map<String,dynamic> roomStatus = {
-    LocalKeys.kStatusCode100.toString() : LocalKeys.kAvailable.tr,
-    LocalKeys.kStatusCode200.toString(): LocalKeys.kOccupied.tr,
-    LocalKeys.kStatusCode50.toString() : LocalKeys.kOut.tr,
-    LocalKeys.kStatusCode150.toString(): LocalKeys.kHouseKeeping.tr,
-    LocalKeys.kStatusCode0.toString()  : LocalKeys.kOutOfOrder.tr
+    LocalKeys.kStatusCode100.toString() : LocalKeys.kAvailable,
+    LocalKeys.kStatusCode200.toString(): LocalKeys.kOccupied,
+    LocalKeys.kStatusCode50.toString() : LocalKeys.kOut,
+    LocalKeys.kStatusCode150.toString(): LocalKeys.kHouseKeeping,
+    LocalKeys.kStatusCode0.toString()  : LocalKeys.kOutOfOrder
   };
   static  Map<String,Color> roomStatusColor = {
     LocalKeys.kStatusCode100.toString() : ColorsManager.success,

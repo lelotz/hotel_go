@@ -3,6 +3,7 @@ import 'package:hotel_pms/app/modules/check_in_screen/view/check_in_form_view.da
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:hotel_pms/app/modules/widgtes/global_navigation_buttons.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
+import 'package:hotel_pms/core/session_management/session_manager.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
 import 'package:hotel_pms/core/values/localization/localization_controller.dart';
@@ -29,7 +30,6 @@ class HomePageView extends GetView<HomepageController> {
   );
 
   AuthController authController = Get.put(AuthController(),permanent: true);
-  LocalizationController langController = Get.put(LocalizationController(),permanent: true);
   //HomepageController homepageController = Get.put(HomepageController(),permanent: true);
 
   @override
@@ -37,7 +37,10 @@ class HomePageView extends GetView<HomepageController> {
     return GetBuilder<HomepageController>(
       init: HomepageController(),
         builder: (controller)=>Scaffold(
-        appBar: buildGlobalAppBar(context),
+        appBar: buildGlobalAppBar(context,onBackButton: (){
+          Get.delete<AuthController>();
+          Get.delete<SessionManager>();
+        }),
         body: Obx(() => Column(
         //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -62,7 +65,7 @@ class HomePageView extends GetView<HomepageController> {
                     return InkWell(
                       onTap:(){
                         controller.selectedRoom(controller.roomData.value[index]);
-                        if(controller.selectedRoomData.value.roomStatus!.description == LocalKeys.kOccupied){
+                        if(controller.selectedRoomData.value.roomStatus!.description == LocalKeys.kOccupied || controller.selectedRoomData.value.roomStatus!.description == LocalKeys.kHouseKeeping){
                           Get.to(popGesture: true,opaque: true,()=> const GuestDashboardView());
 
                         }else{

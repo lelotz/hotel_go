@@ -41,6 +41,8 @@ class AdminUserCard extends GetView<AuthController> {
               children: [
                 BigText(text: title.tr,color: titleColor,),
                 SmallText(text: "${controller.adminUser.value.fullName} (${controller.adminUser.value.position})",color: subtitleColor,),
+                SmallText(text: "${controller.sessionTracker.value.sessionStatus.toString()}",color: subtitleColor,),
+
                 //SizedBox(height: const Size.fromHeight(8).height,)
               ],
             ),

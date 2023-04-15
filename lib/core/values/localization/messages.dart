@@ -16,8 +16,9 @@ class Messages extends Translations {
 
   @override
   Map<String, Map<String, String>> get keys => {
-        "en": en,
         "sw": sw,
+        "en": en,
+
       };
 }
 
@@ -28,5 +29,7 @@ class AppMessages{
   static const String isNotEmpty = "Value cannot be empty";
   static const String valueNotGreater = "Value cannot be greater than ";
   static const String cannotCollectZero = "Cannot collect 0 Tsh";
+  static const String confirmSession = "You have a shift that was not logged out.\nSelect below to continue with current shift or start a new shift";
+
 }
 

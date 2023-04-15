@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
@@ -9,8 +8,8 @@ import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/logs/logger_instance.dart';
-import '../../../../core/utils/utils.dart';
 import '../../../../core/values/localization/local_keys.dart';
+import '../../../data/local_storage/repository/admin_user_repo.dart';
 import '../../../data/local_storage/repository/client_user_repo.dart';
 import '../../../data/local_storage/repository/room_data_repository.dart';
 import '../../../data/local_storage/repository/room_status_repo.dart';
@@ -40,9 +39,19 @@ class GuestDashboardController extends GetxController{
   Rx<String> checkInDate = "".obs;
   Rx<String> checkOutDate = "".obs;
   Rx<bool> isLoadingData = true.obs;
-  bool isTest;
+  Rx<bool> isCheckedOut = false.obs;
+  Rx<bool> isSettingRoomToAvailable = false.obs;
 
-  GuestDashboardController({this.isTest = true});
+  Rx<bool> housekeeperAssigned = false.obs;
+
+
+  bool isTest;
+  Rx<List<AdminUser>> houseKeepingStaff = Rx<List<AdminUser>>([]);
+  Rx<AdminUser> selectedHouseKeeper = Rx<AdminUser>(AdminUser());
+  Rx<List<String>> houseKeepingStaffNames = Rx<List<String>>([]);
+  Rx<String> selectedHouseKeeperName = Rx<String>('');
+
+  GuestDashboardController({this.isTest = false});
 
 
 
@@ -55,9 +64,15 @@ class GuestDashboardController extends GetxController{
     if(selectedRoom.value.roomStatus!.description == LocalKeys.kOccupied){
       await getClientData();
       await initializeMetaData();
-      // initializeDependencies();
       updateUI();
 
+    }else if (selectedRoom.value.roomStatus!.description == LocalKeys.kHouseKeeping){
+      isCheckedOut.value = true;
+      await getClientData();
+      await initializeMetaData();
+      updateUI();
+      await getHouseKeepingStaff();
+      if(selectedHouseKeeperName.value!='') housekeeperAssigned.value = true;
     }
     isLoadingData.value = false;
     super.onInit();
@@ -91,6 +106,65 @@ class GuestDashboardController extends GetxController{
    // userActivity.value = userActivity.value.reversed.toList();
   }
 
+  selectHouseKeeper(String houseKeeper) {
+    selectedHouseKeeperName.value = houseKeeper;
+    selectedHouseKeeper.refresh();
+  }
+
+  getHouseKeepingStaffName() {
+    houseKeepingStaffNames.value.clear();
+    for (AdminUser housekeeper in houseKeepingStaff.value) {
+      houseKeepingStaffNames.value.add(housekeeper.fullName!);
+    }
+    houseKeepingStaffNames.refresh();
+  }
+  getHouseKeepingStaff() async {
+    await AdminUserRepository()
+        .getAdminUserByPosition(LocalKeys.kHouseKeeping)
+        .then((value) {
+      if (value != null && value.isNotEmpty) {
+        houseKeepingStaff.value = AdminUser().fromJsonList(value);
+        getHouseKeepingStaffName();
+      }
+    });
+    logger.i({'housekeepers': '${houseKeepingStaffNames.value.length}'});
+  }
+
+  assignHouseKeeperRoomToClean()async{
+    await UserActivityRepository().createUserActivity(
+        UserActivity(
+          activityId: Uuid().v1(),
+          activityValue: 0,
+          activityStatus: LocalKeys.kHouseKeeping,
+          employeeFullName: selectedHouseKeeperName.value,
+          guestId: clientUser.value.clientId,
+          roomTransactionId: roomData.currentTransactionId,
+          employeeId: loggedInUser.value.appId,
+          description: LocalKeys.kHouseKeeping,
+          unit: selectedRoom.value.roomNumber.toString(),
+          dateTime: DateTime.now().toIso8601String()
+        ).toJson()
+    );
+    await getHouseKeepingUserActivity();
+    housekeeperAssigned.value = true;
+  }
+
+  getHouseKeepingUserActivity()async{
+    userActivity.value.clear();
+    userActivity.value = await UserActivityRepository().getUserActivityByRoomTransactionIdAndDescription(
+        roomData.currentTransactionId!,LocalKeys.kHouseKeeping);
+    getAssignedHousekeeperByRoomNumber();
+    updateUI();
+  }
+
+  getAssignedHousekeeperByRoomNumber(){
+    for(UserActivity housekeepingActivity in userActivity.value){
+      if(housekeepingActivity.roomTransactionId == roomData.currentTransactionId){
+        selectedHouseKeeperName.value = housekeepingActivity.employeeFullName!;
+      }
+    }
+  }
+
   void parseCheckInOutDate(){
     checkInDate.value = extractDate(DateTime.parse(paymentDataController.roomTransaction.value.checkInDate!));
     checkOutDate.value = extractDate(DateTime.parse(paymentDataController.roomTransaction.value.checkOutDate!));
@@ -103,9 +177,8 @@ class GuestDashboardController extends GetxController{
   Future<void> checkOutGuest()async{
     if(paymentDataController.roomTransaction.value.outstandingBalance == 0){
       /// Update RoomTransaction in RoomData
-      selectedRoom.value.roomStatus!.description = LocalKeys.kAvailable;
-      selectedRoom.value.roomStatus!.code = LocalKeys.kStatusCode100.toString();
-      selectedRoom.value.currentTransactionId = "";
+      selectedRoom.value.roomStatus!.description = LocalKeys.kHouseKeeping;
+      selectedRoom.value.roomStatus!.code = LocalKeys.kStatusCode150.toString();
       await RoomDataRepository().updateRoom(selectedRoom.toJson()).then((value) async{
         // showSnackBar("UpdatedRoom", Get.context!);
         /// Update RoomStatus
@@ -124,12 +197,10 @@ class GuestDashboardController extends GetxController{
                 unit: LocalKeys.kRoom.capitalize,
                 dateTime: DateTime.now().toIso8601String(),
               ).toJson()
-          ).then((value) {
-            // showSnackBar("Created AdminActivity", Get.context!);
-            if(isTest==false) Get.find<HomepageController>().onInit();
-
-          }).then((value) {
-            if(isTest==false) Navigator.of(Get.overlayContext!).pop();
+          ).then((value) async{
+            isCheckedOut.value = false;
+            isCheckedOut.refresh();
+            await onInit();
           });
         });
       });
@@ -142,11 +213,26 @@ class GuestDashboardController extends GetxController{
     /// RoomTransaction, ClientUser,  UserActivity, & OtherActivity
     await getRoomTransactionId().then((value)async {
       await getClientUser().then((value) async{
-        await getUserActivity();
+        isCheckedOut.value ? await getHouseKeepingUserActivity() : await getUserActivity();
       });
     });
     parseCheckInOutDate();
     updateUI();
+  }
+
+  setRoomAsAvailable()async{
+    selectedRoom.value.roomStatus!.description = LocalKeys.kAvailable;
+    selectedRoom.value.roomStatus!.code = LocalKeys.kStatusCode100.toString();
+    selectedRoom.value.currentTransactionId = "";
+
+    await RoomDataRepository().updateRoom(selectedRoom.toJson()).then((value) async {
+      /// Update RoomStatus
+      await RoomStatusRepository().updateRoomStatus(
+          selectedRoom.value.roomStatus!.toJson());
+    });
+    isSettingRoomToAvailable.value = false;
+
+
   }
 
   Future<void> getRoomTransactionId()async{

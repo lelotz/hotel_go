@@ -13,6 +13,7 @@ Map<String, String> sw = {
   AppMessages.valueNotGreater : 'Haiewezi kua kubwa zaidi ya ',
   LocalKeys.kSelectBillType : "Chagua aina ya bili",
   AppMessages.cannotCollectZero : "Huwezi pokea 0 Tsh",
+  AppMessages.confirmSession : "Kuna shift yako ya leo ambayo haijaisha.\nChangua chini kuanza shift mpya au kuendelea na shift ya leo",
 
   /// Login
   LocalKeys.kLogin : 'Ingia',
@@ -68,6 +69,8 @@ Map<String, String> sw = {
 
   /// General
   //LocalKeys.kSelectSearchCategory :"",
+  LocalKeys.kNewShift: 'Shift mpya',
+  LocalKeys.kContinue : 'Endelea',
   LocalKeys.kFilters: 'Vichujio',
   LocalKeys.kClearFilters : 'Toa vichujio',
   LocalKeys.kSearchBy : 'Tafuta kwa',

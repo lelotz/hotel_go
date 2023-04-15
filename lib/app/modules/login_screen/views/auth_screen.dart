@@ -16,8 +16,7 @@ import '../../user_management/widgets/forms/create_user_form.dart';
 class LandingPage extends StatelessWidget {
   LandingPage({Key? key}) : super(key: key);
   final signInFormKey = GlobalKey<FormState>();
-  final AuthController authController =
-      Get.put(AuthController(isTest: false), permanent: true);
+  final AuthController authController = Get.put(AuthController(isTest: false), permanent: true);
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +128,7 @@ class LandingPage extends StatelessWidget {
                                 padding: const EdgeInsets.all(8),
                                 child: SmallText(
                                   text: authController.authResult.value,
-                                  color: authController.authResult.value == LocalKeys.kSuccess.toUpperCase() ? ColorsManager.success : ColorsManager.error,
+                                  color: authController.authResult.value == LocalKeys.kSuccess ? ColorsManager.success : ColorsManager.error,
                                 ),
                               ),
                             )
