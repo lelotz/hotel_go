@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
-import 'package:hotel_pms/core/logs/logger_instance.dart';
-import 'package:hotel_pms/core/utils/date_formatter.dart';
-import 'package:hotel_pms/core/utils/utils.dart';
-import 'package:logger/logger.dart';
+
 
 // External package imports
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -13,12 +9,14 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Column, Row;
 
 // Local import
 import 'dart:io';
-
-//import 'package:open_file/open_file.dart' as open_file;
-// ignore: depend_on_referenced_packages
 import 'package:get/get.dart';
-
 import '../values/localization/local_keys.dart';
+import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
+import 'package:hotel_pms/core/logs/logger_instance.dart';
+import 'package:hotel_pms/core/utils/date_formatter.dart';
+import 'package:hotel_pms/core/utils/utils.dart';
+import 'package:logger/logger.dart';
+
 int getMaxTableRows(int maxRows) {
   if (maxRows > 8) return 8;
   if (maxRows == 0) return 1;
@@ -116,6 +114,52 @@ class ExcelWorkBook{
     return workbook;
   }
 
+  Workbook buildDailyReportTemplate(Map<String,dynamic> excelData){
+    Workbook workbook = Workbook();
+
+    Worksheet sheet = workbook.worksheets[0];
+    sheet.enableSheetCalculations();
+    sheet.name = 'Summary';
+    sheet.getRangeByName('B1:D3').merge();
+    sheet.getRangeByName('B1:D3').cellStyle.fontSize = 16;
+    sheet.getRangeByName('B1:D3').cellStyle.vAlign = VAlignType.center;
+    sheet.getRangeByName('B1:D3').cellStyle.hAlign = HAlignType.center;
+    sheet.getRangeByName('B1:D3').setText('${extractDate(DateTime.now())} Report Summary');
+
+    sheet.getRangeByName('B6:C6').cellStyle.bold = true;
+    sheet.getRangeByName('B6:C6').columnWidth = 20;
+    sheet.getRangeByName('B6').setText('ITEM');
+    sheet.getRangeByName('C6').setText('COLLECTED PAYMENT');
+
+    sheet.getRangeByName('B7').setText(LocalKeys.kRooms);
+    sheet.getRangeByName('B8').setText(LocalKeys.kLaundry);
+    sheet.getRangeByName('B9').setText(LocalKeys.kConference);
+    sheet.getRangeByName('B10').setText('${LocalKeys.kConference} Advance');
+    sheet.getRangeByName('B11').setText(LocalKeys.kRoomService);
+    sheet.getRangeByName('B12').setText('${LocalKeys.kRooms} ${LocalKeys.kDebts}');
+    sheet.getRangeByName('B13').setText(LocalKeys.kPettyCash);
+
+    sheet.getRangeByName('B15').setText('TOTAL');
+    sheet.getRangeByName('B15:C15').cellStyle.bold = true;
+    sheet.getRangeByName('C15').cellStyle.numberFormat = '###,###,##0.00';
+    sheet.getRangeByName('C15').setFormula('=SUM(C7:C11)');
+
+    sheet.getRangeByName('C7').setNumber(excelData[LocalKeys.kRooms]);
+    sheet.getRangeByName('C8').setNumber(excelData[LocalKeys.kLaundry]);
+
+    sheet.getRangeByName('C9').setNumber(excelData[LocalKeys.kConference]);
+    sheet.getRangeByName('C10').setNumber(excelData['${LocalKeys.kConference} Advance']);
+    sheet.getRangeByName('C11').setNumber(excelData[LocalKeys.kRoomService]);
+    sheet.getRangeByName('C12').setNumber(excelData['${LocalKeys.kRooms} ${LocalKeys.kDebts}']);
+    sheet.getRangeByName('C12').cellStyle.fontColor = '#ff0000';
+    sheet.getRangeByName('C13').setNumber(excelData[LocalKeys.kPettyCash]);
+    sheet.getRangeByName('C13').cellStyle.fontColor = '#ff0000';
+    sheet.getRangeByName('C7:C13').cellStyle.numberFormat = '###,###,##0.00';
+
+    return workbook;
+  }
+
+
 
 
   Future<String> getPath() async {
@@ -124,7 +168,6 @@ class ExcelWorkBook{
     if (directory != null) return directory.path;
     return '';
   }
-
 
 
   Future<void> exportDataGridToExcel(

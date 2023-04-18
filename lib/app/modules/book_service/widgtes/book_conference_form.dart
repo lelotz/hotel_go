@@ -14,15 +14,13 @@ import 'package:hotel_pms/widgets/text/small_text.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../../../core/resourses/color_manager.dart';
 import '../../../../core/utils/date_formatter.dart';
-import '../../../../widgets/cards/labled_widget.dart';
-import '../../../../widgets/icons/app_icon.dart';
+import '../../../../widgets/check_box/check_box.dart';
 import '../../../../widgets/text/big_text.dart';
 import '../controller/book_service_form_controller.dart';
 
-class BookServiceForm extends GetView<BookServiceFormController> {
-  final int isRoom;
+class BookConferenceForm extends GetView<BookServiceFormController> {
 
-  BookServiceForm({Key? key, required this.isRoom}) : super(key: key);
+  BookConferenceForm({Key? key}) : super(key: key);
 
   final formKey = GlobalKey<FormState>();
 
@@ -31,7 +29,7 @@ class BookServiceForm extends GetView<BookServiceFormController> {
     return GetBuilder<BookServiceFormController>(
       init: BookServiceFormController(),
       builder: (controller) => Scaffold(
-        appBar: buildGlobalAppBar(context,appBarTitle: isRoom == 1 ? 'Room Booking': 'Conference Booking'),
+        appBar: buildGlobalAppBar(context,appBarTitle: 'Conference Booking'),
         body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -39,7 +37,7 @@ class BookServiceForm extends GetView<BookServiceFormController> {
               Row(
                 children: [
                   Expanded(
-                    flex: 2,
+                      flex: 2,
                       child: SizedBox()),
                   Expanded(
                     flex: 6,
@@ -100,89 +98,7 @@ class BookServiceForm extends GetView<BookServiceFormController> {
                               ),
 
                               /// Date Range picker
-                              isRoom == 1
-                                  ? Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(
-                                    child: buildLabeledWidget(
-                                        'Start Date',
-                                        Row(
-                                          children: [
-                                            Obx(() => BigText(
-                                                text: extractDate(controller
-                                                    .bookingServiceStartDate
-                                                    .value))),
-                                            InkWell(
-                                                onTap: () {
-                                                  showDatePicker(
-                                                      context: context,
-                                                      initialDate:
-                                                      DateTime.now(),
-                                                      firstDate: DateTime(2023),
-                                                      lastDate: DateTime(2024))
-                                                      .then((selectedDate) {
-                                                    controller
-                                                        .bookingServiceStartDate
-                                                        .value = selectedDate!;
-                                                    controller
-                                                        .updateBookingExpiryDate();
-                                                  });
-                                                },
-                                                child: const AppIcon(
-                                                  icon: Icons.calendar_month,
-                                                  useBackground: true,
-                                                ))
-                                          ],
-                                        )),
-                                  ),
-                                  SizedBox(
-                                    width: const Size.fromWidth(10).width,
-                                  ),
-                                  Expanded(
-                                    child: buildLabeledWidget(
-                                        'End Date',
-                                        Row(
-                                          children: [
-                                            Obx(() => BigText(
-                                                text: extractDate(controller
-                                                    .bookingServiceEndDate.value))),
-                                            InkWell(
-                                                onTap: () {
-                                                  showDatePicker(
-                                                      context: context,
-                                                      initialDate:
-                                                      DateTime.now(),
-                                                      firstDate: DateTime(2023),
-                                                      lastDate: DateTime(2024))
-                                                      .then((selectedDate) {
-                                                    controller.bookingServiceEndDate
-                                                        .value = selectedDate!;
-                                                    controller.calculateServiceCost(
-                                                        isRoom);
-                                                  });
-                                                },
-                                                child: const AppIcon(
-                                                  icon: Icons.calendar_month,
-                                                  useBackground: true,
-                                                ))
-                                          ],
-                                        )),
-                                  ),
-                                  SizedBox(
-                                    width: const Size.fromWidth(10).width,
-                                  ),
-                                  Expanded(
-                                    child: buildLabeledWidget(
-                                      'Expiry Date',
-                                      Obx(() => BigText(
-                                          text:
-                                          controller.bookingExpiryDate.value)),
-                                    ),
-                                  )
-                                ],
-                              )
-                                  :
+
 
                               /// Multi-Date Picker Button
                               Obx(() => controller.selectedDatesCount.value == 0
@@ -254,17 +170,11 @@ class BookServiceForm extends GetView<BookServiceFormController> {
                                                     height: 400,
                                                     width: 400,
                                                     Obx(() => TableCalendar(
-                                                      firstDay: DateTime.utc(
-                                                          2010, 10, 16),
-                                                      lastDay: DateTime.utc(
-                                                          2030, 3, 14),
-                                                      focusedDay: controller
-                                                          .focusDate.value,
-                                                      selectedDayPredicate:
-                                                      controller
-                                                          .dateIsSelected,
-                                                      onDaySelected: controller
-                                                          .addSelectedConferenceDates,
+                                                      firstDay: DateTime(2010, 10, 16),
+                                                      lastDay: DateTime(2030, 3, 14),
+                                                      focusedDay: controller.focusDate.value,
+                                                      selectedDayPredicate: controller.dateIsSelected,
+                                                      onDaySelected: controller.addSelectedConferenceDates,
                                                     )));
                                               },
                                             ),
@@ -486,69 +396,98 @@ class BookServiceForm extends GetView<BookServiceFormController> {
                                 height: const Size.fromHeight(20).height,
                               ),
 
-                              /// RoomNumber Input
-                              isRoom == 1
-                                  ? Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFieldInput(
-                                      textEditingController:
-                                      controller.roomNumberController,
-                                      hintText: "Room Number",
-                                      useBorder: true,
-                                      validation: DataValidation.isNumeric,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: const Size.fromWidth(20).width,
-                                  ),
-                                  const Expanded(child: SizedBox())
-                                ],
-                              )
-                                  : const SizedBox(),
                               SizedBox(
                                 height: const Size.fromHeight(20).height,
                               ),
 
                               /// PaymentMethod, Service Cost & Payment Input
-                              Row(
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Expanded(
-                                      child: Obx(() => GeneralDropdownMenu(
-                                        menuItems: PaymentMethods.toList(),
-                                        callback: controller.setPayMethod,
-                                        userBorder: true,
-                                        initialItem: 'Pay Method',
-                                        borderColor:
-                                        controller.payMethodStatus.value == ''
-                                            ? ColorsManager.darkGrey
-                                            : ColorsManager.error,
-                                      ))),
-                                  SizedBox(
-                                    width: const Size.fromWidth(20).width,
-                                  ),
-                                  Expanded(
+                                  Obx(() => Row(
+                                    children: [
+                                      MyCheckBox(
+                                          title: 'Package',
+                                          value: controller.isPackage.value, onChanged: (state){
+
+                                        controller.updateIsPackage(state);
+                                      }
+                                      ),
+                                      MyCheckBox(
+                                          title: 'Hourly',
+                                          value: controller.isHourly.value, onChanged: (state){
+                                        controller.updateIsHourly(state);
+                                      }
+                                      ),
+                                      MyCheckBox(
+                                          title: 'Daily',
+                                          value: controller.isDaily.value, onChanged: (state){
+                                            controller.updateIsDaily(state);
+                                          }
+                                        ),
+                                      MyCheckBox(
+                                          title: 'Restaurant',
+                                          value: controller.isRestaurant.value, onChanged: (state){
+                                            controller.updateIsRestaurant(state);
+                                      }
+                                      ),
+                                    ],
+                                  ),),
+                                  Obx(() => controller.isHourly.value ?  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: SizedBox(
+                                      width: Size.fromWidth(100).width,
                                       child: TextFieldInput(
                                         textEditingController:
-                                        controller.conferencePackage,
-                                        hintText: "Package",
+                                        controller.hoursBookedController,
+                                        hintText: 'Hours',
                                         useBorder: true,
                                         validation: DataValidation.isNumeric,
                                         onChanged: controller.updateServiceValue,
-                                      )),
-                                  SizedBox(
-                                    width: const Size.fromWidth(20).width,
+                                      ),
+                                    ),
+                                  ): SizedBox()),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Expanded(
+                                          child: Obx(() => GeneralDropdownMenu(
+                                            menuItems: PaymentMethods.toList(),
+                                            callback: controller.setPayMethod,
+                                            userBorder: true,
+                                            initialItem: 'Pay Method',
+                                            borderColor:
+                                            controller.payMethodStatus.value == ''
+                                                ? ColorsManager.darkGrey
+                                                : ColorsManager.error,
+                                          ))),
+                                      SizedBox(
+                                        width: const Size.fromWidth(20).width,
+                                      ),
+                                      Expanded(
+                                          child: Obx(() => TextFieldInput(
+                                            textEditingController:
+                                            controller.conferencePackage,
+                                            hintText: controller.getPackageTypeLabel(),
+                                            useBorder: true,
+                                            validation: DataValidation.isNumeric,
+                                            onChanged: controller.updateServiceValue,
+                                          )
+                                          )),
+                                      SizedBox(
+                                        width: const Size.fromWidth(20).width,
+                                      ),
+                                      Expanded(
+                                          child: TextFieldInput(
+                                            textEditingController:
+                                            controller.advancePaymentController,
+                                            hintText: "Advance Payment",
+                                            useBorder: true,
+                                            validation: DataValidation.isNumeric,
+                                          ))
+                                    ],
                                   ),
-                                  Expanded(
-                                      child: TextFieldInput(
-                                        textEditingController:
-                                        controller.advancePaymentController,
-                                        hintText: "Advance Payment",
-                                        useBorder: true,
-                                        validation: DataValidation.isNumeric,
-                                      ))
                                 ],
                               ),
                               SizedBox(
@@ -570,9 +509,7 @@ class BookServiceForm extends GetView<BookServiceFormController> {
                                 ],
                               ),
                               SizedBox(
-                                height: isRoom == 1
-                                    ? const Size.fromHeight(0).height
-                                    : const Size.fromHeight(20).height,
+                                height: const Size.fromHeight(20).height,
                               ),
                             ]),
                           ),
@@ -591,27 +528,16 @@ class BookServiceForm extends GetView<BookServiceFormController> {
                     : InkWell(
                   hoverColor: ColorsManager.primaryAccent,
                   onTap: () async {
-                    if (isRoom == 1) {
-                      if (formKey.currentState!.validate() &&
-                          controller.validatePayMethod()) {
-                        await controller.createRoomBooking(isRoom: isRoom);
-                        Get.back();
-                      }else{
-                        controller.displayBookingCreationStatus();
-                      }
+                    if (formKey.currentState!.validate() &&
+                        controller.validatePayMethod() &&
+                        controller.validateConferenceDates()) {
+                      await controller.createConferenceBooking(isRoom: 0);
+                      controller.displayBookingCreationStatus();
 
-                    } else {
-                      if (formKey.currentState!.validate() &&
-                          controller.validatePayMethod() &&
-                          controller.validateConferenceDates()) {
-                        await controller.createConferenceBooking(isRoom: isRoom);
-                        controller.displayBookingCreationStatus();
+                      Get.back();
+                    }else{
+                      controller.displayBookingCreationStatus();
 
-                        Get.back();
-                      }else{
-                        controller.displayBookingCreationStatus();
-
-                      }
                     }
                   },
                   child: Padding(
@@ -625,8 +551,7 @@ class BookServiceForm extends GetView<BookServiceFormController> {
                           color: ColorsManager.error,
                         )
                             : const SizedBox(),
-                        isRoom == 0 && controller.selectedConferenceDateStatus.value != ''
-                            ? SmallText(text: controller.selectedConferenceDateStatus.value,color: ColorsManager.error,) : const SizedBox()
+                        SmallText(text: controller.selectedConferenceDateStatus.value,color: ColorsManager.error,)
                       ],
                     ),
                   ),

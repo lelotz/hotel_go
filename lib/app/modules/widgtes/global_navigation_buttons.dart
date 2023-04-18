@@ -5,6 +5,7 @@ import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.da
 import 'package:hotel_pms/app/modules/reports/view/report_selector.dart';
 import 'package:hotel_pms/app/modules/user_management/views/user_management_view.dart';
 import 'package:hotel_pms/core/session_management/session_manager.dart';
+import 'package:hotel_pms/widgets/dropdown_menu/ai_dropdown.dart';
 import '../../../core/resourses/color_manager.dart';
 import '../../../core/resourses/size_manager.dart';
 import '../../../core/values/app_constants.dart';
@@ -48,7 +49,7 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             ElevatedButton(
                 style:style,
-                onPressed: (){Get.to(()=>const BookServiceView());},
+                onPressed: (){Get.to(()=> BookServiceView());},
                 child: SmallText(text: LocalKeys.kBookService.tr,color: ColorsManager.grey1,)),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             authController.adminUser.value.position == AppConstants.userRoles[1] ? ElevatedButton(
@@ -60,6 +61,10 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             const ReportSelector(),
             SizedBox(width: const Size.fromWidth(36).width,),
+            ElevatedButton(
+                style:style,
+                onPressed: (){Get.to(transition: Transition.noTransition,duration: const Duration(milliseconds: 500), ()=> DropdownMenuExample());},
+                child:  SmallText(text: 'dp'.tr,color: ColorsManager.grey1,)),
 
 
           ],

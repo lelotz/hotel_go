@@ -10,7 +10,6 @@ class SalesTableSource extends DataGridSource{
   SalesTableSource({this.rowsPerPage = 20}){
     salesController.paginatedCollectedPayments.value = salesController.collectedPayments.value;
     buildPaginatedDataGridRows();
-    print('paginatedSalesCount${salesController.paginatedCollectedPayments.value.length}');
   }
   SalesController salesController = Get.find<SalesController>();
 
@@ -76,7 +75,6 @@ class SalesTableSource extends DataGridSource{
       ]);
 
     }).toList(growable: false);
-    print('DataGridRowsCount'+ dataGridRows.length.toString());
   }
 
 }

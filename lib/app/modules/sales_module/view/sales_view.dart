@@ -25,7 +25,6 @@ class SalesView extends GetView<SalesController> {
         builder: (controller)=>Scaffold(
           appBar: buildGlobalAppBar(context,appBarTitle: LocalKeys.kSales.tr,onTitleTap: controller.onReady,onBackButton: (){
             Get.back();
-            Get.delete<SalesController>();
           }),
           body: Obx(() => controller.isLoadingData.value ? loadingAnimation(actionStatement: 'Loading Table Data') : Scrollbar(
             controller: scrollController,

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/data/models_n/service_booking_model.dart';
 import 'package:hotel_pms/app/modules/book_service/controller/book_service_controller.dart';
+import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'booked_service_calender_widget.dart';
@@ -16,12 +17,12 @@ class BookingsCalender extends GetView<BookServiceController> {
       init: BookServiceController(),
         builder: (controller)=>Column(
         children: [
-          TableCalendar<ServiceBooking>(
+          Obx(() => TableCalendar<ServiceBooking>(
             firstDay: DateTime.now().add(const Duration(days: -300)),
             lastDay: DateTime.now().add(const Duration(days: 365)),
             focusedDay: controller.focusDate.value,
             calendarFormat: controller.calendarFormat.value,
-            eventLoader: controller.getEventsForDay,
+            eventLoader: controller.getEvents,
             startingDayOfWeek: StartingDayOfWeek.monday,
             selectedDayPredicate: controller.shouldMarkDate,
             onDaySelected: controller.onDaySelected,
@@ -30,7 +31,7 @@ class BookingsCalender extends GetView<BookServiceController> {
               controller.focusDate.value = focusedDay;
               controller.focusDate.refresh();
             },
-          ),
+          ),),
           ElevatedButton(
             onPressed: controller.selectedDayEvents.value.clear,
             child: const Text('Clear selection')
@@ -43,17 +44,20 @@ class BookingsCalender extends GetView<BookServiceController> {
               itemBuilder: (context, index) {
                 return Container(
                   margin: const EdgeInsets.symmetric(
-                    horizontal: 12.0,
+                    //horizontal: 1.0,
                     vertical: 4.0,
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(),
+                    border: Border.all(color: ColorsManager.grey,width: 2),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                  child: Padding(
+                  child: Obx(() => Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: bookedServiceCalenderWidget(controller.selectedDayEvents.value[extractDate(controller.currentDate.value)]?[index] ?? ServiceBooking()),
-                  ),
+                    child: bookedServiceCalenderWidget(
+                        controller.selectedDayEvents.value[extractDate(controller.currentDate.value)]?[index] ?? ServiceBooking(),
+                        controller.getOptions()
+                    ),
+                  )),
                 );
               },
             )),

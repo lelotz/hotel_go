@@ -1,4 +1,5 @@
 
+import 'package:get_storage/get_storage.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import '../../models_n/session_activity_model.dart';
@@ -82,6 +83,21 @@ class SessionManagementRepository  extends SqlDatabase{
     return session;
   }
 
+  Future<List<SessionTracker>> getSessionByEmployeeIdAndSessionStatus(String id,String sessionStatus)async{
+    List<SessionTracker> session = [];
+
+    await SqlDatabase.instance.read(
+      tableName: SessionTrackerTable.tableName,
+      where: '${SessionTrackerTable.employeeId}=? AND ${SessionTrackerTable.sessionStatus}=? ',
+      whereArgs: [id,sessionStatus],
+    ).then((value) {
+      if(value!=null && value.isNotEmpty){
+        session = SessionTracker().fromJsonList(value);
+      }
+
+    });
+    return session;
+  }
 
   /// Session Activity
 

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/conference_booking_details_repo.dart';
 import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
 import 'package:hotel_pms/app/data/models_n/service_booking_model.dart';
+import 'package:hotel_pms/app/modules/book_service/controller/book_service_controller.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
+import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:hotel_pms/core/values/localization/messages.dart';
 import 'package:logger/logger.dart';
@@ -11,17 +14,19 @@ import 'package:uuid/uuid.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
-
 import '../../../../core/logs/logger_instance.dart';
 import '../../../../core/resourses/color_manager.dart';
 import '../../../../core/utils/useful_math.dart';
 import '../../../data/local_storage/repository/service_booking_repo.dart';
 import '../../../data/models_n/conference_booking_details.dart';
+
+
 class BookServiceFormController extends GetxController with GlobalCalculations{
   Logger logger = AppLogger.instance.logger;
 
   /// EMPLOYEE ID
   AuthController authController = Get.find<AuthController>();
+  BookServiceController bookServiceController = Get.find<BookServiceController>();
 
   /// Calculated VALUES
   /// IS ROOM, BOOKING TYPE
@@ -71,8 +76,20 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
   Rx<String> payMethod = Rx<String>('');
   Rx<String> payMethodStatus = Rx<String>('');
 
+  TextEditingController conferencePackage = TextEditingController();
+
+  TextEditingController hoursBookedController = TextEditingController();
+
+
+
   /// SERVICE COST
   TextEditingController serviceValueController = TextEditingController();
+
+  Rx<bool> isPackage = false.obs;
+  Rx<bool> isHourly = false.obs;
+  Rx<bool> isDaily = false.obs;
+  Rx<bool> isRestaurant = false.obs;
+
 
   @override
   onInit(){
@@ -80,6 +97,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
     advancePaymentController.text = "0";
     phoneController.text = "0";
     roomNumberController.text = "101";
+    conferencePackage.text = "35000";
     calculateServiceCost(1);
     updateBookingExpiryDate();
     super.onInit();
@@ -103,17 +121,62 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
     return DateTime.utc(date.year,date.month,date.day,time.hour,time.minute);
   }
 
+  updateIsPackage(bool isSelected){
+    if(isDaily.value || isHourly.value || isRestaurant.value){
+
+    }else{
+      isPackage.value = isSelected;
+      isPackage.refresh();
+    }
+    conferencePackage.text = "45000";
+
+  }
+  updateIsDaily(bool isSelected){
+    if(isPackage.value || isHourly.value || isRestaurant.value) {
+
+    }else{
+      isDaily.value = isSelected;
+      isDaily.refresh();
+      conferencePackage.text = "200000";
+    }
+  }
+  updateIsHourly(bool isSelected){
+    if(isPackage.value || isDaily.value || isRestaurant.value) {
+
+    }else{
+      isHourly.value = isSelected;
+      isHourly.refresh();
+      conferencePackage.text = "30000";
+    }
+
+  }
+  updateIsRestaurant(bool isSelected){
+    if(isPackage.value || isDaily.value || isHourly.value) {
+
+    }else{
+      isRestaurant.value = isSelected;
+      isRestaurant.refresh();
+      conferencePackage.text = "50000";
+    }
+
+  }
+
+  String getPackageTypeLabel(){
+    if(isPackage.value) return 'Package';
+    if(isDaily.value) return 'Daily';
+    if(isHourly.value) return 'Hourly';
+    if(isRestaurant.value) return 'Restaurant';
+    return 'Select Package';
+
+  }
+
   displayBookingCreationStatus(){
     if(bookingCreated.value){
       bookingButtonColors.value = ColorsManager.success;
       bookingButtonText.value = "Booking Created!";
       updateUI();
-      Future.delayed(const Duration(seconds: 2),(){
-        bookingButtonColors.value = ColorsManager.primary;
-        bookingButtonText.value = "Create Booking";
-        updateUI();
-        Navigator.of(Get.overlayContext!).pop();
-      });
+      bookingButtonColors.value = ColorsManager.primary;
+      bookingButtonText.value = "Create Booking";
     }else{
       bookingButtonColors.value = ColorsManager.error;
       bookingButtonText.value = "Something went wrong. Try gain!";
@@ -262,7 +325,8 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
     bookingInitiated.value = true;
 
     int serviceDurationInDays = bookingServiceEndDate.value.difference(bookingServiceStartDate.value).inDays;
-    await ServiceBookingRepository().createServiceBooking(ServiceBooking(
+    await ServiceBookingRepository().createServiceBooking(
+        ServiceBooking(
           id: bookServiceId.value,employeeId:authController.adminUser.value.appId,
           bookingDatetime:resetTimeInDateTime(DateTime.now()),roomNumber: int.parse(roomNumberController.text),
           bookingExpiryDateTime: resetTimeInDateTime(bookingServiceStartDate.value.add(const Duration(days: -1))),
@@ -274,7 +338,8 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
           bookingType: isRoom == 0 ? 'CONFERENCE':'ROOM', bookingStatus: 'ACTIVE', isRoom: isRoom
     ).toJson()).then((value) async{
       bookingCreated.value = true;
-      await CollectedPaymentsRepository().createCollectedPayment(CollectPayment(
+      await CollectedPaymentsRepository().createCollectedPayment(
+          CollectPayment(
           id: const Uuid().v1(), roomTransactionId: bookServiceId.value,employeeId: authController.adminUser.value.appId,
           employeeName: authController.adminUser.value.fullName,clientName: nameController.text,clientId: '',
           roomNumber: int.parse(roomNumberController.text),amountCollected: int.parse(advancePaymentController.text),
@@ -282,8 +347,23 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
           service: 'ROOM:ADVANCE',payMethod: payMethod.value,receiptNumber: ''
       ).toJson());
       });
-    bookingInitiated.value = false;
 
+
+
+
+  }
+
+  updateServiceValue(){
+    if(isPackage.value){
+      serviceValueController.text = ((stringToInt(conferencePackage.text) * stringToInt(peopleCountController.text))* selectedDatesCount.value).toString();
+
+    }else if(isHourly.value){
+      serviceValueController.text = (stringToInt(conferencePackage.text) * stringToInt(hoursBookedController.text)).toString();
+
+    }else if(isDaily.value){
+      serviceValueController.text = (stringToInt(conferencePackage.text )* selectedDatesCount.value).toString();
+
+    }
 
   }
 
@@ -292,7 +372,9 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
     /// CREATE ConferenceBookingDetails
     /// CREATE COLLECTED PAYMENT
     bookingInitiated.value = true;
-    await ServiceBookingRepository().createServiceBooking(ServiceBooking(
+    serviceValueController.text = (stringToInt(conferencePackage.text) * stringToInt(peopleCountController.text)).toString();
+    await ServiceBookingRepository().createServiceBooking(
+        ServiceBooking(
             id: bookServiceId.value,employeeId: authController.adminUser.value.appId,
             bookingDatetime: DateTime.now().toIso8601String(),
             bookingExpiryDateTime: getBiggestDate()['startDate']?.add(const Duration(days: -1)).toIso8601String(),
@@ -300,19 +382,21 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
             serviceEndEndDate: getBiggestDate()['endDate']?.toIso8601String(),
             name: nameController.text,phone: phoneController.text,peopleCount: int.parse(peopleCountController.text),
             serviceValue: int.parse(serviceValueController.text),
-            advancePayment: advancePaymentController.text, invoiceNo: invoiceNumberController.text,
-            bookingType: TransactionTypes.conferenceBooking, bookingStatus: 'ACTIVE', isRoom: isRoom
+            advancePayment: advancePaymentController.text, invoiceNo: conferencePackage.text,
+            bookingType: TransactionTypes.conferenceBooking +': ' + getPackageTypeLabel(), bookingStatus: 'ACTIVE', isRoom: isRoom
         ).toJson()).catchError((onError){
           logger.e('UNABLE to create Service booking',onError);
           return -1;
         }).then((value)async {
           for(Map<String,dynamic> element in selectedConferenceDates.value){
-            await ConferenceBookingDetailsRepository().createConferenceBookingDetails(ConferenceBookingDetails(
+            await ConferenceBookingDetailsRepository().createConferenceBookingDetails(
+                ConferenceBookingDetails(
               id: const Uuid().v1(),
               bookingId: bookServiceId.value,date: element['date'].toString(),
               startTime: element['startTime'],endTime: element['endTime'].toString()
             ).toJson()).then((value)async {
-              await CollectedPaymentsRepository().createCollectedPayment(CollectPayment(
+              await CollectedPaymentsRepository().createCollectedPayment(
+                  CollectPayment(
                     id: const Uuid().v1(), roomTransactionId: bookServiceId.value,employeeId: authController.adminUser.value.appId,
                       employeeName: authController.adminUser.value.fullName,clientName: nameController.text,clientId: '',
                     roomNumber: 0,amountCollected: int.parse(advancePaymentController.text),
@@ -325,6 +409,8 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
           }
           bookingCreated.value = true;
         });
+    await bookServiceController.loadBookedServices();
+
     bookingInitiated.value = false;
   }
 

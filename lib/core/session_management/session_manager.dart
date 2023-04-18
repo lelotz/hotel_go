@@ -24,32 +24,6 @@ class SessionManager extends GetxController {
 
   SessionManager({this.isTest = false});
 
-  // /// Creates a new session if
-  // /// 1. A session older than 8 hours and created on the same day exists
-  // /// 2. Current Session is empty
-  // Future<String?> createNewSession(String userId)async{
-  //   Map<String,dynamic> sessionTrackerMap = SessionTracker(
-  //     id: const Uuid().v1(),
-  //     employeeId: userId,
-  //     dateCreated: DateTime.now().toIso8601String(),
-  //     sessionStatus: SessionStatusTypes.instance.currentSession
-  //   ).toJson();
-  //
-  //   /// Search for existing session
-  //   sessionExists.value = await getExistingOpenSession(userId);
-  //
-  //   if(sessionExists.value == false){
-  //     /// Create currentSession
-  //     await SessionManagementRepository().createNewSessionTracker(sessionTrackerMap).then((value) {
-  //       if (value != null) {
-  //         currentSession.value = SessionTracker.fromJson(sessionTrackerMap);
-  //       }
-  //     });
-  //   }
-  //
-  //   return currentSession.value.id;
-  // }
-
   /// Creates a new session if
   /// 1. A session older than 8 hours and created on the same day exists
   /// 2. Current Session is empty
@@ -128,18 +102,20 @@ class SessionManager extends GetxController {
   getRougeSessions(String userId) async {
     rogueSessions.value.clear();
     await SessionManagementRepository()
-        .getSessionByStatus(SessionStatusTypes.instance.currentSession)
+        .getSessionByEmployeeIdAndSessionStatus(userId,SessionStatusTypes.instance.currentSession)
         .then((value) async {
       if (value.isNotEmpty) {
         for (SessionTracker session in value) {
           if (session.dateEnded == null &&
               session.sessionStatus ==
-                  SessionStatusTypes.instance.currentSession ||
-              DateTime.parse(session.dateCreated!)
-                      .difference(DateTime.now())
-                      .inHours >
-                  13) {
+                  SessionStatusTypes.instance.currentSession
+              ) {
             rogueSessions.value.add(session);
+          }else if(DateTime.parse(session.dateCreated!)
+              .difference(DateTime.now())
+              .inHours >
+              13){
+            updateRogueSessions([session], userId);
           }
         }
         rogueSessions.refresh();

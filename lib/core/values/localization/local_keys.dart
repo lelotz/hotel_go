@@ -59,7 +59,7 @@ class LocalKeys {
   static const String kNo = "No";
 
   /// Transaction types
-  static const String kConferenceBooking= "ConferenceBooking";
+  static const String kConferenceBooking= "Conference";
 
   /// Global Navigation Buttons
   static const String kReports = "Reports";

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/homepage_screen/views/homepage_view.dart';
 import 'package:hotel_pms/app/modules/login_screen/views/auth_screen.dart';
 import 'package:hotel_pms/app/modules/widgtes/admin_card_popup_actions.dart';
+import 'package:hotel_pms/core/values/app_constants.dart';
 import '../../app/modules/homepage_screen/controller/homepage_controller.dart';
 import '../../app/modules/login_screen/controller/auth_controller.dart';
 import '../../core/resourses/color_manager.dart';
@@ -30,8 +31,8 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,
         Icons.arrow_back_ios,
         color: ColorsManager.grey1,
       ),
-      onPressed: () {
-        if (appBarTitle == "Whitemark Hotels") {
+      onPressed: authController.adminUser.value.position == AppConstants.userRoles[1] ? () {
+        if (appBarTitle == "Whitemark Hotels" ) {
           Get.to(() => LandingPage());
         } else {
           if(onBackButton!=null){
@@ -41,7 +42,7 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,
           }
 
         }
-      },
+      } : null,
     ),
     title: Obx(
       () => buildAppBarTitle(appBarTitle,

@@ -44,6 +44,12 @@ class ServiceBookingRepository extends SqlDatabase{
         where: '${ServiceBookingTable.id} = ?', whereArgs: [row[ServiceBookingTable.id]]);
   }
 
+  Future<int?> deleteServiceBooking(Map<String, dynamic> row)async{
+    return await delete(
+        tableName: ServiceBookingTable.tableName,
+        where: '${ServiceBookingTable.id} = ?', whereArgs: [row[ServiceBookingTable.id]]);
+  }
+
 
 
 }
