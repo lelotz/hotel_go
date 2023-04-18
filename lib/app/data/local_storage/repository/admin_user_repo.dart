@@ -1,4 +1,5 @@
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
+import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 
 class AdminUserRepository{
   SqlDatabase db = SqlDatabase.instance;
@@ -18,6 +19,12 @@ class AdminUserRepository{
         whereArgs: [row[AdminUsersTable.appId]]
     );
     return response;
+  }
+
+  Future<String> getAdminUserNameById(String id)async{
+    List<Map<String, dynamic>>? response = await getAdminUserById(id);
+    AdminUser user = AdminUser().fromJsonList(response?? []).first;
+    return user.fullName ?? 'Not Found';
   }
   Future<List<Map<String, dynamic>>?> getAdminUserByName(String name)async{
     List<Map<String, dynamic>>? response = await db.read(

@@ -38,6 +38,18 @@ class SessionManagementRepository  extends SqlDatabase{
     });
     return foundSessions;
   }
+
+  Future<List<SessionTracker>> getAllSessionTrackers()async{
+    List<SessionTracker> foundSessions = [];
+    await read(
+        tableName: SessionTrackerTable.tableName, readAll: true,
+    ).then((value) {
+      if(value !=null && value.isNotEmpty){
+        foundSessions.addAll(SessionTracker().fromJsonList(value));
+      }
+    });
+    return foundSessions;
+  }
   Future<List<SessionTracker>> getSessionByStatus(String sessionStatus)async{
     List<SessionTracker> foundSessions = [];
     await read(

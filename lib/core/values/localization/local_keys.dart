@@ -146,6 +146,7 @@ class LocalKeys {
   static const String kSubmitKey = "Submit Key";
   static const String kRetrieveKey = "Retrieve Key";
   static const String kClient = "Client";
+  static const String kCreateReport = "Create Report";
 
 
   /// Room Status

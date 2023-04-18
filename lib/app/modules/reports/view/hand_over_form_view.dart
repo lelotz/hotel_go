@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/check_in_screen/view/check_in_form_view.dart';
 import 'package:hotel_pms/app/modules/reports/view/handover_report_tables/petty_cash_table.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
+import 'package:hotel_pms/core/values/localization/local_keys.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
+import 'package:hotel_pms/widgets/check_box/check_box.dart';
 import 'package:hotel_pms/widgets/inputs/text_field_input.dart';
 import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import 'package:hotel_pms/widgets/text/big_text.dart';
@@ -14,6 +16,7 @@ import '../../../../widgets/icons/app_icon.dart';
 import '../../../../widgets/text/small_text.dart';
 import '../controller/handover_form_controller.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import '../widgets/session_dropdown_menu.dart';
 import 'handover_report_tables/conference_usage_table.dart';
 import 'handover_report_tables/hotel_issues_table.dart';
 import 'handover_report_tables/laundry_usage_table.dart';
@@ -144,7 +147,12 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                             Obx(() => Checkbox(
                                   value: controller.isHandoverReport.value,
                                   onChanged: controller.handleReportConfigurationOptions),
-                            )
+                            ),
+                            Obx(() => MyCheckBox(title: 'Chagua Shift', value: controller.searchBySelectedSession.value, onChanged: (state){
+                              controller.searchBySelectedSession.value = state;
+                              controller.searchBySelectedSession.refresh();
+
+                            }))
                           ],
                         ),
                         Card(
@@ -153,9 +161,9 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                               await controller.initData();
                               controller.update();
                             },
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: BigText(text: 'Create Report',),
+                            child:Padding(
+                              padding:  const EdgeInsets.all(8.0),
+                              child: BigText(text: LocalKeys.kCreateReport.tr,),
                             ),
                           ),
                         )
@@ -163,7 +171,7 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                     ),
                   ),
                   SizedBox(height: const Size.fromHeight(20).height,),
-                  Obx(() => controller.isHandoverReport.value==false ? Padding(
+                  Obx(() => controller.isHandoverReport.value==false && controller.searchBySelectedSession.value == false ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: Column(
                       children: [
@@ -270,7 +278,8 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                         ),
                       ],
                     ),
-                  ): const SizedBox(),)
+                  ): const SizedBox(),),
+                  Obx(() => controller.searchBySelectedSession.value ?  SessionsDropdown(): SizedBox())
                 ],
               ),
             ));

@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/reports/view/hand_over_form_view.dart';
 
 class ReportSelectorController extends GetxController{
-  Map<String,dynamic> reportConfigs = {};
+  Map<String,String> reportConfigs = {};
   List<String> reportTypes = ['Daily','Weekly','Monthly','Custom'];
   Rx<String> selectedReportType = Rx<String>('');
 
@@ -21,7 +21,7 @@ class ReportSelectorController extends GetxController{
     switch (selectedReportType.value){
       case 'Daily': {
         reportConfigs = {
-          'startDate': DateTime.now().add(const Duration(days: -1))..toIso8601String(),
+          'startDate': DateTime.now().add(const Duration(days: -1)).toIso8601String(),
           'endDate':DateTime.now().toIso8601String(),
         };
       }

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/internal_transaction_repo.dart';
+import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:hotel_pms/app/modules/reports/table_sources/laundry_transactions_source.dart';
 import 'package:hotel_pms/app/modules/reports/table_sources/petty_cash_source.dart';
 import 'package:hotel_pms/app/modules/reports/table_sources/room_service_source.dart';
+import 'package:hotel_pms/core/logs/logger_instance.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
+import 'package:logger/logger.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/hotel_issues_repo.dart';
@@ -86,14 +90,21 @@ class ReportGeneratorController extends GetxController {
   Rx<String> selectedReportType = Rx<String>('');
 
   Rx<bool> isExporting = false.obs;
+  Rx<bool> searchBySelectedSession = false.obs;
 
   Rx<Map<String, dynamic>> summaryData = Rx<Map<String, dynamic>>({});
 
   Rx<int> reportDayOffset = Rx<int>(-1);
 
   Rx<DateTime> reportStartDate = Rx<DateTime>(DateTime.now());
-  Rx<DateTime> reportEndDate =
-      Rx<DateTime>(DateTime.now().add(const Duration(days: -1)));
+  Rx<DateTime> reportEndDate = Rx<DateTime>(DateTime.now().add(const Duration(days: -1)));
+
+  Rx<List<SessionTracker>> existingSessions = Rx<List<SessionTracker>>([]);
+  Rx<SessionTracker> selectedSession = Rx<SessionTracker>(SessionTracker());
+  Rx<List<String>> existingSessionsView = Rx<List<String>>([]);
+  Rx<String> selectedSessionView = "".obs;
+
+  Logger logger = AppLogger.instance.logger;
 
   @override
   Future<void> onInit() async {
@@ -103,6 +114,7 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<void> initData() async {
+    await loadExistingSessions();
     await getRoomsSoldInCurrentSession();
     await getConferenceActivityInCurrentSession();
     await getLaundryTransactionsCurrentSession();
@@ -115,10 +127,10 @@ class ReportGeneratorController extends GetxController {
     bool isOneDayApart = true;
     if(reportConfigs !=null && reportConfigs!.keys.contains('endDate') && reportConfigs!.keys.contains('startDate')){
       isOneDayApart = isDateDifferenceLessOrEqualTo(
-          // DateTime.parse(reportConfigs!['endDate']),
-          // DateTime.parse(reportConfigs! ['startDate']),
-          reportConfigs!['endDate'],
-          reportConfigs! ['startDate'],
+          DateTime.parse(reportConfigs?['endDate'] ?? DateTime.now().toIso8601String()),
+          DateTime.parse(reportConfigs?['startDate'] ?? DateTime.now().toIso8601String()),
+          // reportConfigs!['endDate'],
+          // reportConfigs! ['startDate'],
           1);
     }
 
@@ -209,6 +221,16 @@ class ReportGeneratorController extends GetxController {
     };
   }
 
+  setSessionById(String id){
+    for(SessionTracker session in existingSessions.value){
+      if(session.id == id){
+        selectedSession.value = session;
+
+      }
+    }
+    selectedSession.refresh();
+  }
+
   getSummaryData(String tableTitle, String summaryValue) {
     switch (tableTitle) {
       case RoomsUsedColumnNames.paid:
@@ -255,8 +277,7 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<void> getPettyCashTransactions() async {
-    List<String> pettyCashTransactionsIds =
-        await getTransactionIdsByTransactionType(TransactionTypes.pettyCash);
+    List<String> pettyCashTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.pettyCash);
 
     pettyCashTransactions.value = await InternalTransactionRepository()
         .getMultipleInternalTransactionByIds(pettyCashTransactionsIds);
@@ -288,16 +309,12 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<void> getRoomsSoldInCurrentSession() async {
-    List<String> roomTransactionsIds =
-        await getTransactionIdsByTransactionType(TransactionTypes.room);
-    roomsSoldInCurrentSession.value = await RoomTransactionRepository()
-        .getMultipleRoomTransactions(roomTransactionsIds);
+    List<String> roomTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.room);
+    roomsSoldInCurrentSession.value = await RoomTransactionRepository().getMultipleRoomTransactions(roomTransactionsIds);
   }
 
   Future<void> getLaundryTransactionsCurrentSession() async {
-    List<String> laundryTransactionsIds =
-        await getTransactionIdsByTransactionType(
-            TransactionTypes.laundryPayment);
+    List<String> laundryTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.laundryPayment);
     laundryTransactionsInCurrentSession.value =
         await CollectedPaymentsRepository().getMultipleCollectedPaymentsByIds(
             laundryTransactionsIds, TransactionTypes.laundryPayment);
@@ -305,10 +322,10 @@ class ReportGeneratorController extends GetxController {
 
   Future<List<SessionActivity>> getTransaction(String transactionType) async {
     List<SessionActivity> activity = [];
-    if (isHandoverReport.value) {
+    if (isHandoverReport.value || searchBySelectedSession.value) {
       activity = await SessionManagementRepository()
           .getSessionActivityByTransactionTypeAndSessionId(transactionType,
-              authController.sessionController.currentSession.value.id ?? '');
+              selectedSession.value.id ?? '');
     } else {
       activity = await SessionManagementRepository()
           .getSessionActivityByTransactionTypeAndDateRange(
@@ -318,5 +335,37 @@ class ReportGeneratorController extends GetxController {
     }
 
     return activity;
+  }
+
+  setSessionForReport(String sessionView){
+    selectedSessionView.value = sessionView;
+    String sessionId = selectedSessionView.value.split('\n\n')[1];
+    setSessionById(sessionId);
+    searchBySelectedSession.value = true;
+  }
+
+  Future<void> loadExistingSessions()async{
+    existingSessions.value.clear();
+    await SessionManagementRepository().getAllSessionTrackers().then((value) {
+      existingSessions.value = value;
+      existingSessions.value.sort((a,b)=> DateTime.parse(b.dateCreated!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateCreated!).millisecondsSinceEpoch));
+    });
+
+    for(SessionTracker session in existingSessions.value){
+      String userName = await AdminUserRepository().getAdminUserNameById(session.employeeId!).then((value) => value);
+
+      String startDate = DateTime.parse(session.dateCreated!).day.toString();
+      String endDate= DateTime.parse(session.dateEnded ?? DateTime.now().toIso8601String()).day.toString();
+      String dayRange = startDate == endDate ? '$endDate' : '$startDate - $endDate';
+      String dates = '        ${getMonthName(DateTime.parse(session.dateCreated?? DateTime.now().toIso8601String()).month)}, $dayRange';
+      String time = extractTime(DateTime.parse(session.dateCreated?? DateTime.now().toIso8601String())) + ' - ' +
+          extractTime(DateTime.parse(session.dateEnded ?? DateTime.now().toIso8601String()));
+      existingSessionsView.value.add('${userName} ${dates}\n$time\n\n${session.id}');
+    }
+    // existingSessionsView.value.sort();
+    existingSessionsView.refresh();
+    logger.i('sessions loaded ${existingSessions.value.length}');
+    setSessionById(authController.sessionController.currentSession.value.id ?? '');
+
   }
 }

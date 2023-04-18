@@ -85,7 +85,7 @@ Map<String, String> sw = {
   LocalKeys.kEmployee : "Mfanyakazi",
   LocalKeys.kToday : "Leo",
   LocalKeys.kCollected : "Iliokusanywa",
-
+  LocalKeys.kCreateReport : 'Tengeneza Report',
   LocalKeys.kPayMethod : 'Aina ya Malipo',
   LocalKeys.kStarting : "Kuanzia",
   LocalKeys.kRoomSales : "Mauzo ya Vyumba",
