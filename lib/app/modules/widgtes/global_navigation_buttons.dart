@@ -61,10 +61,7 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             const ReportSelector(),
             SizedBox(width: const Size.fromWidth(36).width,),
-            ElevatedButton(
-                style:style,
-                onPressed: (){Get.to(transition: Transition.noTransition,duration: const Duration(milliseconds: 500), ()=> DropdownMenuExample());},
-                child:  SmallText(text: 'dp'.tr,color: ColorsManager.grey1,)),
+
 
 
           ],

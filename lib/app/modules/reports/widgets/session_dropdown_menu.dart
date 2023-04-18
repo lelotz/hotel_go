@@ -24,7 +24,7 @@ class SessionsDropdown extends GetView<ReportGeneratorController> {
               children: [
                 GeneralDropdownMenu(
                     menuItems: controller.existingSessionsView.value,
-                    callback:controller.setSessionForReport,
+                    callback: controller.setSessionForReport,
                     initialItem: "Chagua Shift"),
 
                 Card(child: Padding(

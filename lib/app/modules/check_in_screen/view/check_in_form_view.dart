@@ -271,7 +271,7 @@ class CheckInView extends GetView<CheckInFormController> {
                                   Expanded(
                                     child: TextFieldInput(
                                         textEditingController: controller.paidTodayCtrl,
-                                        onChanged: controller.calculateOutstandingBalance,
+                                        onChanged: controller.stayCost,
                                         hintText: LocalKeys.kPaidToday.tr,
                                         textInputType: TextInputType.number,
                                         validation: DataValidation.isNotEmpty,

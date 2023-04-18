@@ -119,15 +119,18 @@ class CheckInFormController extends GetxController{
   stayCost(){
     int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType['VIP'] : AppConstants.roomType['STD'];
     roomCost.value = (stringToInt(nightsCtrl.text) ) * roomPrice;
-    //roomCost.value = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType['VIP'] : AppConstants.roomType['STD'];
     checkOutDate.value = checkOutDate.value.add(Duration(days: stringToInt(nightsCtrl.text)));
     roomCost.refresh();
-    update();
+    calculateOutstandingBalance();
+    // update();
   }
 
   calculateOutstandingBalance (){
     if(stringToInt(paidTodayCtrl.value.text) > -1 && stringToInt(paidTodayCtrl.value.text) <= roomCost.value){
       outstandingBalance.value = roomCost.value - (stringToInt(paidTodayCtrl.text));
+    }else{
+      outstandingBalance.value = roomCost.value;
+      paidTodayCtrl.text = "0";
     }
 
   }
@@ -146,11 +149,12 @@ class CheckInFormController extends GetxController{
   }
 
   checkInGuest()async {
-    int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType[LocalKeys.kVip] : AppConstants.roomType[LocalKeys.kStd];
-
-    roomCost.value = stringToInt(nightsCtrl.text) * roomPrice;
-
-    outstandingBalance.value = roomCost.value - stringToInt(paidTodayCtrl.text);
+    // int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType[LocalKeys.kVip] : AppConstants.roomType[LocalKeys.kStd];
+    //
+    // roomCost.value = stringToInt(nightsCtrl.text) * roomPrice;
+    //
+    // outstandingBalance.value = roomCost.value - stringToInt(paidTodayCtrl.text);
+    stayCost();
 
     await createClientProfile().then((value) async{
       //showSnackBar("Created Profile", Get.context!);

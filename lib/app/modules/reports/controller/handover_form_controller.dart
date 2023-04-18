@@ -346,6 +346,7 @@ class ReportGeneratorController extends GetxController {
 
   Future<void> loadExistingSessions()async{
     existingSessions.value.clear();
+    existingSessionsView.value.clear();
     await SessionManagementRepository().getAllSessionTrackers().then((value) {
       existingSessions.value = value;
       existingSessions.value.sort((a,b)=> DateTime.parse(b.dateCreated!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateCreated!).millisecondsSinceEpoch));

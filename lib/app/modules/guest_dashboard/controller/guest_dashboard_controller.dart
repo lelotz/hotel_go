@@ -58,10 +58,11 @@ class GuestDashboardController extends GetxController{
 
   @override
   Future<void> onInit() async {
-
+    super.onInit();
     selectedRoom.value = await RoomDataRepository().getRoom(roomData.roomNumber ?? 0);
     logger.wtf({'Initiating Guest Dashboard': selectedRoom.value.toJson(),'roomStatus': selectedRoom.value.roomStatus!.description});
     if(selectedRoom.value.roomStatus!.description == LocalKeys.kOccupied){
+      isCheckedOut.value = false;
       await getClientData();
       await initializeMetaData();
       updateUI();
@@ -75,7 +76,7 @@ class GuestDashboardController extends GetxController{
       if(selectedHouseKeeperName.value!='') housekeeperAssigned.value = true;
     }
     isLoadingData.value = false;
-    super.onInit();
+
   }
 
   @override

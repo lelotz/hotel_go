@@ -41,14 +41,14 @@ class RoomAndGuestCard extends GetView<GuestDashboardController> {
                 ),
                 height: const Size.fromHeight(160).height,
                 width:  Size.fromWidth(roomCardWidth).width,
-                child: Center(child: BigText(text: controller.selectedRoom.value.roomNumber.toString(),size: AppSize.size56,)),
+                child: Center(child: Obx(() => BigText(text: controller.selectedRoom.value.roomNumber.toString(),size: AppSize.size56,))),
               ),
-              DecoratedTextButton(
+              Obx(() => DecoratedTextButton(
                   buttonLabel: controller.selectedRoom.value.roomStatus!.description!,
                   backgroundColor: AppConstants.roomStatusColor[controller.selectedRoom.value.roomStatus!.code]!,
                   textColor: Colors.white,
                   onPressed: (){}
-              ),
+              ),)
             ],
           ),
 

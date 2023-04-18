@@ -31,8 +31,8 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,
         Icons.arrow_back_ios,
         color: ColorsManager.grey1,
       ),
-      onPressed: authController.adminUser.value.position == AppConstants.userRoles[1] ? () {
-        if (appBarTitle == "Whitemark Hotels" ) {
+      onPressed:  () {
+        if (appBarTitle == "Whitemark Hotels" && authController.adminUser.value.position == AppConstants.userRoles[1] ) {
           Get.to(() => LandingPage());
         } else {
           if(onBackButton!=null){
@@ -42,7 +42,7 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,
           }
 
         }
-      } : null,
+      } ,
     ),
     title: Obx(
       () => buildAppBarTitle(appBarTitle,

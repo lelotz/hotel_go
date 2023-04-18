@@ -9,6 +9,7 @@ int stringToInt(String? givenString){
   int result = 0;
   try{
     result = int.parse(givenString!);
+    if(result < 0) return 0;
   }catch(e){
     logger.e({'str->int ERROR': '','str': givenString},e);
     return 0;
