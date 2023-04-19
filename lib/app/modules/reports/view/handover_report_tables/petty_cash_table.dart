@@ -33,7 +33,7 @@ class PettyCashUsageSection extends GetView<ReportGeneratorController> {
                       text: 'Petty Cash',
                     ),
                     reportEntryHeader(
-                        onRefreshEntries: controller.initData,
+                        onRefreshEntries: controller.loadReportData,
                         title: "Petty Cash Transactions",
                         onSave: () async {
                           controller.queTableKey(

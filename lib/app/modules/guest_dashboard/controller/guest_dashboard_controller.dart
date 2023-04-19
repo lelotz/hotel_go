@@ -131,7 +131,16 @@ class GuestDashboardController extends GetxController{
     logger.i({'housekeepers': '${houseKeepingStaffNames.value.length}'});
   }
 
+  setSelectedHouseKeeperModel()async{
+    await AdminUserRepository().getAdminUserByName(selectedHouseKeeperName.value).then((value) {
+      if(value.isNotEmpty){
+        selectedHouseKeeper.value = value[0];
+      }
+    });
+  }
+
   assignHouseKeeperRoomToClean()async{
+    await setSelectedHouseKeeperModel();
     await UserActivityRepository().createUserActivity(
         UserActivity(
           activityId: Uuid().v1(),
@@ -146,6 +155,8 @@ class GuestDashboardController extends GetxController{
           dateTime: DateTime.now().toIso8601String()
         ).toJson()
     );
+    selectedHouseKeeper.value = AdminUser.incrementRoomsSold(selectedHouseKeeper.value.toJson());
+    await AdminUserRepository().updateAdminUser(selectedHouseKeeper.value.toJson());
     await getHouseKeepingUserActivity();
     housekeeperAssigned.value = true;
   }

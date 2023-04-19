@@ -2,6 +2,7 @@
 
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
+import 'package:hotel_pms/widgets/text/small_text.dart';
 import '../../../../../core/values/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/values/localization/local_keys.dart';
@@ -29,7 +30,7 @@ class RoomAndGuestCard extends GetView<GuestDashboardController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          /// Room Number
+          /// Room Number & Status
           Stack(
             alignment: Alignment.bottomCenter,
             children: [
@@ -54,8 +55,12 @@ class RoomAndGuestCard extends GetView<GuestDashboardController> {
 
           /// Guest Name
           Obx(()=>LabeledText(title: LocalKeys.kGuest.tr, subtitle: controller.clientUser.value.fullName!)),
+          /// Phone Number
+          Obx(()=>SmallText(text: controller.clientUser.value.idNumber!.split(':').length > 1 ?
+                                  controller.clientUser.value.idNumber!.split(':')[1] : '-'
+          )),
 
-          /// Today's Date
+
 
         ],
 
@@ -66,11 +71,7 @@ class RoomAndGuestCard extends GetView<GuestDashboardController> {
             alignment: Alignment.bottomCenter,
             children: [
               SizedBox(
-                // decoration: BoxDecoration(
-                //     color: Colors.white24,
-                //     //border: Border.all(color: ColorsManager.darkGrey),
-                //     //borderRadius: const BorderRadius.all(Radius.circular(15))
-                // ),
+
                 height: const Size.fromHeight(160).height,
                 // width: Size.fromHeight(roomCardWidth).width,
                 child: Center(child: BigText(text: controller.selectedRoom.value.roomNumber.toString(),size: 60,)),
@@ -87,6 +88,10 @@ class RoomAndGuestCard extends GetView<GuestDashboardController> {
 
           /// Guest Name
           Obx(()=>LabeledText(title: LocalKeys.kGuest.tr, subtitle: controller.clientUser.value.fullName ?? 'Loading')),
+          /// Phone Number
+          Obx(()=>SmallText(text: controller.clientUser.value.idNumber!.split(':').length > 1 ?
+          controller.clientUser.value.idNumber!.split(':')[1] : '-'
+          )),
         ],
       )
     );

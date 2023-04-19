@@ -178,8 +178,8 @@ class LaundryFormController extends GetxController {
           await AdminUserRepository()
               .getAdminUserByName(selectedHouseKeeperName.value)
               .then((value) async{
-                if(value!=null){
-                  selectedHouseKeeper.value = AdminUser.fromJson(value.first);
+                if(value.isNotEmpty){
+                  selectedHouseKeeper.value = value.first;
                   selectedHouseKeeper.value = AdminUser.incrementRoomsSold(selectedHouseKeeper.value.toJson());
                   await AdminUserRepository().updateAdminUser(selectedHouseKeeper.value.toJson());
                   logger.i({'hk': selectedHouseKeeper.value.roomsSold});

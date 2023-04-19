@@ -50,6 +50,7 @@ class HouseKeepingRoomStatus extends GetView<GuestDashboardController> {
             ),
             UserActivityTableView(),
             CardButton(
+
                 onPressed: ()async{
                   controller.isSettingRoomToAvailable.value = true;
                   controller.isSettingRoomToAvailable.refresh();

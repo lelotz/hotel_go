@@ -102,11 +102,8 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                               padding: const EdgeInsets.all(15),
                               child: Obx(
                                 () => controller.isExporting.value
-                                    ? loadingAnimation(
-                                        actionStatement: 'Exporting')
-                                    : const BigText(
-                                        text: 'Submit Report',
-                                      ),
+                                    ? loadingAnimation(actionStatement: 'Exporting')
+                                    : const BigText(text: 'Submit Report'),
                               ),
                             )),
                       )
@@ -128,8 +125,8 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
         builder: (controller) => Card(
               child: Column(
                 children: [
-                  buildFormHeader("Configure Report",
-                      enableCancelButton: false),
+                  Obx(() => buildFormHeader("Configure Report ${controller.selectedSession.value.id}",
+                      enableCancelButton: false),),
                   SizedBox(
                     height: const Size.fromHeight(20).height,
                   ),
@@ -158,8 +155,9 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                         Card(
                           child: InkWell(
                             onTap: ()async{
-                              await controller.initData();
-                              controller.update();
+                              await controller.loadReportData();
+                              controller.updateUI();
+
                             },
                             child:Padding(
                               padding:  const EdgeInsets.all(8.0),
@@ -212,7 +210,8 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                                         if (selectedDate != null) {
                                           controller.reportStartDate.value =
                                               selectedDate;
-                                          controller.update();
+                                          controller.reportStartDate.refresh();
+
                                         }
                                       });
                                     },
@@ -258,7 +257,8 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                                         if (selectedDate != null) {
                                           controller.reportEndDate.value =
                                               selectedDate;
-                                          controller.update();
+                                          controller.reportEndDate.refresh();
+
                                         }
                                       });
                                     },

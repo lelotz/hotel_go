@@ -32,7 +32,7 @@ String extractDate(DateTime? date,{String? dateFromString}){
   return onlyDate;
 }
 String extractTime(DateTime time){
-  return "${time.hour}:${time.hour}";
+  return "${time.hour}:${time.minute}";
 }
 
 String resetTimeInDateTime(DateTime date,{bool toEndOfDay = false}){

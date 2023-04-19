@@ -109,18 +109,30 @@ class ReportGeneratorController extends GetxController {
   @override
   Future<void> onInit() async {
     super.onInit();
+    await loadExistingSessions();
     setReportConfigsFromReportSelector();
-    await initData();
+    await loadReportData();
+    updateUI(onInit: true);
   }
 
-  Future<void> initData() async {
-    await loadExistingSessions();
+  Future<void> loadReportData() async {
     await getRoomsSoldInCurrentSession();
     await getConferenceActivityInCurrentSession();
     await getLaundryTransactionsCurrentSession();
     await getRoomServiceTransactionsInCurrentSession();
     await getHotelIssuesInCurrentSession();
     await getPettyCashTransactions();
+
+  }
+
+  updateUI({bool onInit=false}){
+    roomsSoldInCurrentSession.refresh();
+    conferenceActivityCurrentSession.refresh();
+    laundryTransactionsInCurrentSession.refresh();
+    roomServiceTransactionsInCurrentSession.refresh();
+    hotelIssuesInCurrentSession.refresh();
+    pettyCashTransactions.refresh();
+    onInit ? null : update();
   }
 
   setReportConfigsFromReportSelector() {
@@ -273,6 +285,8 @@ class ReportGeneratorController extends GetxController {
         transactionsIds.add(transaction.transactionId ?? '');
       }
     }
+
+
     return transactionsIds;
   }
 
@@ -325,13 +339,16 @@ class ReportGeneratorController extends GetxController {
     if (isHandoverReport.value || searchBySelectedSession.value) {
       activity = await SessionManagementRepository()
           .getSessionActivityByTransactionTypeAndSessionId(transactionType,
-              selectedSession.value.id ?? '');
+              selectedSession.value.id ?? authController.sessionTracker.value.id!);
+      logger.i('fetched ${activity.length} of ${transactionType} from session ${selectedSession.value.id ?? authController.sessionTracker.value.id!}');
     } else {
       activity = await SessionManagementRepository()
           .getSessionActivityByTransactionTypeAndDateRange(
               transactionType,
               reportStartDate.value.toIso8601String(),
               reportEndDate.value.toIso8601String());
+      logger.i('fetched ${activity.length} of ${transactionType} from date range ${extractDate(reportStartDate.value)}-${extractDate(reportEndDate.value)}');
+
     }
 
     return activity;
@@ -366,6 +383,7 @@ class ReportGeneratorController extends GetxController {
     // existingSessionsView.value.sort();
     existingSessionsView.refresh();
     logger.i('sessions loaded ${existingSessions.value.length}');
+
     setSessionById(authController.sessionController.currentSession.value.id ?? '');
 
   }

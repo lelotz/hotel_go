@@ -32,7 +32,7 @@ class RoomsUsedSection extends GetView<ReportGeneratorController> {
                   children: [
                     const BigText(text: "Rooms Sold Today"),
                     reportEntryHeader(
-                        onRefreshEntries: controller.initData,
+                        onRefreshEntries: controller.loadReportData,
                         title: "Rooms Sold",
                         onSave: () async {
                           controller.queTableKey(roomsTableKey, 'Rooms');

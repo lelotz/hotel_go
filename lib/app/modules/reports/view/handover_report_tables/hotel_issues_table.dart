@@ -34,7 +34,7 @@ class HotelIssuesSection extends GetView<ReportGeneratorController> {
                       text: 'Hotel Issues',
                     ),
                     reportEntryHeader(
-                        onRefreshEntries: controller.initData,
+                        onRefreshEntries: controller.loadReportData,
                         onSave: () async {
                           controller.queTableKey(
                               hotelIssuesTableKey, "hotel_issues");

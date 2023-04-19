@@ -26,13 +26,14 @@ class AdminUserRepository{
     AdminUser user = AdminUser().fromJsonList(response?? []).first;
     return user.fullName ?? 'Not Found';
   }
-  Future<List<Map<String, dynamic>>?> getAdminUserByName(String name)async{
+  Future<List<AdminUser>> getAdminUserByName(String name)async{
     List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,
         where: '${AdminUsersTable.fullName} = ?',
         whereArgs: [name]
     );
-    return response;
+
+    return AdminUser().fromJsonList(response ?? []);;
   }
   Future<List<Map<String, dynamic>>?> getAdminUserById(String id)async{
     List<Map<String, dynamic>>? response = await db.read(

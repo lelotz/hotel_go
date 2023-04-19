@@ -31,7 +31,7 @@ class RoomServiceTransactionsSection extends GetView<ReportGeneratorController> 
                   children: [
                     const BigText(text: 'Room Service Transactions'),
                     reportEntryHeader(
-                        onRefreshEntries: controller.initData,
+                        onRefreshEntries: controller.loadReportData,
                         title: "Room Service Transactions",
                         onSave: () async {
                           controller.queTableKey(

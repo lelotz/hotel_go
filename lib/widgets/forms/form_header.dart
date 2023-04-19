@@ -12,7 +12,7 @@ Widget buildFormHeader(String formName,{bool enableCancelButton = true}){
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children:  [
-            BigText(text: formName,size: 18,),
+            BigText(text: formName,size: 18,selectable: false,),
             //SizedBox(width: const Size.fromWidth(170).width,),
             enableCancelButton ? InkWell(onTap: (){
               Navigator.of(Get.overlayContext!).pop();},child: const Icon(Icons.close)):

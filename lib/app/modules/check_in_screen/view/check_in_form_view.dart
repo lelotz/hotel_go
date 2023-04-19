@@ -270,11 +270,11 @@ class CheckInView extends GetView<CheckInFormController> {
                                   SizedBox(width: const Size.fromWidth(35).width,),
                                   Expanded(
                                     child: TextFieldInput(
-                                        textEditingController: controller.paidTodayCtrl,
-                                        onChanged: controller.stayCost,
-                                        hintText: LocalKeys.kPaidToday.tr,
+                                        textEditingController: controller.phoneNumberCtrl,
+                                        // onChanged: controller.stayCost,
+                                        hintText: LocalKeys.kPhoneNumber.tr,
                                         textInputType: TextInputType.number,
-                                        validation: DataValidation.isNotEmpty,
+                                        validation: DataValidation.isNumeric,
                                     ),
                                   ),
                                   // const Expanded(
@@ -284,6 +284,23 @@ class CheckInView extends GetView<CheckInFormController> {
                                 ],
                               ),
                             ),
+                            SizedBox(height: const Size.fromHeight(15).height,),
+                            SizedBox(
+                              width: inputPairWidth,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFieldInput(
+                                      textEditingController: controller.paidTodayCtrl,
+                                      onChanged: controller.stayCost,
+                                      hintText: LocalKeys.kPaidToday.tr,
+                                      textInputType: TextInputType.number,
+                                      validation: DataValidation.isNotEmpty,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         )),
 
@@ -333,25 +350,22 @@ class CheckInView extends GetView<CheckInFormController> {
                 ],
               ),
               /// Cost Summary Bottom Row
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  color: Colors.black87,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 40),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            SizedBox(width: const Size.fromWidth(20).width,),
-                            Obx(() => LabeledText(title: LocalKeys.kTotalCost.tr,isNumber: true, subtitle: controller.roomCost.value.toString(),subtitleColor: Colors.white,),),
-                            SizedBox(width: const Size.fromWidth(20).width,),
-                            LabeledText(title: LocalKeys.kBalance.tr,isNumber: true, subtitle:controller.outstandingBalance.value.toString(),subtitleColor: Colors.white,),
-                          ],
-                        ),
-                      ],
-                    ),
+              Container(
+                color: Colors.black87,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 40),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(width: const Size.fromWidth(20).width,),
+                          Obx(() => LabeledText(title: LocalKeys.kTotalCost.tr,isNumber: true, subtitle: controller.roomCost.value.toString(),subtitleColor: Colors.white,),),
+                          SizedBox(width: const Size.fromWidth(20).width,),
+                          LabeledText(title: LocalKeys.kBalance.tr,isNumber: true, subtitle:controller.outstandingBalance.value.toString(),subtitleColor: Colors.white,),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),

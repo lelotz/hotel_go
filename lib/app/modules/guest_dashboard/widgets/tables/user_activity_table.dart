@@ -67,7 +67,7 @@ class UserActivityTableView extends GetView<GuestDashboardController> {
 
               ],
 
-              rows: List<DataRow>.generate(controller.userActivityCount.value, (index) {
+              rows: List<DataRow>.generate(controller.userActivity.value.length, (index) {
                 String date = extractDate(DateTime.parse(controller.userActivity.value[index].dateTime!));
                 String time = "${DateTime.parse(controller.userActivity.value[index].dateTime!).hour}:${DateTime.parse(controller.userActivity.value[index].dateTime!).minute}";
                 return DataRow(

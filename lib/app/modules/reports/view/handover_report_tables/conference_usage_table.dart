@@ -31,7 +31,7 @@ class ConferenceUsageSection extends GetView<ReportGeneratorController> {
                   children: [
                     const BigText(text: "Conference Usage Today"),
                     reportEntryHeader(
-                        onRefreshEntries: controller.initData,
+                        onRefreshEntries: controller.loadReportData,
                         title: "Conference Transactions",
                         onSave: () async {
                           controller.queTableKey(

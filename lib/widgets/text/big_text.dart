@@ -17,6 +17,7 @@ class BigText extends StatelessWidget {
   final FontStyle fontStyle;
   final TextOverflow overFlow;
   final bool isNumber;
+  final bool selectable;
 
   const BigText({Key? key,
     required this.text,
@@ -28,13 +29,28 @@ class BigText extends StatelessWidget {
     this.height= AppSize.size4/3,
     this.fontStyle = FontStyle.normal,
     this.fontWeight = FontWeight.bold,
-    this.overFlow=TextOverflow.ellipsis
+    this.overFlow=TextOverflow.ellipsis,
+    this.selectable=false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     bool isANumber = RegExp(r'^[0-9]+$').hasMatch(text);
-    return Text(
+    return selectable ? SelectableText(
+      isANumber ? formatNumber(text) : text,
+      maxLines: maxLines,
+      // textHeightBehavior: TextHeightBehavior(leadingDistribution: TextLeadingDistribution.even),
+      // overflow: overFlow,
+      //strutStyle: StrutStyle(),
+      style: TextStyle(
+          decoration: linehtrough ? TextDecoration.lineThrough : TextDecoration.none,
+          color: color,
+          fontFamily: FontConstants.fontName,
+          fontWeight: fontWeight,
+          fontSize: Size.fromWidth(size).width,
+          height: height,
+          fontStyle: fontStyle
+      ),) : Text(
       isANumber ? formatNumber(text) : text,
       maxLines: maxLines,
       overflow: overFlow,

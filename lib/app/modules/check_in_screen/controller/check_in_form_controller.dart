@@ -38,6 +38,7 @@ class CheckInFormController extends GetxController{
   TextEditingController idNumberCtrl = TextEditingController();
   TextEditingController paidTodayCtrl = TextEditingController();
   TextEditingController countryOfBirthCtrl = TextEditingController();
+  TextEditingController phoneNumberCtrl = TextEditingController();
   Rx<DateTime> checkInDate = Rx<DateTime>(DateTime.now());
   Rx<DateTime> checkOutDate = Rx<DateTime>(DateTime.now());
   Map<String,dynamic> checkInArtifacts = {};
@@ -125,6 +126,20 @@ class CheckInFormController extends GetxController{
     // update();
   }
 
+  disposeInputControllers(){
+    fullNameCtrl.dispose();
+    nightsCtrl.dispose();
+    adultsCtrl.dispose();
+    childrenCtrl.dispose();
+    goingToCtrl.dispose();
+    comingFromCtrl.dispose();
+    idTypeCtrl.dispose();
+    idNumberCtrl.dispose();
+    paidTodayCtrl.dispose();
+    countryOfBirthCtrl.dispose();
+    phoneNumberCtrl.dispose();
+  }
+
   calculateOutstandingBalance (){
     if(stringToInt(paidTodayCtrl.value.text) > -1 && stringToInt(paidTodayCtrl.value.text) <= roomCost.value){
       outstandingBalance.value = roomCost.value - (stringToInt(paidTodayCtrl.text));
@@ -149,21 +164,12 @@ class CheckInFormController extends GetxController{
   }
 
   checkInGuest()async {
-    // int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType[LocalKeys.kVip] : AppConstants.roomType[LocalKeys.kStd];
-    //
-    // roomCost.value = stringToInt(nightsCtrl.text) * roomPrice;
-    //
-    // outstandingBalance.value = roomCost.value - stringToInt(paidTodayCtrl.text);
     stayCost();
 
     await createClientProfile().then((value) async{
-      //showSnackBar("Created Profile", Get.context!);
         await createRoomTransaction().then((value) async{
-          //showSnackBar("Created Transaction", Get.context!);
           await updateRoomData().then((value)async {
-           // showSnackBar("Updated RoomsStatus", Get.context!);
             await updateAdminUserRoomsSold().then((value) {
-              //showSnackBar("Updated Rooms Sold", Get.context!);
             }).then((value) async {
                 if(int.tryParse(paidTodayCtrl.text) != null && int.tryParse(paidTodayCtrl.text) != 0){
                   final String collectPaymentId = const Uuid().v1();
@@ -195,6 +201,7 @@ class CheckInFormController extends GetxController{
           });
         });
       });
+    disposeInputControllers();
 
   }
   Future<void> createClientProfile()async{
@@ -202,7 +209,7 @@ class CheckInFormController extends GetxController{
         clientId: userId,
         fullName: fullNameCtrl.text,
         idType: idTypeCtrl.text,
-        idNumber: idNumberCtrl.text,
+        idNumber: idNumberCtrl.text +':' + phoneNumberCtrl.text,
         countryOfBirth: countryOfBirthCtrl.text
     );
     await ClientUserRepository().createClientUser(

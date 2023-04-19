@@ -33,7 +33,7 @@ class LaundryUsageSection extends GetView<ReportGeneratorController> {
                       text: 'Laundry Transactions',
                     ),
                     reportEntryHeader(
-                        onRefreshEntries: controller.initData,
+                        onRefreshEntries: controller.loadReportData,
                         title: "Laundry Transactions",
                         onSave: () async {
                           controller.queTableKey(
