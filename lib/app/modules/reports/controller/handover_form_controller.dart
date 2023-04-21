@@ -107,6 +107,12 @@ class ReportGeneratorController extends GetxController {
   Rx<List<String>> existingSessionsView = Rx<List<String>>([]);
   Rx<String> selectedSessionView = "".obs;
   Rx<String> roomSummaryValue = "".obs;
+  Rx<String> roomDebtValue = "".obs;
+  Rx<String> conferenceSummaryValue = "".obs;
+  Rx<String> conferenceAdvanceSummaryValue = "".obs;
+  Rx<String> laundrySummaryValue = "".obs;
+  Rx<String> pettyCashSummaryValue = "".obs;
+  Rx<String> roomServiceSummaryValue = "".obs;
   Logger logger = AppLogger.instance.logger;
 
   @override
@@ -145,7 +151,13 @@ class ReportGeneratorController extends GetxController {
 
   updateSummaryValues(){
     roomPaymentsCtr.text = roomSummaryValue.value;
-    logger.i('roomSummaryValue ${roomSummaryValue.value}');
+    conferencePaymentsCtr.text = conferenceSummaryValue.value;
+    conferenceAdvancePaymentsCtr.text = conferenceAdvanceSummaryValue.value;
+    laundryPaymentsCtr.text = laundrySummaryValue.value;
+    roomServicePaymentsCtr.text = roomServiceSummaryValue.value;
+    roomDebtPaymentsCtr.text = roomDebtValue.value;
+    pettyCashOutCtr.text = pettyCashSummaryValue.value;
+
 
   }
 
@@ -279,33 +291,45 @@ class ReportGeneratorController extends GetxController {
     try{
       switch (tableTitle) {
         case RoomsUsedColumnNames.paid:
-          if(roomSummaryValue.value ==''){
+          if(roomSummaryValue.value =='') {
             roomSummaryValue.value = summaryValue;
           }
 
-
+          break;
+        case RoomsUsedColumnNames.debt:
+          if(roomDebtValue.value=='') {
+            roomDebtValue.value = summaryValue;
+          }
 
           break;
-        // case RoomsUsedColumnNames.debt:
-        //   roomDebtPaymentsCtr.text = summaryValue;
-        //   break;
-        // case ConferenceTableColumnNames.advance:
-        //   conferenceAdvancePaymentsCtr.text = summaryValue;
-        //   break;
-        // case ConferenceTableColumnNames.totalCost:
-        //   conferencePaymentsCtr.text = summaryValue;
-        //   break;
-        // case LaundryTableColumnNames.amountPaid:
-        //   laundryPaymentsCtr.text = summaryValue;
-        //   break;
-        // case RoomsServiceColumnNames.amountPaid:
-        //   roomServicePaymentsCtr.text = summaryValue;
-        //   break;
-        // case PettyCashTableColumnNames.amountPaid:
-        //   pettyCashOutCtr.text = summaryValue;
-        //   break;
+        case ConferenceTableColumnNames.advance:
+          if(conferenceAdvanceSummaryValue.value == '') {
+            conferenceAdvanceSummaryValue.value = summaryValue;
+          }
+          break;
+        case ConferenceTableColumnNames.totalCost:
+          if(conferenceSummaryValue.value=='') {
+            conferenceAdvanceSummaryValue.value = summaryValue;
+          }
+
+          break;
+        case LaundryTableColumnNames.amountPaid:
+          if(laundrySummaryValue.value=='') {
+            laundrySummaryValue.value = summaryValue;
+          }
+          break;
+        case RoomsServiceColumnNames.amountPaid:
+          if(roomServiceSummaryValue.value=='') {
+            roomServiceSummaryValue.value = summaryValue;
+          }
+          break;
+        case PettyCashTableColumnNames.amountPaid:
+          if(pettyCashSummaryValue.value=='') {
+            pettyCashSummaryValue.value = summaryValue;
+          }
+          break;
         default:
-        //logger.w('Table name $tableTitle does not exist');
+          logger.w('Table name $tableTitle does not exist');
       }
     }catch(e){
       logger.w('summary data error ${e.toString()}');
