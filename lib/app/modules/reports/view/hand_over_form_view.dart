@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/check_in_screen/view/check_in_form_view.dart';
+import 'package:hotel_pms/app/modules/reports/controller/report_selector_controller.dart';
 import 'package:hotel_pms/app/modules/reports/view/handover_report_tables/petty_cash_table.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
@@ -44,11 +45,12 @@ class HandoverReport extends GetView<ReportGeneratorController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportGeneratorController>(
-        init: ReportGeneratorController(reportConfigs: reportConfigs),
+        init: ReportGeneratorController(),
         builder: (controller) => Scaffold(
               appBar: buildGlobalAppBar(context, appBarTitle: "Handover Form",onBackButton: (){
                 Get.back();
                 Get.delete<ReportGeneratorController>();
+                Get.delete<ReportSelectorController>();
               }),
               body: Padding(
                 padding:
@@ -121,7 +123,7 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportGeneratorController>(
-        init: ReportGeneratorController(reportConfigs: Get.find<ReportGeneratorController>().reportConfigs),
+        init: ReportGeneratorController(),
         builder: (controller) => Card(
               child: Column(
                 children: [

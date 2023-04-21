@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/conference_booking_details_repo.dart';
 import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
@@ -11,7 +10,6 @@ import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:hotel_pms/core/values/localization/messages.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import '../../../../core/logs/logger_instance.dart';
@@ -327,7 +325,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
     int serviceDurationInDays = bookingServiceEndDate.value.difference(bookingServiceStartDate.value).inDays;
     await ServiceBookingRepository().createServiceBooking(
         ServiceBooking(
-          id: bookServiceId.value,employeeId:authController.adminUser.value.appId,
+          id: bookServiceId.value,employeeId:authController.adminUser.value.id,
           bookingDatetime:resetTimeInDateTime(DateTime.now()),roomNumber: int.parse(roomNumberController.text),
           bookingExpiryDateTime: resetTimeInDateTime(bookingServiceStartDate.value.add(const Duration(days: -1))),
           serviceStartDate: resetTimeInDateTime(bookingServiceStartDate.value),
@@ -340,7 +338,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
       bookingCreated.value = true;
       await CollectedPaymentsRepository().createCollectedPayment(
           CollectPayment(
-          id: const Uuid().v1(), roomTransactionId: bookServiceId.value,employeeId: authController.adminUser.value.appId,
+          id: const Uuid().v1(), roomTransactionId: bookServiceId.value,employeeId: authController.adminUser.value.id,
           employeeName: authController.adminUser.value.fullName,clientName: nameController.text,clientId: '',
           roomNumber: int.parse(roomNumberController.text),amountCollected: int.parse(advancePaymentController.text),
           date: extractDate(DateTime.now()),time: extractTime(DateTime.now()),dateTime: DateTime.now().toIso8601String(),
@@ -375,7 +373,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
     serviceValueController.text = (stringToInt(conferencePackage.text) * stringToInt(peopleCountController.text)).toString();
     await ServiceBookingRepository().createServiceBooking(
         ServiceBooking(
-            id: bookServiceId.value,employeeId: authController.adminUser.value.appId,
+            id: bookServiceId.value,employeeId: authController.adminUser.value.id,
             bookingDatetime: DateTime.now().toIso8601String(),
             bookingExpiryDateTime: getBiggestDate()['startDate']?.add(const Duration(days: -1)).toIso8601String(),
             serviceStartDate: getBiggestDate()['startDate']?.toIso8601String(),
@@ -397,7 +395,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
             ).toJson()).then((value)async {
               await CollectedPaymentsRepository().createCollectedPayment(
                   CollectPayment(
-                    id: const Uuid().v1(), roomTransactionId: bookServiceId.value,employeeId: authController.adminUser.value.appId,
+                    id: const Uuid().v1(), roomTransactionId: bookServiceId.value,employeeId: authController.adminUser.value.id,
                       employeeName: authController.adminUser.value.fullName,clientName: nameController.text,clientId: '',
                     roomNumber: 0,amountCollected: int.parse(advancePaymentController.text),
                       date: extractDate(DateTime.now()),time: extractTime(DateTime.now()),dateTime: DateTime.now().toIso8601String(),

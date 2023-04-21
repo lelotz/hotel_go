@@ -3,6 +3,7 @@ import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/internal_transaction_repo.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
+import 'package:hotel_pms/app/modules/reports/controller/report_selector_controller.dart';
 import 'package:hotel_pms/app/modules/reports/table_sources/laundry_transactions_source.dart';
 import 'package:hotel_pms/app/modules/reports/table_sources/petty_cash_source.dart';
 import 'package:hotel_pms/app/modules/reports/table_sources/room_service_source.dart';
@@ -33,11 +34,12 @@ import '../table_sources/conference_usage_source.dart';
 import '../table_sources/rooms_used_table_source.dart';
 
 class ReportGeneratorController extends GetxController {
-  ReportGeneratorController({this.reportConfigs});
+  ReportGeneratorController();
 
   Map<String, dynamic>? reportConfigs;
 
   AuthController authController = Get.find<AuthController>();
+  ReportSelectorController reportSelectorController = Get.find<ReportSelectorController>();
 
   Rx<List<RoomTransaction>> roomsSoldInCurrentSession =
       Rx<List<RoomTransaction>>([]);
@@ -97,22 +99,38 @@ class ReportGeneratorController extends GetxController {
   Rx<int> reportDayOffset = Rx<int>(-1);
 
   Rx<DateTime> reportStartDate = Rx<DateTime>(DateTime.now());
-  Rx<DateTime> reportEndDate = Rx<DateTime>(DateTime.now().add(const Duration(days: -1)));
+  Rx<DateTime> reportEndDate =
+      Rx<DateTime>(DateTime.now().add(const Duration(days: -1)));
 
   Rx<List<SessionTracker>> existingSessions = Rx<List<SessionTracker>>([]);
   Rx<SessionTracker> selectedSession = Rx<SessionTracker>(SessionTracker());
   Rx<List<String>> existingSessionsView = Rx<List<String>>([]);
   Rx<String> selectedSessionView = "".obs;
-
+  Rx<String> roomSummaryValue = "".obs;
   Logger logger = AppLogger.instance.logger;
 
   @override
   Future<void> onInit() async {
     super.onInit();
-    await loadExistingSessions();
+    reportConfigs = reportSelectorController.reportConfigs;
     setReportConfigsFromReportSelector();
-    await loadReportData();
+    await loadExistingSessions();
+    initTextEditingControllers();
+    logger.i('Session at innit is ${selectedSession.value.id}');
+    // await loadReportData();
     updateUI(onInit: true);
+  }
+
+  initTextEditingControllers(){
+    // roomNumberController.text = "0";
+    // conferencePaymentsCtr.text = "0";
+    // conferenceAdvancePaymentsCtr.text = "0";
+    // roomPaymentsCtr.text = "0";
+    // roomDebtPaymentsCtr.text = "0";
+    // laundryPaymentsCtr.text = "0";
+    // roomServicePaymentsCtr.text = "0";
+    // pettyCashOutCtr.text = "0";
+    // totalDailyPaymentsCtr.text = "0";
   }
 
   Future<void> loadReportData() async {
@@ -122,25 +140,36 @@ class ReportGeneratorController extends GetxController {
     await getRoomServiceTransactionsInCurrentSession();
     await getHotelIssuesInCurrentSession();
     await getPettyCashTransactions();
+    updateSummaryValues();
+  }
+
+  updateSummaryValues(){
+    roomPaymentsCtr.text = roomSummaryValue.value;
+    logger.i('roomSummaryValue ${roomSummaryValue.value}');
 
   }
 
-  updateUI({bool onInit=false}){
-    roomsSoldInCurrentSession.refresh();
-    conferenceActivityCurrentSession.refresh();
-    laundryTransactionsInCurrentSession.refresh();
-    roomServiceTransactionsInCurrentSession.refresh();
-    hotelIssuesInCurrentSession.refresh();
-    pettyCashTransactions.refresh();
+  updateUI({bool onInit = false}) {
+    // roomsSoldInCurrentSession.refresh();
+    // roomsSoldInCurrentSession.update((val) {});
+    // conferenceActivityCurrentSession.refresh();
+    // laundryTransactionsInCurrentSession.refresh();
+    // roomServiceTransactionsInCurrentSession.refresh();
+    // hotelIssuesInCurrentSession.refresh();
+    // pettyCashTransactions.refresh();
     onInit ? null : update();
   }
 
   setReportConfigsFromReportSelector() {
     bool isOneDayApart = true;
-    if(reportConfigs !=null && reportConfigs!.keys.contains('endDate') && reportConfigs!.keys.contains('startDate')){
+    if (reportConfigs != null &&
+        reportConfigs!.keys.contains('endDate') &&
+        reportConfigs!.keys.contains('startDate')) {
       isOneDayApart = isDateDifferenceLessOrEqualTo(
-          DateTime.parse(reportConfigs?['endDate'] ?? DateTime.now().toIso8601String()),
-          DateTime.parse(reportConfigs?['startDate'] ?? DateTime.now().toIso8601String()),
+          DateTime.parse(
+              reportConfigs?['endDate'] ?? DateTime.now().toIso8601String()),
+          DateTime.parse(
+              reportConfigs?['startDate'] ?? DateTime.now().toIso8601String()),
           // reportConfigs!['endDate'],
           // reportConfigs! ['startDate'],
           1);
@@ -193,12 +222,14 @@ class ReportGeneratorController extends GetxController {
 
   Future<void> processTableExports() async {
     isExporting.value = true;
-    String filePath = await FileManager().generateFileName(userName: loggedInUser.value.fullName ?? 'system', category: 'Reports');
+    String filePath = await FileManager().generateFileName(
+        userName: loggedInUser.value.fullName ?? 'system', category: 'Reports');
 
-
-    ExcelWorkBook excelWorkBook = ExcelWorkBook(sheetProperties: reportExportInfo.value, excelFileName: filePath);
+    ExcelWorkBook excelWorkBook = ExcelWorkBook(
+        sheetProperties: reportExportInfo.value, excelFileName: filePath);
     setSummaryData();
-    Workbook workbook = excelWorkBook.createDailyReportSummary(summaryData.value);
+    Workbook workbook =
+        excelWorkBook.createDailyReportSummary(summaryData.value);
     await excelWorkBook.createFileWithSheetsFromSfTable(filePath, workbook);
 
     isExporting.value = false;
@@ -220,6 +251,8 @@ class ReportGeneratorController extends GetxController {
   }
 
   setSummaryData() {
+    logger.w('setting summary data');
+
     summaryData.value = {
       LocalKeys.kRooms: strToDouble(roomPaymentsCtr.text),
       '${LocalKeys.kRooms} ${LocalKeys.kDebts}':
@@ -229,46 +262,55 @@ class ReportGeneratorController extends GetxController {
           strToDouble(conferenceAdvancePaymentsCtr.text),
       LocalKeys.kRoomService: strToDouble(roomServicePaymentsCtr.text),
       LocalKeys.kLaundry: strToDouble(laundryPaymentsCtr.text),
-      LocalKeys.kPettyCash : strToDouble(pettyCashOutCtr.text)
+      LocalKeys.kPettyCash: strToDouble(pettyCashOutCtr.text)
     };
   }
 
-  setSessionById(String id){
-    for(SessionTracker session in existingSessions.value){
-      if(session.id == id){
+  setSessionById(String id) {
+    for (SessionTracker session in existingSessions.value) {
+      if (session.id == id) {
         selectedSession.value = session;
-
       }
     }
     selectedSession.refresh();
   }
 
   getSummaryData(String tableTitle, String summaryValue) {
-    switch (tableTitle) {
-      case RoomsUsedColumnNames.paid:
-        roomPaymentsCtr.text = summaryValue;
-        break;
-      case RoomsUsedColumnNames.debt:
-        roomDebtPaymentsCtr.text = summaryValue;
-        break;
-      case ConferenceTableColumnNames.advance:
-        conferenceAdvancePaymentsCtr.text = summaryValue;
-        break;
-      case ConferenceTableColumnNames.totalCost:
-        conferencePaymentsCtr.text = summaryValue;
-        break;
-      case LaundryTableColumnNames.amountPaid:
-        laundryPaymentsCtr.text = summaryValue;
-        break;
-      case RoomsServiceColumnNames.amountPaid:
-        roomServicePaymentsCtr.text = summaryValue;
-        break;
-      case PettyCashTableColumnNames.amountPaid:
-        pettyCashOutCtr.text = summaryValue;
-        break;
-      default:
-      //logger.w('Table name $tableTitle does not exist');
+    try{
+      switch (tableTitle) {
+        case RoomsUsedColumnNames.paid:
+          if(roomSummaryValue.value ==''){
+            roomSummaryValue.value = summaryValue;
+          }
+
+
+
+          break;
+        // case RoomsUsedColumnNames.debt:
+        //   roomDebtPaymentsCtr.text = summaryValue;
+        //   break;
+        // case ConferenceTableColumnNames.advance:
+        //   conferenceAdvancePaymentsCtr.text = summaryValue;
+        //   break;
+        // case ConferenceTableColumnNames.totalCost:
+        //   conferencePaymentsCtr.text = summaryValue;
+        //   break;
+        // case LaundryTableColumnNames.amountPaid:
+        //   laundryPaymentsCtr.text = summaryValue;
+        //   break;
+        // case RoomsServiceColumnNames.amountPaid:
+        //   roomServicePaymentsCtr.text = summaryValue;
+        //   break;
+        // case PettyCashTableColumnNames.amountPaid:
+        //   pettyCashOutCtr.text = summaryValue;
+        //   break;
+        default:
+        //logger.w('Table name $tableTitle does not exist');
+      }
+    }catch(e){
+      logger.w('summary data error ${e.toString()}');
     }
+
   }
 
   setReportType(String reportType) {
@@ -276,22 +318,22 @@ class ReportGeneratorController extends GetxController {
     selectedReportType.refresh();
   }
 
-  Future<List<String>> getTransactionIdsByTransactionType(
-      String transactionType) async {
-    List<SessionActivity> transactions = await getTransaction(transactionType);
+  Future<List<String>> getTransactionIdsByTransactionType(String transactionType) async {
+    return getSessionActivityIds(await getTransaction(transactionType));
+  }
+
+  List<String> getSessionActivityIds(List<SessionActivity> transactions) {
     List<String> transactionsIds = [];
     for (SessionActivity transaction in transactions) {
       if (transaction.transactionId != null) {
         transactionsIds.add(transaction.transactionId ?? '');
       }
     }
-
-
     return transactionsIds;
   }
 
   Future<void> getPettyCashTransactions() async {
-    List<String> pettyCashTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.pettyCash);
+    List<String> pettyCashTransactionsIds = getSessionActivityIds(await getTransaction(TransactionTypes.pettyCash));
 
     pettyCashTransactions.value = await InternalTransactionRepository()
         .getMultipleInternalTransactionByIds(pettyCashTransactionsIds);
@@ -323,12 +365,16 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<void> getRoomsSoldInCurrentSession() async {
-    List<String> roomTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.room);
-    roomsSoldInCurrentSession.value = await RoomTransactionRepository().getMultipleRoomTransactions(roomTransactionsIds);
+    List<String> roomTransactionsIds =
+        await getTransactionIdsByTransactionType(TransactionTypes.room);
+    roomsSoldInCurrentSession.value = await RoomTransactionRepository()
+        .getMultipleRoomTransactions(roomTransactionsIds);
   }
 
   Future<void> getLaundryTransactionsCurrentSession() async {
-    List<String> laundryTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.laundryPayment);
+    List<String> laundryTransactionsIds =
+        await getTransactionIdsByTransactionType(
+            TransactionTypes.laundryPayment);
     laundryTransactionsInCurrentSession.value =
         await CollectedPaymentsRepository().getMultipleCollectedPaymentsByIds(
             laundryTransactionsIds, TransactionTypes.laundryPayment);
@@ -338,53 +384,74 @@ class ReportGeneratorController extends GetxController {
     List<SessionActivity> activity = [];
     if (isHandoverReport.value || searchBySelectedSession.value) {
       activity = await SessionManagementRepository()
-          .getSessionActivityByTransactionTypeAndSessionId(transactionType,
-              selectedSession.value.id ?? authController.sessionTracker.value.id!);
-      logger.i('fetched ${activity.length} of ${transactionType} from session ${selectedSession.value.id ?? authController.sessionTracker.value.id!}');
+          .getSessionActivityByTransactionTypeAndSessionId(
+              transactionType,
+              selectedSession.value.id ??
+                  authController.sessionTracker.value.id ??
+                  '');
+      if(activity.length > 0){
+        logger.i('fetched ${activity.length} of ${transactionType} from session ${selectedSession.value.id ?? 'selected session was null used current session${authController.sessionTracker.value.id ?? 'auth controller empty'}'}');
+
+      }
     } else {
       activity = await SessionManagementRepository()
           .getSessionActivityByTransactionTypeAndDateRange(
               transactionType,
               reportStartDate.value.toIso8601String(),
               reportEndDate.value.toIso8601String());
-      logger.i('fetched ${activity.length} of ${transactionType} from date range ${extractDate(reportStartDate.value)}-${extractDate(reportEndDate.value)}');
+      if(activity.length>0){
+        logger.i('fetched ${activity.length} of ${transactionType} from date range ${extractDate(reportStartDate.value)}-${extractDate(reportEndDate.value)}');
 
+      }
     }
 
     return activity;
   }
 
-  setSessionForReport(String sessionView){
+  setSessionForReport(String sessionView) {
     selectedSessionView.value = sessionView;
     String sessionId = selectedSessionView.value.split('\n\n')[1];
     setSessionById(sessionId);
     searchBySelectedSession.value = true;
   }
 
-  Future<void> loadExistingSessions()async{
+  Future<void> loadExistingSessions() async {
     existingSessions.value.clear();
     existingSessionsView.value.clear();
     await SessionManagementRepository().getAllSessionTrackers().then((value) {
       existingSessions.value = value;
-      existingSessions.value.sort((a,b)=> DateTime.parse(b.dateCreated!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateCreated!).millisecondsSinceEpoch));
+      existingSessions.value.sort((a, b) => DateTime.parse(b.dateCreated!)
+          .millisecondsSinceEpoch
+          .compareTo(DateTime.parse(a.dateCreated!).millisecondsSinceEpoch));
     });
 
-    for(SessionTracker session in existingSessions.value){
-      String userName = await AdminUserRepository().getAdminUserNameById(session.employeeId!).then((value) => value);
+    for (SessionTracker session in existingSessions.value) {
+      String userName = await AdminUserRepository()
+          .getAdminUserNameByAppId(session.employeeId!)
+          .then((value) => value);
 
       String startDate = DateTime.parse(session.dateCreated!).day.toString();
-      String endDate= DateTime.parse(session.dateEnded ?? DateTime.now().toIso8601String()).day.toString();
-      String dayRange = startDate == endDate ? '$endDate' : '$startDate - $endDate';
-      String dates = '        ${getMonthName(DateTime.parse(session.dateCreated?? DateTime.now().toIso8601String()).month)}, $dayRange';
-      String time = extractTime(DateTime.parse(session.dateCreated?? DateTime.now().toIso8601String())) + ' - ' +
-          extractTime(DateTime.parse(session.dateEnded ?? DateTime.now().toIso8601String()));
-      existingSessionsView.value.add('${userName} ${dates}\n$time\n\n${session.id}');
+      String endDate =
+          DateTime.parse(session.dateEnded ?? DateTime.now().toIso8601String())
+              .day
+              .toString();
+      String dayRange =
+          startDate == endDate ? '$endDate' : '$startDate - $endDate';
+      String dates =
+          '        ${getMonthName(DateTime.parse(session.dateCreated ?? DateTime.now().toIso8601String()).month)}, $dayRange';
+      String time = extractTime(DateTime.parse(
+              session.dateCreated ?? DateTime.now().toIso8601String())) +
+          ' - ' +
+          extractTime(DateTime.parse(
+              session.dateEnded ?? DateTime.now().toIso8601String()));
+      existingSessionsView.value
+          .add('${userName} ${dates}\n$time\n\n${session.id}');
     }
     // existingSessionsView.value.sort();
     existingSessionsView.refresh();
     logger.i('sessions loaded ${existingSessions.value.length}');
 
-    setSessionById(authController.sessionController.currentSession.value.id ?? '');
-
+    setSessionById(
+        authController.sessionController.currentSession.value.id ?? '');
   }
 }

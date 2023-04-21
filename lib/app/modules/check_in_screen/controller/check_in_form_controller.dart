@@ -45,7 +45,7 @@ class CheckInFormController extends GetxController{
 
   HomepageController? homepageController;
   Rx<RoomData> selectedRoomData = Rx<RoomData>(RoomData());
-  Future<String> get employeeId async => Get.find<AuthController>().adminUser.value.appId!;
+  Future<String> get employeeId async => Get.find<AuthController>().adminUser.value.id!;
   Future<String> get employeeIdName async => Get.find<AuthController>().adminUser.value.fullName!;
 
   Rx<String> payMethod = Rx<String>('');
@@ -165,13 +165,12 @@ class CheckInFormController extends GetxController{
 
   checkInGuest()async {
     stayCost();
-
     await createClientProfile().then((value) async{
         await createRoomTransaction().then((value) async{
           await updateRoomData().then((value)async {
             await updateAdminUserRoomsSold().then((value) {
             }).then((value) async {
-                if(int.tryParse(paidTodayCtrl.text) != null && int.tryParse(paidTodayCtrl.text) != 0){
+                if(int.tryParse(paidTodayCtrl.text) != null && int.tryParse(paidTodayCtrl.text)! > 0){
                   final String collectPaymentId = const Uuid().v1();
                   CollectPayment collectPayment = CollectPayment(
                     id: collectPaymentId,
@@ -201,7 +200,7 @@ class CheckInFormController extends GetxController{
           });
         });
       });
-    disposeInputControllers();
+    // disposeInputControllers();
 
   }
   Future<void> createClientProfile()async{

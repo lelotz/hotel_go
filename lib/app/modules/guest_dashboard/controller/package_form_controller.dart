@@ -88,7 +88,7 @@ class PackageFormController extends GetxController {
     GuestPackage package = GuestPackage(
       id: const Uuid().v1(),
       roomTransactionId: metaData.value[LocalKeys.kRoomTransaction].value.id!,
-      storedEmployeeId: metaData.value[LocalKeys.kLoggedInUser].value.appId,
+      storedEmployeeId: metaData.value[LocalKeys.kLoggedInUser].value.id,
       dateStored: DateTime.now().toIso8601String(),
       description: packageDescriptionCtrl.text,
       unit: packageDescriptionCtrl.text,
@@ -127,7 +127,7 @@ class PackageFormController extends GetxController {
     if(returnedPackagesBuffer.value.contains(package)){
       returnedPackagesBuffer.value.remove(package);
     }else{
-      package.returnedEmployeeId = metaData.value[LocalKeys.kLoggedInUser].value.appId;
+      package.returnedEmployeeId = metaData.value[LocalKeys.kLoggedInUser].value.id;
       package.dateReturned = DateTime.now().toIso8601String();
       returnedPackagesBuffer.value.add(package);
 

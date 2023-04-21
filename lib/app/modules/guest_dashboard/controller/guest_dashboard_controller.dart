@@ -87,10 +87,6 @@ class GuestDashboardController extends GetxController{
 
   }
 
-
-
-
-
   Future<void> initializeMetaData()async{
       metaData.value = {
       LocalKeys.kLoggedInUser: loggedInUser,
@@ -149,7 +145,7 @@ class GuestDashboardController extends GetxController{
           employeeFullName: selectedHouseKeeperName.value,
           guestId: clientUser.value.clientId,
           roomTransactionId: roomData.currentTransactionId,
-          employeeId: loggedInUser.value.appId,
+          employeeId: loggedInUser.value.id,
           description: LocalKeys.kHouseKeeping,
           unit: selectedRoom.value.roomNumber.toString(),
           dateTime: DateTime.now().toIso8601String()
@@ -202,7 +198,7 @@ class GuestDashboardController extends GetxController{
                 activityId: const Uuid().v1(),
                 roomTransactionId: paymentDataController.roomTransaction.value.id,
                 guestId: clientUser.value.clientId,
-                employeeId: loggedInUser.value.appId,
+                employeeId: loggedInUser.value.id,
                 employeeFullName: loggedInUser.value.fullName,
                 description: LocalKeys.kCheckout.capitalize,
                 activityValue: 0,
@@ -296,7 +292,7 @@ class GuestDashboardController extends GetxController{
     UserActivity receiveKeyActivity = UserActivity(
       activityId: const Uuid().v1(),
       guestId: clientUser.value.clientId,
-      employeeId: loggedInUser.value.appId,
+      employeeId: loggedInUser.value.id,
       employeeFullName: loggedInUser.value.fullName,
       roomTransactionId: paymentDataController.roomTransaction.value.id,
       description: LocalKeys.kSubmitKey,
@@ -335,7 +331,7 @@ class GuestDashboardController extends GetxController{
     UserActivity returnKeyActivity = UserActivity(
       activityId: const Uuid().v1(),
       guestId: clientUser.value.clientId,
-      employeeId: loggedInUser.value.appId,
+      employeeId: loggedInUser.value.id,
       employeeFullName: loggedInUser.value.fullName,
       roomTransactionId: paymentDataController.roomTransaction.value.id,
       description: LocalKeys.kRetrieveKey,

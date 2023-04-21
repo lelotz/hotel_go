@@ -120,7 +120,7 @@ class LaundryFormController extends GetxController {
       id: const Uuid().v1(),
       roomTransactionId: metaData.value[LocalKeys.kRoomTransaction].value.id,
       clientId: metaData.value[LocalKeys.kClientUser].value.clientId,
-      employeeId: metaData.value[LocalKeys.kLoggedInUser].value.appId,
+      employeeId: metaData.value[LocalKeys.kLoggedInUser].value.id,
       dateTime: DateTime.now().toIso8601String(),
       paymentNotes: AppConstants.laundryLabel,
       transactionNotes:
@@ -273,7 +273,7 @@ class LaundryFormController extends GetxController {
             guestId: metaData.value[LocalKeys.kClientUser].value.clientId,
             roomTransactionId:
                 metaData.value[LocalKeys.kRoomTransaction].value.id,
-            employeeId: metaData.value[LocalKeys.kLoggedInUser].value.appId,
+            employeeId: metaData.value[LocalKeys.kLoggedInUser].value.id,
             employeeFullName:
                 metaData.value[LocalKeys.kLoggedInUser].value.fullName,
             activityValue: 0,

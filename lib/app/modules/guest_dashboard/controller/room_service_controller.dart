@@ -52,7 +52,7 @@ class RoomServiceFormController extends GetxController {
     OtherTransactions roomService = OtherTransactions(
       id: const Uuid().v1(),
       clientId: payDataController.roomTransaction.value.clientId,
-      employeeId: loggedInUser.appId,
+      employeeId: loggedInUser.id,
       roomTransactionId: payDataController.roomTransaction.value.id,
       roomNumber: selectedRoom.roomNumber,
       transactionNotes: serviceDescription.text,
@@ -90,7 +90,7 @@ class RoomServiceFormController extends GetxController {
           UserActivity roomServiceActivity = UserActivity(
             activityId: const Uuid().v1(),
             employeeFullName: loggedInUser.fullName,
-            employeeId: loggedInUser.appId,
+            employeeId: loggedInUser.id,
             guestId: ClientTable.clientId,
             activityValue: roomService.grandTotal,
             unit: '-',

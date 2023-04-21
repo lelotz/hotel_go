@@ -23,6 +23,17 @@ class AdminUserRepository{
 
   Future<String> getAdminUserNameById(String id)async{
     List<Map<String, dynamic>>? response = await getAdminUserById(id);
+
+    if(response!=null && response.isNotEmpty){
+      return AdminUser.fromJson(response.first).fullName!;
+
+    }
+
+    return 'Not Found';
+  }
+
+  Future<String> getAdminUserNameByAppId(String id)async{
+    List<Map<String, dynamic>>? response = await getAdminUserByAppId(id);
     AdminUser user = AdminUser().fromJsonList(response?? []).first;
     return user.fullName ?? 'Not Found';
   }
@@ -36,6 +47,15 @@ class AdminUserRepository{
     return AdminUser().fromJsonList(response ?? []);;
   }
   Future<List<Map<String, dynamic>>?> getAdminUserById(String id)async{
+    List<Map<String, dynamic>>? response = await db.read(
+        tableName: AdminUsersTable.tableName,
+        where: '${AdminUsersTable.id} = ?',
+        whereArgs: [id]
+    );
+    return response;
+  }
+
+  Future<List<Map<String, dynamic>>?> getAdminUserByAppId(String id)async{
     List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,
         where: '${AdminUsersTable.appId} = ?',
@@ -67,6 +87,7 @@ class AdminUserRepository{
 /// Users Table
 class AdminUsersTable{
   static const String tableName = "admin_users";
+  static const String id = "id";
   static const String appId = "appId";
   static const String fullName = "fullName";
   static const String firstName = "firstName";
@@ -79,6 +100,7 @@ class AdminUsersTable{
   '''
       CREATE TABLE IF NOT EXISTS $tableName(
         $appId TEXT PRIMARY KEY,
+        $id TEXT NOT NULL,
         $fullName TEXT NOT NULL,
         $firstName TEXT,
         $lastName TEXT,

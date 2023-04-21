@@ -80,7 +80,7 @@ class AuthController extends GetxController {
 
   Future<bool> validateLoginAttempt() async {
     await AdminUserRepository()
-        .getAdminUserById(adminUserPasswordCtrl.text)
+        .getAdminUserByAppId(adminUserPasswordCtrl.text)
         .then((value) {
       if (value != null && value.isNotEmpty) {
         adminUser.value = AdminUser.fromJson(value[0]);

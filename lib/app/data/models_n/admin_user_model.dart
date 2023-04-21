@@ -1,5 +1,6 @@
 
 class AdminUser {
+  String? id;
   String? appId;
   String? fullName;
   String? firstName;
@@ -12,6 +13,7 @@ class AdminUser {
   AdminUser(
       {
         this.appId,
+        this.id,
         this.fullName,
         this.firstName,
         this.lastName,
@@ -46,6 +48,7 @@ class AdminUser {
     lastName = json['lastName'];
     position = json['position'];
     phone = json['phone'];
+    id = json['id'];
     roomsSold = totalRoomsSold;
   }
 
@@ -59,6 +62,7 @@ class AdminUser {
     phone = json['phone'];
     roomsSold = json['roomsSold'];
     status = json['status'];
+    id = json['id'];
   }
 
   List<AdminUser> fromJsonList(List<Map<String,dynamic>> list){
@@ -83,6 +87,7 @@ class AdminUser {
     data['phone'] = phone;
     data['roomsSold'] = roomsSold;
     data['status'] = status;
+    data['id'] = id;
     return data;
   }
 }

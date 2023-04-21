@@ -14,6 +14,7 @@ class RoomsUsedSection extends GetView<ReportGeneratorController> {
   RoomsUsedSection({Key? key, required this.roomsTableKey}) : super(key: key);
 
   final RoomsUsedSource _roomSoldSource = RoomsUsedSource();
+
   final GlobalKey<SfDataGridState> roomsTableKey;
   final double minColumnWidth = 150;
 
@@ -135,4 +136,6 @@ class RoomsUsedSection extends GetView<ReportGeneratorController> {
           ),
         ));
   }
+
+
 }

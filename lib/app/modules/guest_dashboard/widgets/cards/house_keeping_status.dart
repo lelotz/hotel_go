@@ -36,7 +36,7 @@ class HouseKeepingRoomStatus extends GetView<GuestDashboardController> {
                     initialItem: 'Housekeeper'
                 ) : SizedBox()
                 ),
-                Obx(() => SmallText(size: 18,text: 'Housekeeper aliechaguliwa : ${controller.selectedHouseKeeperName ?? ''}'),
+                Obx(() => SmallText(size: 18,text: 'Housekeeper aliechaguliwa : ${controller.selectedHouseKeeperName}'),
                 ),
               ],
             ),),

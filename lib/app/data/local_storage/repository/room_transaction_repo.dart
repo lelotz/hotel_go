@@ -16,6 +16,7 @@ class RoomTransactionRepository extends SqlDatabase {
   /// Create RoomTransaction
   Future<int?> createRoomTransaction(Map<String, dynamic> row) async {
     int? rowNumber = await create(RoomTransactionsTable.tableName, row);
+    String employeeName = await AdminUserRepository().getAdminUserNameById(row[RoomTransactionsTable.employeeId]);
     await UserActivityRepository().createUserActivity(
         UserActivity(
             activityId: const Uuid().v1(),
@@ -25,10 +26,7 @@ class RoomTransactionRepository extends SqlDatabase {
             guestId: row[RoomTransactionsTable.clientId],
             unit: LocalKeys.kRoom,
             employeeId: row[RoomTransactionsTable.employeeId],
-            employeeFullName: await AdminUserRepository()
-                .getAdminUserById(row[RoomTransactionsTable.employeeId])
-                .then((value) =>
-                    AdminUser().fromJsonList(value ?? []).first.fullName),
+            employeeFullName: employeeName,
             dateTime: DateTime.now().toIso8601String(),
             roomTransactionId: row[RoomTransactionsTable.id]
         ).toJson());

@@ -59,7 +59,7 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
             const FormSelector(),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
-            const ReportSelector(),
+            ReportSelector(),
             SizedBox(width: const Size.fromWidth(36).width,),
 
 

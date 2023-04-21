@@ -143,7 +143,7 @@ class UserManagementView extends GetView<UserManagementController> {
                                         DataCell(SmallText(text: controller.allEmployees.value[index].position!,)),
                                         DataCell(SmallText(text: controller.allEmployees.value[index].roomsSold.toString(),)),
                                         DataCell(SmallText(text: controller.allEmployees.value[index].phone!,)),
-                                        DataCell(SmallText(text: controller.allEmployees.value[index].appId!,)),
+                                        DataCell(SmallText(text: controller.allEmployees.value[index].id!,)),
                                       ]);
                                 }
                                 ),
