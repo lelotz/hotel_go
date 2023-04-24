@@ -131,7 +131,7 @@ class AppConstants {
 
 
 
-  static const Map<String,dynamic> roomType = {
+  static const Map<String,int> roomType = {
     LocalKeys.kVip : 35000,
     LocalKeys.kStd : 30000,
   };

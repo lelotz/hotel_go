@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_data_controller.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
+import 'package:hotel_pms/app/modules/stay_calculator/stay_calculator.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
@@ -50,6 +52,7 @@ class GuestDashboardController extends GetxController{
   Rx<AdminUser> selectedHouseKeeper = Rx<AdminUser>(AdminUser());
   Rx<List<String>> houseKeepingStaffNames = Rx<List<String>>([]);
   Rx<String> selectedHouseKeeperName = Rx<String>('');
+  late StayCalculator stayCalculator;
 
   GuestDashboardController({this.isTest = false});
 
@@ -60,6 +63,7 @@ class GuestDashboardController extends GetxController{
   Future<void> onInit() async {
     super.onInit();
     selectedRoom.value = await RoomDataRepository().getRoom(roomData.roomNumber ?? 0);
+    stayCalculator = StayCalculator(roomData: selectedRoom.value,roomTransactionId: selectedRoom.value.currentTransactionId!);
     logger.wtf({'Initiating Guest Dashboard': selectedRoom.value.toJson(),'roomStatus': selectedRoom.value.roomStatus!.description});
     if(selectedRoom.value.roomStatus!.description == LocalKeys.kOccupied){
       isCheckedOut.value = false;
@@ -133,6 +137,21 @@ class GuestDashboardController extends GetxController{
         selectedHouseKeeper.value = value[0];
       }
     });
+  }
+
+  Future<void> extendGuestStay(DateTime? newCheckOutDate)async{
+    RoomTransaction roomTransaction = RoomTransaction();
+    await RoomTransactionRepository().getRoomTransaction(selectedRoom!.value.currentTransactionId!).then((value) {
+      if(value != null){
+        roomTransaction = RoomTransaction().fromJsonList(value).first;
+      }
+    });
+    await stayCalculator.updateStayCostByCheckOutDate(newCheckOutDate!.toIso8601String(), roomTransaction);
+    await paymentDataController.getCurrentRoomTransaction();
+    paymentDataController.update();
+    parseCheckInOutDate();
+    await getUserActivity();
+
   }
 
   assignHouseKeeperRoomToClean()async{

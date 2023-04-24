@@ -34,7 +34,11 @@ class AdminUserRepository{
 
   Future<String> getAdminUserNameByAppId(String id)async{
     List<Map<String, dynamic>>? response = await getAdminUserByAppId(id);
-    AdminUser user = AdminUser().fromJsonList(response?? []).first;
+    AdminUser user = AdminUser();
+    if(response!=null && response.isNotEmpty){
+      user = AdminUser().fromJsonList(response).first;
+    }
+
     return user.fullName ?? 'Not Found';
   }
   Future<List<AdminUser>> getAdminUserByName(String name)async{

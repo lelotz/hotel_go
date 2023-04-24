@@ -25,6 +25,7 @@ import '../../../data/local_storage/repository/user_activity_repo.dart';
 import '../../../data/models_n/room_data_model.dart';
 import '../../homepage_screen/controller/homepage_controller.dart';
 import '../../sales_module/controller/sales_controller.dart';
+import '../../stay_calculator/stay_calculator.dart';
 
 class CheckInFormController extends GetxController{
   Logger logger = AppLogger.instance.logger;
@@ -59,6 +60,7 @@ class CheckInFormController extends GetxController{
   bool isTest;
 
   String roomNumber;
+  late StayCalculator stayCalculator;
 
   CheckInFormController({this.isReport = false,this.roomNumber = "101",this.isTest=false});
 
@@ -69,6 +71,7 @@ class CheckInFormController extends GetxController{
     childrenCtrl.text = "0";
     nightsCtrl.text = "1";
     paidTodayCtrl.text = "0";
+
     // fullNameCtrl.text = mockNames[mockNameIndex];
     // goingToCtrl.text = mockCountries[mockCountriesIndex].split(' ')[1];
     // comingFromCtrl.text = mockCountries[random(0, mockCountries.length)].split(' ')[1];
@@ -77,6 +80,7 @@ class CheckInFormController extends GetxController{
     // countryOfBirthCtrl.text = mockCountries[mockCountriesIndex];
 
     await initializeRoomData(roomNumber);
+    stayCalculator = StayCalculator(roomData: selectedRoomData.value);
     stayCost();
     outstandingBalance();
   }
@@ -118,9 +122,8 @@ class CheckInFormController extends GetxController{
     payMethod.refresh();
   }
   stayCost(){
-    int roomPrice = selectedRoomData.value.isVIP == 1 ? AppConstants.roomType['VIP'] : AppConstants.roomType['STD'];
-    roomCost.value = (stringToInt(nightsCtrl.text) ) * roomPrice;
-    checkOutDate.value = checkOutDate.value.add(Duration(days: stringToInt(nightsCtrl.text)));
+    roomCost.value = stayCalculator.calculateStayCostByRoomTypeAndDays(selectedRoomData.value, stringToInt(nightsCtrl.text));
+    checkOutDate.value = DateTime.now().add(Duration(days: stringToInt(nightsCtrl.text)));
     roomCost.refresh();
     calculateOutstandingBalance();
     // update();

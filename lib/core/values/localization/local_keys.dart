@@ -17,6 +17,7 @@ class LocalKeys {
   static const String kExpired = "Expired";
 
 
+
   /// Input Prompts
   static const String kEnter = "Enter ";
   static const String kSelectSearchCategory = "Select Search Category";
@@ -69,7 +70,7 @@ class LocalKeys {
   /// General
   static const String kNewShift = "New Shift";
   static const String kContinue = "Continue";
-
+  static const String kExtendStay = "Extend Stay";
   static const String kSelectBillType = "Select Bill Type";
   static const String kPettyCash = "Petty Cash";
   static const String kHotelIssues = "Hotel Issues";

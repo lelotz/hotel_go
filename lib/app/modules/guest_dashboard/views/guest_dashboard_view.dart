@@ -61,6 +61,19 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                      Row(
                        children: [
                          ElevatedButton(
+                             onPressed: ()async{
+                               showDatePicker(
+                                   context: context,
+                                   initialDate:
+                                   DateTime.now(),
+                                   firstDate: DateTime.parse(controller.paymentDataController.roomTransaction.value.checkInDate!),
+                                   lastDate: DateTime(2024)).then((value) async{
+                                     await controller.extendGuestStay(value!);
+                               });
+                             },
+                             child: const SmallText(text: LocalKeys.kExtendStay,color: ColorsManager.grey2,)),
+                         SizedBox(width: const Size.fromWidth(AppSize.size12).width,),
+                         ElevatedButton(
                              onPressed: ()async{ await controller.checkOutGuest();},
                              child: const SmallText(text: LocalKeys.kCheckout,color: ColorsManager.grey2,)),
                          SizedBox(width: const Size.fromWidth(AppSize.size12).width,),
@@ -131,26 +144,39 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                                          ),
                                          child: Padding(
                                            padding: const EdgeInsets.all(AppPadding.padding8),
-                                           child: Row(
-                                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                           child: Obx(() => Column(
                                              children: [
-                                               //const AppIcon(icon: Icons.calendar_month,iconSize: 20,useBackground: true,),
-                                               LabeledText(
-                                                 title: LocalKeys.kCheckIn.tr,
-                                                 subtitle: controller.checkInDate.value,
-                                                 subtitleColor: ColorsManager.darkGrey,
-                                                 titleSize: AppSize.size16,subtitleSize: AppSize.size20,
-                                               ),
-                                               SizedBox(width: const Size.fromWidth(10).width,),
-                                               const SmallText(text: "|",size: 40,),
-                                               SizedBox(width: const Size.fromWidth(10).width,),
-                                               LabeledText(
-                                                 title: LocalKeys.kCheckout, subtitle: controller.checkOutDate.value,subtitleColor: ColorsManager.darkGrey,
-                                                 titleSize: AppSize.size16,subtitleSize: AppSize.size20,
-                                               ),
+                                               Row(
+                                                 children: [
 
+                                                   Icon(Icons.nights_stay_outlined),
+                                                   SizedBox(width: Size.fromWidth(10).width,),
+                                                   SmallText(text: 'Siku : ${controller.paymentDataController.roomTransaction.value.nights}'),
+
+                                                 ],
+                                               ),
+                                               Row(
+                                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                 children: [
+                                                   //const AppIcon(icon: Icons.calendar_month,iconSize: 20,useBackground: true,),
+                                                   LabeledText(
+                                                     title: LocalKeys.kCheckIn.tr,
+                                                     subtitle: controller.checkInDate.value,
+                                                     subtitleColor: ColorsManager.darkGrey,
+                                                     titleSize: AppSize.size16,subtitleSize: AppSize.size20,
+                                                   ),
+                                                   SizedBox(width: const Size.fromWidth(10).width,),
+                                                   const SmallText(text: "|",size: 40,),
+                                                   SizedBox(width: const Size.fromWidth(10).width,),
+                                                   LabeledText(
+                                                     title: LocalKeys.kCheckout, subtitle: controller.checkOutDate.value,subtitleColor: ColorsManager.darkGrey,
+                                                     titleSize: AppSize.size16,subtitleSize: AppSize.size20,
+                                                   ),
+
+                                                 ],
+                                               ),
                                              ],
-                                           ),
+                                           ),)
                                          ),
                                        ),
                                      ),

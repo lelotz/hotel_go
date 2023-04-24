@@ -112,15 +112,12 @@ class BookConferenceForm extends GetView<BookServiceFormController> {
                                       height: 400,
                                       width: 400,
                                       Obx(() => TableCalendar(
-                                        firstDay:
-                                        DateTime.utc(2010, 10, 16),
+                                        firstDay: DateTime.utc(2010, 10, 16),
                                         lastDay: DateTime.utc(2030, 3, 14),
                                         focusedDay:
                                         controller.focusDate.value,
-                                        selectedDayPredicate:
-                                        controller.dateIsSelected,
-                                        onDaySelected: controller
-                                            .addSelectedConferenceDates,
+                                        selectedDayPredicate: controller.dateIsSelected,
+                                        onDaySelected: controller.addSelectedConferenceDates,
                                       )));
                                 },
                                 currentTextColor: ColorsManager.darkGrey,

@@ -4,11 +4,12 @@ import 'package:hotel_pms/app/data/local_storage/repository/user_activity_repo.d
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
+import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../models_n/admin_user_model.dart';
-
+import 'package:get/get.dart';
 class RoomTransactionRepository extends SqlDatabase {
   /// Room Transactions CRUD
   RoomTransactionRepository();
@@ -66,13 +67,29 @@ class RoomTransactionRepository extends SqlDatabase {
         whereArgs: whereArgs);
   }
 
-  Future<int?> updateRoomTransaction(Map<String, dynamic> row) async {
+  Future<int?> updateRoomTransaction(Map<String, dynamic> row,{String? updateDetails,String? unit,bool createUserActivity=false}) async {
     String id = row[RoomTransactionsTable.id];
     int? rowId = await update(
         tableName: RoomTransactionsTable.tableName,
         row: row,
         where: '${RoomTransactionsTable.id} = ?',
         whereArgs: [id]);
+    if(createUserActivity) {
+      await UserActivityRepository().createUserActivity(UserActivity(
+          activityId: const Uuid().v1(),
+          activityValue: 0,
+          activityStatus: updateDetails ?? '',
+          description: updateDetails,
+          unit: unit ?? '',
+          roomTransactionId: row[RoomTransactionsTable.id],
+          employeeId: Get.find<AuthController>().adminUser.value.appId,
+          employeeFullName: Get.find<AuthController>().adminUser.value.fullName,
+          guestId: row[RoomTransactionsTable.clientId],
+          dateTime: DateTime.now().toIso8601String(),
+
+
+      ).toJson());
+    }
     return rowId;
   }
 }
