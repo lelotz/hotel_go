@@ -37,6 +37,13 @@ class OtherTransactions {
     transactionNotes = json['transactionNotes'];
     dateTime = json['dateTime'];
   }
+  List<OtherTransactions> fromJsonList(List<Map<String,dynamic>> value){
+    List<OtherTransactions> result = [];
+    for(Map<String,dynamic> element in value){
+      result.add(OtherTransactions.fromJson(element));
+    }
+    return result;
+  }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

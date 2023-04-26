@@ -1,6 +1,7 @@
+
+import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
 import 'package:hotel_pms/app/modules/login_screen/views/confirm_current_session_popup.dart';
-import 'package:hotel_pms/core/resourses/color_manager.dart';
-import 'package:hotel_pms/core/utils/date_formatter.dart';
+
 import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:hotel_pms/widgets/dialogs/dialod_builder.dart';
 import 'package:uuid/uuid.dart';
@@ -18,6 +19,7 @@ class SessionManager extends GetxController {
   Rx<SessionTracker> currentSession = Rx<SessionTracker>(SessionTracker());
   Rx<List<SessionTracker>> rogueSessions = Rx<List<SessionTracker>>([]);
   Rx<String> currentUserId = ''.obs;
+  Map rogueSessionNames = {};
 
   Rx<bool> sessionExists = false.obs;
   bool isTest = false;
@@ -34,11 +36,17 @@ class SessionManager extends GetxController {
     await getRougeSessions(userId);
 
     if (rogueSessions.value.length > 0) {
-      buildDialog(Get.context!, '', ConfirmCurrentSession(),
-          backgroundColor: ColorsManager.transparent);
+      buildDialog(Get.context!, '', ConfirmCurrentSession(),);
       logger.i('Confirming current Session');
     } else {
       await setCurrentSession(userId: userId);
+    }
+  }
+
+  linkRogueSessionIdsToEmployeeNames()async{
+    for(SessionTracker session in rogueSessions.value){
+      String employeeName = await AdminUserRepository().getAdminUserNameByAppId(session.employeeId!);
+      rogueSessionNames.addAll({session.employeeId:employeeName});
     }
   }
 
@@ -120,6 +128,7 @@ class SessionManager extends GetxController {
         }
         rogueSessions.refresh();
       }
+      await linkRogueSessionIdsToEmployeeNames();
 
       logger.i('rogue sessions detected: ${rogueSessions.value.length}');
     });

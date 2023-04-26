@@ -4,15 +4,17 @@ import 'package:hotel_pms/widgets/text/big_text.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
 
 class CardButton extends StatelessWidget {
-  CardButton({Key? key, required this.onPressed, required this.text, this.textColor=ColorsManager.darkGrey, this.isSmallText=true}) : super(key: key);
+  CardButton({Key? key, required this.onPressed, required this.text, this.textColor=ColorsManager.darkGrey, this.isSmallText=true,this.backgroundColor=ColorsManager.white}) : super(key: key);
   final Function onPressed;
   final String text;
   final Color textColor;
   final bool isSmallText;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: backgroundColor,
       child: InkWell(
         onTap: ()async{
           await onPressed();

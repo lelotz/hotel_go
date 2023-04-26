@@ -1,5 +1,4 @@
 import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
-import 'package:hotel_pms/app/data/local_storage/repository/room_data_repository.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/user_activity_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
@@ -7,9 +6,9 @@ import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../models_n/admin_user_model.dart';
 import 'package:get/get.dart';
+
+
 class RoomTransactionRepository extends SqlDatabase {
   /// Room Transactions CRUD
   RoomTransactionRepository();
@@ -55,6 +54,31 @@ class RoomTransactionRepository extends SqlDatabase {
         .then((value) {
       result = RoomTransaction().fromJsonList(value ?? []);
     });
+    return result;
+  }
+
+  Future<List<RoomTransaction>> getRoomTransactionsByEmployeeId({String? appId,String? id})async{
+    List<RoomTransaction> result = [];
+    if(appId!=null){
+      await read(
+          tableName: RoomTransactionsTable.tableName,
+          where:
+          '${RoomTransactionsTable.id}=?',
+          whereArgs: [appId])
+          .then((value) {
+        result = RoomTransaction().fromJsonList(value ?? []);
+      });
+    }
+    if(id!=null){
+      await read(
+          tableName: RoomTransactionsTable.tableName,
+          where:
+          '${RoomTransactionsTable.id}=?',
+          whereArgs: [id])
+          .then((value) {
+        result.addAll(RoomTransaction().fromJsonList(value ?? []));
+      });
+    }
     return result;
   }
 

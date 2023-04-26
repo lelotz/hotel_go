@@ -32,7 +32,7 @@ class PettyCashUsageSection extends GetView<ReportGeneratorController> {
                     const BigText(
                       text: 'Petty Cash',
                     ),
-                    reportEntryHeader(
+                    tableHeader(
                         onRefreshEntries: controller.loadReportData,
                         title: "Petty Cash Transactions",
                         onSave: () async {

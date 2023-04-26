@@ -43,6 +43,7 @@ class CheckInFormController extends GetxController{
   Rx<DateTime> checkInDate = Rx<DateTime>(DateTime.now());
   Rx<DateTime> checkOutDate = Rx<DateTime>(DateTime.now());
   Map<String,dynamic> checkInArtifacts = {};
+  String confirmText = '';
 
   HomepageController? homepageController;
   Rx<RoomData> selectedRoomData = Rx<RoomData>(RoomData());
@@ -60,6 +61,7 @@ class CheckInFormController extends GetxController{
   bool isTest;
 
   String roomNumber;
+  String messageBodySeparator = ":";
   late StayCalculator stayCalculator;
 
   CheckInFormController({this.isReport = false,this.roomNumber = "101",this.isTest=false});
@@ -102,6 +104,19 @@ class CheckInFormController extends GetxController{
 
     }
 
+  }
+
+  buildConfirmMessage({String separator=":"}){
+    separator = messageBodySeparator;
+    confirmText =
+    '''
+    Name$separator${fullNameCtrl.text}\n
+    Check-In$separator${extractDate(checkInDate.value)}\n
+    Check-Out$separator${extractDate(checkOutDate.value)}\n
+    Nights$separator${nightsCtrl.text}\n
+    Cost$separator${roomCost.value}\n
+    Pay Method$separator${payMethod.value}\n
+    Paid$separator${paidTodayCtrl.value.text}\n''';
   }
 
   bool validatePayMethod(){
@@ -167,7 +182,8 @@ class CheckInFormController extends GetxController{
   }
 
   checkInGuest()async {
-    stayCost();
+    // stayCost();
+
     await createClientProfile().then((value) async{
         await createRoomTransaction().then((value) async{
           await updateRoomData().then((value)async {

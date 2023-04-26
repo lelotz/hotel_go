@@ -50,6 +50,19 @@ class ServiceBookingRepository extends SqlDatabase{
         where: '${ServiceBookingTable.id} = ?', whereArgs: [row[ServiceBookingTable.id]]);
   }
 
+  Future<List<ServiceBooking>> getServiceBookingByEmployeeId({String? appId, String? id})async{
+    List<ServiceBooking> result = [];
+
+    await read(tableName: ServiceBookingTable.tableName,
+      where: '${ServiceBookingTable.employeeId}=? OR ${ServiceBookingTable.employeeId}=?',
+      whereArgs: [appId,id]
+    ).then((value) {
+      result = ServiceBooking().fromJsonList(value ?? []);
+    });
+    return result;
+
+  }
+
 
 
 }

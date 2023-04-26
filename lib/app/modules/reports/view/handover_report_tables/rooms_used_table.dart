@@ -32,7 +32,7 @@ class RoomsUsedSection extends GetView<ReportGeneratorController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const BigText(text: "Rooms Sold Today"),
-                    reportEntryHeader(
+                    tableHeader(
                         onRefreshEntries: controller.loadReportData,
                         title: "Rooms Sold",
                         onSave: () async {

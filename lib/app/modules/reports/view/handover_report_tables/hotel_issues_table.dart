@@ -33,7 +33,7 @@ class HotelIssuesSection extends GetView<ReportGeneratorController> {
                     const BigText(
                       text: 'Hotel Issues',
                     ),
-                    reportEntryHeader(
+                    tableHeader(
                         onRefreshEntries: controller.loadReportData,
                         onSave: () async {
                           controller.queTableKey(

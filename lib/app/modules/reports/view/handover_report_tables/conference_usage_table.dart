@@ -30,7 +30,7 @@ class ConferenceUsageSection extends GetView<ReportGeneratorController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const BigText(text: "Conference Usage Today"),
-                    reportEntryHeader(
+                    tableHeader(
                         onRefreshEntries: controller.loadReportData,
                         title: "Conference Transactions",
                         onSave: () async {

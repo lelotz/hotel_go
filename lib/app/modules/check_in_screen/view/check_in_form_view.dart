@@ -3,6 +3,7 @@ import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/services/data_validation.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
+import 'package:hotel_pms/widgets/dialogs/dialod_builder.dart';
 import 'package:hotel_pms/widgets/dropdown_menu/custom_dropdown_menu.dart';
 import 'package:hotel_pms/widgets/icons/app_icon.dart';
 import 'package:hotel_pms/widgets/inputs/text_field_input.dart';
@@ -13,6 +14,7 @@ import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../../widgets/mydividers.dart';
 import '../../../../widgets/text/small_text.dart';
+import '../../confirm_and_status_dialogs/view/confirm_dialog_view.dart';
 import '../../guest_dashboard/views/guest_dashboard_view.dart';
 import '../controller/check_in_form_controller.dart';
 
@@ -324,9 +326,13 @@ class CheckInView extends GetView<CheckInFormController> {
                             child: InkWell(
                               onTap: ()async{
                                 if(checkInFormKey.currentState!.validate() && controller.validatePayMethod()){
-                                  await controller.checkInGuest();
-                                  isReport ? Get.back() : Get.to(()=> const GuestDashboardView());
-                                  Get.delete<CheckInFormController>();
+                                  controller.stayCost();
+                                  controller.buildConfirmMessage();
+                                  buildDialog(context, '', ConfirmDialog(separator:controller.messageBodySeparator,onConfirmed: ()async{
+                                    await controller.checkInGuest();
+                                    isReport ? Get.back() : Get.to(()=> const GuestDashboardView());
+                                    Get.delete<CheckInFormController>();
+                                  },confirmText: controller.confirmText,),height: 340);
                                 }
 
                               },

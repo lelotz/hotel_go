@@ -30,7 +30,7 @@ class RoomServiceTransactionsSection extends GetView<ReportGeneratorController> 
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const BigText(text: 'Room Service Transactions'),
-                    reportEntryHeader(
+                    tableHeader(
                         onRefreshEntries: controller.loadReportData,
                         title: "Room Service Transactions",
                         onSave: () async {

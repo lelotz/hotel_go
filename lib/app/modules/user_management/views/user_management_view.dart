@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/user_management/controller/user_management_controller.dart';
+import 'package:hotel_pms/app/modules/user_management/views/user_profile_view.dart';
 import 'package:hotel_pms/app/modules/user_management/widgets/forms/create_user_form.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
@@ -137,6 +138,10 @@ class UserManagementView extends GetView<UserManagementController> {
                                 ],
                                 rows: List<DataRow>.generate(controller.allEmployees.value.length, (index) {
                                   return DataRow(
+                                    onLongPress: (){
+                                      controller.selectedUser.value = controller.allEmployees.value[index];
+                                      Get.to(()=>UserProfileView());
+                                    },
                                       cells: [
                                         DataCell(BigText(text: (index+1).toString(),)),
                                         DataCell(SmallText(text: controller.allEmployees.value[index].fullName!,)),
@@ -144,7 +149,8 @@ class UserManagementView extends GetView<UserManagementController> {
                                         DataCell(SmallText(text: controller.allEmployees.value[index].roomsSold.toString(),)),
                                         DataCell(SmallText(text: controller.allEmployees.value[index].phone!,)),
                                         DataCell(SmallText(text: controller.allEmployees.value[index].id!,)),
-                                      ]);
+                                      ]
+                                  );
                                 }
                                 ),
                               ),

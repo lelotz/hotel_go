@@ -15,6 +15,7 @@ class UserManagementController extends GetxController{
   Rx<List<AdminUser>> receptionEmployees = Rx<List<AdminUser>>([]);
   Rx<List<AdminUser>> housekeepingEmployees = Rx<List<AdminUser>>([]);
   Rx<List<AdminUser>> adminEmployees = Rx<List<AdminUser>>([]);
+  Rx<AdminUser> selectedUser = Rx<AdminUser>(AdminUser());
 
   @override
   void onReady() async{

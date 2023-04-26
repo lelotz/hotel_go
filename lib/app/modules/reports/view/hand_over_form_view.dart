@@ -433,11 +433,14 @@ class RoomUsedForm extends GetView<ReportGeneratorController> {
   }
 }
 
-Widget reportEntryHeader(
+Widget tableHeader(
     {required Function onRefreshEntries,
     required String title,
     required Function onAddEntry,
     required Function onConfirmEntry,
+      bool enableConfirmEntry = true,
+      bool enableAddEntry = true,
+      bool enableTableExport=true,
     required Function onSave}) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -445,22 +448,22 @@ Widget reportEntryHeader(
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MyOutlinedButton(
+          enableAddEntry ? MyOutlinedButton(
             text: 'Add Entry',
             onClick: onAddEntry,
             borderColor: ColorsManager.primary,
-          ),
+          ) : SizedBox(),
           SizedBox(
             width: const Size.fromWidth(20).width,
           ),
-          MyOutlinedButton(
+          enableConfirmEntry ? MyOutlinedButton(
             text: 'Confirm Entries',
             onClick: onConfirmEntry,
             backgroundColor: ColorsManager.white,
             textColor: ColorsManager.darkGrey,
             borderColor: ColorsManager.darkGrey,
             currentTextColor: ColorsManager.darkGrey,
-          ),
+          ) : SizedBox(),
           SizedBox(
             width: const Size.fromWidth(20).width,
           ),
@@ -470,11 +473,11 @@ Widget reportEntryHeader(
                 await onRefreshEntries();
               },
               icon: const Icon(Icons.refresh)),
-          IconButton(
+          enableTableExport ? IconButton(
               onPressed: () async {
                 await onSave();
               },
-              icon: const Icon(Icons.save_alt_outlined)),
+              icon: const Icon(Icons.save_alt_outlined)) : SizedBox(),
           //MyOutlinedButton(text: 'Update', onClick: onRefreshEntries,borderColor:ColorsManager.primary,),
         ],
       ),

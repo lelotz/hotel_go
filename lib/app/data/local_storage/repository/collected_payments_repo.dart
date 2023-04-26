@@ -50,11 +50,21 @@ class CollectedPaymentsRepository extends SqlDatabase{
         whereArgs: [collectedPaymentId],
         where:'${CollectedPaymentsTable.id} = ?'
     ).then((value) {
-      if(value != null && value.isNotEmpty){
-        for(Map<String,dynamic> element in value){
-          payments.add(CollectPayment.fromJson(element));
-        }
-      }
+      payments = CollectPayment().fromJsonList(value ?? []);
+
+    });
+
+    return payments;
+  }
+
+  Future<List<CollectPayment>> getCollectedPaymentsByEmployeeId({String? appId,String? id})async{
+    List<CollectPayment> payments= [];
+    await SqlDatabase.instance.read(
+        tableName:CollectedPaymentsTable.tableName,
+        whereArgs: [appId,id],
+        where:'${CollectedPaymentsTable.id} = ? OR ${CollectedPaymentsTable.id} = ?'
+    ).then((value) {
+      payments = CollectPayment().fromJsonList(value ?? []);
     });
 
     return payments;

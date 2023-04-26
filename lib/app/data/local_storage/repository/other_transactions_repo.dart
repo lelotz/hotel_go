@@ -1,6 +1,7 @@
 
 
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
+import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
 
 
 class OtherTransactionsRepository extends SqlDatabase{
@@ -26,6 +27,20 @@ class OtherTransactionsRepository extends SqlDatabase{
         row: row,where: '${OtherTransactionsTable.id} = ?',whereArgs: [id]
     );
     return rowId;
+  }
+
+  Future<List<OtherTransactions>> getOtherTransactionsByEmployeeId({String? appId,String? id})async{
+    List<OtherTransactions> result = [];
+
+    await read(
+      tableName: OtherTransactionsTable.tableName,
+      where: '${OtherTransactionsTable.employeeId}=? OR ${OtherTransactionsTable.employeeId}=?',
+      whereArgs: [appId,id]
+    ).then((value) {
+      result = OtherTransactions().fromJsonList(value ?? []);
+    });
+
+    return result;
   }
 
 }

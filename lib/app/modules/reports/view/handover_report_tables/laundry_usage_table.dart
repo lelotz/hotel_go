@@ -32,7 +32,7 @@ class LaundryUsageSection extends GetView<ReportGeneratorController> {
                     const BigText(
                       text: 'Laundry Transactions',
                     ),
-                    reportEntryHeader(
+                    tableHeader(
                         onRefreshEntries: controller.loadReportData,
                         title: "Laundry Transactions",
                         onSave: () async {

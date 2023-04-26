@@ -23,6 +23,18 @@ class GuestPackageRepository extends SqlDatabase {
     return storedPackages;
   }
 
+  Future<List<GuestPackage>> getStoredGuestPackageByEmployeeId(
+      {String? appId,String? id}) async {
+    List<GuestPackage> storedPackages = [];
+    await read(
+        tableName: GuestPackageTable.tableName,
+        where: '${GuestPackageTable.roomTransactionId}=? OR ${GuestPackageTable.roomTransactionId}=?',
+        whereArgs: [appId,id]).then((value) {
+      storedPackages = GuestPackage.fromJsonList(value ?? []);
+    });
+    return storedPackages;
+  }
+
   storeGuestPackage(GuestPackage guestPackage) async {
     await create(GuestPackageTable.tableName, guestPackage.toJson());
     await UserActivityRepository().createUserActivity(UserActivity(
