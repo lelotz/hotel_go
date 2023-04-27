@@ -13,11 +13,14 @@ import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/app/modules/user_management/controller/user_management_controller.dart';
+import 'package:hotel_pms/core/logs/logger_instance.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
+import 'package:logger/logger.dart';
 import '../../../data/models_n/service_booking_model.dart';
 
 
 class UserProfileController extends GetxController{
+  Logger logger = AppLogger.instance.logger;
   Rx<AdminUser> adminUser = Get.find<UserManagementController>().selectedUser;
 
   /// User Activity
@@ -44,7 +47,7 @@ class UserProfileController extends GetxController{
   Rx<List<OtherTransactions>> employeeLaundryActivity = Rx<List<OtherTransactions>>([]);
   Rx<List<OtherTransactions>> paginatedEmployeeLaundryActivity = Rx<List<OtherTransactions>>([]);
 
-  /// Laundry
+  /// Laundry && Room Service
   Rx<List<OtherTransactions>> employeeOtherTransactions = Rx<List<OtherTransactions>>([]);
 
   /// Packages
@@ -75,6 +78,16 @@ class UserProfileController extends GetxController{
     await loadEmployeePackageTransactions();
     setEmployeeKeyMetricTitle();
     updateUI();
+    displayLoadedDataLogs();
+  }
+
+  displayLoadedDataLogs(){
+    logger.i('UserActivity : ${userActivity.value.length}');
+    logger.i('CollectedPayments ${employeeCollectedPaymentsActivity.value.length}');
+    logger.i('RoomTransactions ${employeeRoomTransactions.value.length}');
+    logger.i('Laundry ${employeeLaundryActivity.value.length}');
+
+
   }
 
   loadUserActivity()async{
@@ -84,6 +97,7 @@ class UserProfileController extends GetxController{
     );
     updateUI();
   }
+
 
   loadEmployeeRoomTransactions()async{
     employeeRoomTransactions.value = await RoomTransactionRepository().
@@ -99,16 +113,14 @@ class UserProfileController extends GetxController{
   
   sortEmployeeOtherTransactions(){
     for(OtherTransactions element in employeeOtherTransactions.value){
-      employeeLaundryActivity.value.addIf(element.paymentNotes=='Laundry', element);
+      employeeLaundryActivity.value.addIf(element.paymentNotes=='LAUNDRY', element);
       employeeRoomServiceActivity.value.addIf(element.paymentNotes=='Room Service', element);
     }
     employeeLaundryActivity.value.sort((a,b)=> DateTime.parse(b.dateTime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateTime!).millisecondsSinceEpoch));
     employeeRoomServiceActivity.value.sort((a,b)=> DateTime.parse(b.dateTime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateTime!).millisecondsSinceEpoch));
   }
   loadEmployeePackageTransactions()async{
-
     employeePackageStorageActivity.value = await GuestPackageRepository().getStoredGuestPackageByEmployeeId(appId: adminUser.value.appId,id: adminUser.value.id);
-
     employeePackageStorageActivity.value.sort((a,b)=> DateTime.parse(b.dateStored!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateStored!).millisecondsSinceEpoch)
     );
   }
@@ -125,9 +137,7 @@ class UserProfileController extends GetxController{
   }
 
   setEmployeeKeyMetricTitle(){
-    if(adminUser.value.position == AppConstants.userRoles[300]){
-      employeeKeyMetricTitle.value = 'Rooms Sold';
-    }else if(adminUser.value.position == AppConstants.userRoles[600]) {
+    if(adminUser.value.position == AppConstants.userRoles[600]){
       employeeKeyMetricTitle.value = 'Rooms & Laundry Tasks';
     }else{
       employeeKeyMetricTitle.value = 'Rooms Sold';

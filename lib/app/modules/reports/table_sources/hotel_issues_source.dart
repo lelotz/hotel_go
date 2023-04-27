@@ -45,7 +45,7 @@ class HotelIssuesSource extends DataGridSource{
       GridSummaryColumn? summaryColumn,
       RowColumnIndex rowColumnIndex,
       String summaryValue) {
-    handoverFormController.getSummaryData(summaryColumn?.columnName ?? '',summaryValue);
+    handoverFormController.getSummaryData(summaryColumn!.columnName,summaryValue);
     return Container(
       padding: const EdgeInsets.all(15.0),
       child: BigText(text: summaryValue),

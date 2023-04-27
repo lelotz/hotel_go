@@ -1,16 +1,18 @@
+import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/confirm_and_status_dialogs/view/confirm_dialog_view.dart';
 import 'package:hotel_pms/app/modules/user_management/controller/user_profile_controller.dart';
 import 'package:hotel_pms/app/modules/user_management/tables/table/employee_activity_table_view.dart';
+import 'package:hotel_pms/app/modules/user_management/tables/table/employee_collected_payment_table_view.dart';
 import 'package:hotel_pms/app/modules/user_management/widgets/forms/user_profile_summary.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
-import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import 'package:hotel_pms/widgets/mydividers.dart';
-
 import '../../../../core/resourses/color_manager.dart';
 import '../../../../widgets/dialogs/dialod_builder.dart';
 import '../../../../widgets/text/small_text.dart';
+import '../tables/table/employee_laundry_activity_table_view.dart';
+import '../tables/table/employee_room_transactions_table_view.dart';
 
 class UserProfileView extends GetView<UserProfileController> {
   const UserProfileView({Key? key}) : super(key: key);
@@ -61,23 +63,33 @@ class UserProfileView extends GetView<UserProfileController> {
                 ),
                 thinDivider(),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     /// Profile Summary Card
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        children: [
-                          UserProfileSummaryView()
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 8,
-                        child: Column(
-                        children: [
-                        controller.initialized ? EmployeeTableView() : loadingAnimation(actionStatement: 'Loading')
+                    Column(
+                      children: [
+                        UserProfileSummaryView()
                       ],
-                    ))
+                    ),
+                    Container(
+                      width: Size.fromWidth(1180).width,
+                      height:Size.fromHeight(620).height,
+                      child: ContainedTabBarView(
+                          tabs: [
+                            SmallText(text: 'All'),
+                            SmallText(text: 'Payments'),
+                            SmallText(text: 'Rooms'),
+                            SmallText(text: 'Laundry')
+                          ],
+                          views: [
+                            EmployeeTableView(),
+                            EmployeeCollectedPaymentsTableView(),
+                            EmployeeRoomTransactionsTableView(),
+                            EmployeeLaundryActivityTableView()
+                          ]
+                      )
+                    )
 
                   ],
                 ),

@@ -83,17 +83,18 @@ class CollectPayment {
   }
 
   Future<int?> toDb()async{
-    await UserActivityRepository().createUserActivity(UserActivity(
-      activityId: const Uuid().v1(),
-      activityValue: amountCollected,
-      employeeId: employeeId,
-      employeeFullName: employeeName,
-      activityStatus: service,
-      guestId: clientId,
-      unit: 'Payment',
-      dateTime: dateTime,
-      description: LocalKeys.kCollectPayment,
-      roomTransactionId: roomTransactionId,
+    await UserActivityRepository().createUserActivity(
+        UserActivity(
+          activityId: const Uuid().v1(),
+          activityValue: amountCollected,
+          employeeId: employeeId,
+          employeeFullName: employeeName,
+          activityStatus: service,
+          guestId: clientId,
+          unit: 'Payment',
+          dateTime: dateTime,
+          description: LocalKeys.kCollectPayment,
+          roomTransactionId: roomTransactionId,
     ).toJson());
    return await CollectedPaymentsRepository().createCollectedPayment(toJson());
   }

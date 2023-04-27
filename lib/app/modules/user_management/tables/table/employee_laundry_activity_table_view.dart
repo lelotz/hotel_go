@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/modules/user_management/tables/sources/employee_room_transactions_source.dart';
 import 'package:hotel_pms/app/modules/user_management/tables/table/table_constants.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import '../../../../../core/values/localization/local_keys.dart';
@@ -8,12 +7,13 @@ import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import '../../../reports/view/hand_over_form_view.dart';
 import '../../controller/user_profile_controller.dart';
+import '../sources/employee_laundry_activity_source.dart';
 
-class EmployeeRoomTransactionsTableView extends GetView<UserProfileController> {
-  EmployeeRoomTransactionsTableView({Key? key})
+class EmployeeLaundryActivityTableView extends GetView<UserProfileController> {
+  EmployeeLaundryActivityTableView({Key? key})
       : super(key: key);
 
-  final EmployeeRoomTransactionsSource tableSource = EmployeeRoomTransactionsSource();
+  final EmployeeLaundryActivitySource tableSource = EmployeeLaundryActivitySource();
   final GlobalKey<SfDataGridState> tableKey= GlobalKey<SfDataGridState>();
 
   @override
@@ -31,13 +31,13 @@ class EmployeeRoomTransactionsTableView extends GetView<UserProfileController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const BigText(text: "Rooms Sold"),
+                      const BigText(text: "Laundry"),
                       tableHeader(
                           onRefreshEntries: ()async{
                             await controller.loadEmployeeRoomTransactions();
                             controller.updateUI();
                           },
-                          title: "Rooms Sold",
+                          title: "Laundry",
                           onSave: () async {},
                           enableAddEntry: false,
                           enableConfirmEntry: false,
@@ -56,7 +56,7 @@ class EmployeeRoomTransactionsTableView extends GetView<UserProfileController> {
 
                         columns: [
                           GridColumn(
-                              columnName: EmployeeRoomTransactionsTableColumn.date,
+                              columnName: EmployeeLaundryTableColumn.date,
                               columnWidthMode: ColumnWidthMode.fitByCellValue,
                               label: Container(
                                   padding: const EdgeInsets.all(8.0),
@@ -65,7 +65,7 @@ class EmployeeRoomTransactionsTableView extends GetView<UserProfileController> {
                                       text: LocalKeys.kDate.tr
                                           .toUpperCase()))),
                           GridColumn(
-                              columnName: EmployeeRoomTransactionsTableColumn.time,
+                              columnName: EmployeeLaundryTableColumn.time,
                               columnWidthMode: ColumnWidthMode.fitByCellValue,
                               label: Container(
                                   padding: const EdgeInsets.all(8.0),
@@ -74,7 +74,7 @@ class EmployeeRoomTransactionsTableView extends GetView<UserProfileController> {
                                       text: LocalKeys.kTime.tr
                                           .toUpperCase()))),
                           GridColumn(
-                              columnName: EmployeeRoomTransactionsTableColumn.roomNumber,
+                              columnName: EmployeeLaundryTableColumn.roomNumber,
                               columnWidthMode: ColumnWidthMode.fitByColumnName,
                               label: Container(
                                   padding: const EdgeInsets.all(8.0),
@@ -83,28 +83,22 @@ class EmployeeRoomTransactionsTableView extends GetView<UserProfileController> {
                                       text: LocalKeys.kRoomNumber.tr
                                           .toUpperCase()))),
                           GridColumn(
-                              columnName: EmployeeRoomTransactionsTableColumn.checkIn,
-                              columnWidthMode: ColumnWidthMode.fitByCellValue,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: const SmallText(text: 'CHECK-IN'))),
-                          GridColumn(
-                              columnName: EmployeeRoomTransactionsTableColumn.checkOut,
-                              columnWidthMode: ColumnWidthMode.fitByCellValue,
-                              label: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  alignment: Alignment.center,
-                                  child: const SmallText(text: 'CHECK-OUT'))),
-                          GridColumn(
-                              columnName: EmployeeRoomTransactionsTableColumn.nights,
+                              columnName: EmployeeLaundryTableColumn.description,
                               columnWidthMode: ColumnWidthMode.fitByColumnName,
                               label: Container(
                                   padding: const EdgeInsets.all(8.0),
                                   alignment: Alignment.center,
-                                  child: const SmallText(text: 'NIGHTS'))),
+                                  child: const SmallText(text: 'DESCRIPTION'))),
                           GridColumn(
-                              columnName:EmployeeRoomTransactionsTableColumn.value,
+                              columnName: EmployeeLaundryTableColumn.status,
+                              columnWidthMode: ColumnWidthMode.fitByCellValue,
+                              label: Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  alignment: Alignment.center,
+                                  child: const SmallText(text: 'STATUS'))),
+
+                          GridColumn(
+                              columnName:EmployeeLaundryTableColumn.value,
                               columnWidthMode: ColumnWidthMode.fitByColumnName,
                               label: Container(
                                   padding: const EdgeInsets.all(8.0),

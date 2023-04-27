@@ -83,7 +83,7 @@ class ConferenceUsageSection extends GetView<ReportGeneratorController> {
                     columns: [
                       GridColumn(
                           columnName: ConferenceTableColumnNames.name,
-                          columnWidthMode: ColumnWidthMode.fitByCellValue,
+                          columnWidthMode: ColumnWidthMode.fitByColumnName,
                           label: Container(
                               padding: const EdgeInsets.all(8.0),
                               alignment: Alignment.center,

@@ -3,21 +3,20 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/user_management/controller/user_profile_controller.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 
 
 
-class EmployeeRoomTransactionsSource extends DataGridSource{
-  EmployeeRoomTransactionsSource({this.rowsPerPage = 20}) {
-    userProfileController.paginatedEmployeeRoomTransactions.value =
-        userProfileController.employeeRoomTransactions.value;
+class EmployeeCollectedPaymentsSource extends DataGridSource{
+  EmployeeCollectedPaymentsSource({this.rowsPerPage = 20}) {
+    userProfileController.paginatedEmployeeCollectedPaymentsActivity.value =
+        userProfileController.employeeCollectedPaymentsActivity.value;
     buildPaginatedDataGridRows();
   }
 
-  onInit()async{
 
-  }
 
   UserProfileController userProfileController = Get.find<UserProfileController>();
 
@@ -44,16 +43,16 @@ class EmployeeRoomTransactionsSource extends DataGridSource{
   Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
     num startIndex = newPageIndex * rowsPerPage;
     num endIndex = startIndex + rowsPerPage;
-    if (startIndex < userProfileController.employeeRoomTransactions.value.length &&
-        endIndex <= userProfileController.employeeRoomTransactions.value.length) {
-      userProfileController.paginatedEmployeeRoomTransactions.value =
-          userProfileController.employeeRoomTransactions.value
+    if (startIndex < userProfileController.employeeCollectedPaymentsActivity.value.length &&
+        endIndex <= userProfileController.employeeCollectedPaymentsActivity.value.length) {
+      userProfileController.paginatedEmployeeCollectedPaymentsActivity.value =
+          userProfileController.employeeCollectedPaymentsActivity.value
               .getRange(startIndex as int, endIndex as int)
               .toList(growable: false);
       buildPaginatedDataGridRows();
       notifyListeners();
     } else {
-      userProfileController.paginatedEmployeeRoomTransactions.value = [];
+      userProfileController.paginatedEmployeeCollectedPaymentsActivity.value = [];
     }
 
     return true;
@@ -70,32 +69,30 @@ class EmployeeRoomTransactionsSource extends DataGridSource{
 
 
   buildPaginatedDataGridRows() {
-    dataGridRows = userProfileController.paginatedEmployeeRoomTransactions.value
+    dataGridRows = userProfileController.paginatedEmployeeCollectedPaymentsActivity.value
         .map<DataGridRow>((dataGridRow) {
 
       return DataGridRow(cells: [
         DataGridCell<String>(
-            columnName: EmployeeRoomTransactionsTableColumn.date, value: extractDate(DateTime.parse(dataGridRow.checkInDate!))),
+            columnName: EmployeeCollectedPaymentsTableColumn.date, value: extractDate(DateTime.parse(dataGridRow.dateTime!))),
         DataGridCell<String>(
-            columnName: EmployeeRoomTransactionsTableColumn.time, value: extractTime(DateTime.parse(dataGridRow.checkInDate!))),
-        DataGridCell<int>(columnName: EmployeeRoomTransactionsTableColumn.roomNumber, value: dataGridRow.roomNumber),
-        DataGridCell<String>(columnName: EmployeeRoomTransactionsTableColumn.checkIn, value: extractTime(DateTime.parse(dataGridRow.checkInDate!))),
-        DataGridCell<String>(columnName: EmployeeRoomTransactionsTableColumn.checkOut, value: extractTime(DateTime.parse(dataGridRow.checkOutDate!))),
-        DataGridCell<int>(columnName: EmployeeRoomTransactionsTableColumn.nights, value: dataGridRow.nights),
-        DataGridCell<int>(columnName: EmployeeRoomTransactionsTableColumn.value, value: dataGridRow.roomCost),
+            columnName: EmployeeCollectedPaymentsTableColumn.time, value: extractTime(DateTime.parse(dataGridRow.dateTime!))),
+        DataGridCell<int>(columnName: EmployeeCollectedPaymentsTableColumn.room_number, value: dataGridRow.roomNumber),
+        DataGridCell<String>(columnName: EmployeeCollectedPaymentsTableColumn.service, value: dataGridRow.service),
+        DataGridCell<String>(columnName: EmployeeCollectedPaymentsTableColumn.payMethod, value: dataGridRow.payMethod),
+        DataGridCell<int>(columnName: EmployeeCollectedPaymentsTableColumn.value, value: dataGridRow.amountCollected),
       ]);
     }).toList(growable: false);
   }
 }
 
-class EmployeeRoomTransactionsTableColumn{
+class EmployeeCollectedPaymentsTableColumn{
   static const String leading = "employee_";
   static const String date = '${leading}name';
   static const String time = '${leading}time';
-  static const String roomNumber = '${leading}room_number';
-  static const String checkIn = '${leading}check_in';
-  static const String checkOut = '${leading}check_out';
+  static const String room_number = '${leading}room_number';
+  static const String service = '${leading}service';
   static const String value = '${leading}value';
-  static const String nights = '${leading}nights';
+  static const String payMethod = '${leading}pay_method';
 
 }

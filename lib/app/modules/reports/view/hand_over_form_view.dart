@@ -64,7 +64,10 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                         children: [
                           const BigText(text: "Export Report"),
                           Obx(() => controller.isExporting.value
-                              ? loadingAnimation()
+                              ? Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: loadingAnimation(size: 30,actionStatement: ''),
+                              )
                               : IconButton(
                                   onPressed: () async {
                                     await controller.submitReport({
@@ -141,17 +144,23 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                       children: [
                         Row(
                           children: [
-                            const SmallText(text: 'Report for current session only'),
                             SizedBox(width: const Size.fromWidth(15).width,),
-                            Obx(() => Checkbox(
-                                  value: controller.isHandoverReport.value,
-                                  onChanged: controller.handleReportConfigurationOptions),
-                            ),
-                            Obx(() => MyCheckBox(title: 'Chagua Shift', value: controller.searchBySelectedSession.value, onChanged: (state){
-                              controller.searchBySelectedSession.value = state;
-                              controller.searchBySelectedSession.refresh();
 
-                            }))
+                            Obx(() => MyCheckBox(
+                                  title: 'Shift hii',
+                                  value: controller.isHandoverReport.value,
+                                  onChanged: controller.handleHandoverConfigCheckboxState),
+                            ),
+                            Obx(() => MyCheckBox(
+                                title: 'Chagua Shift',
+                                value: controller.searchBySelectedSession.value,
+                                onChanged: controller.handleSessionConfigCheckboxState)
+                            ),
+                            Obx(() => MyCheckBox(
+                                title: 'Chagua Tarehe',
+                                value: controller.searchByDateRange.value,
+                                onChanged: controller.handleDateRangeConfigCheckboxState)
+                            )
                           ],
                         ),
                         Card(
@@ -171,7 +180,7 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                     ),
                   ),
                   SizedBox(height: const Size.fromHeight(20).height,),
-                  Obx(() => controller.isHandoverReport.value==false && controller.searchBySelectedSession.value == false ? Padding(
+                  Obx(() => controller.searchByDateRange.value? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: Column(
                       children: [

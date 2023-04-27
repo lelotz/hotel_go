@@ -60,7 +60,7 @@ class RoomServiceSource extends DataGridSource{
       GridSummaryColumn? summaryColumn,
       RowColumnIndex rowColumnIndex,
       String summaryValue) {
-    handoverFormController.getSummaryData(summaryColumn?.columnName ?? '',summaryValue);
+    handoverFormController.getSummaryData(summaryColumn!.columnName,summaryValue);
     return Container(
       padding: const EdgeInsets.all(1.0),
       child: Center(child: BigText(text: summaryValue),),

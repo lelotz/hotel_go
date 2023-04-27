@@ -93,6 +93,7 @@ class ReportGeneratorController extends GetxController {
 
   Rx<bool> isExporting = false.obs;
   Rx<bool> searchBySelectedSession = false.obs;
+  Rx<bool> searchByDateRange = false.obs;
 
   Rx<Map<String, dynamic>> summaryData = Rx<Map<String, dynamic>>({});
 
@@ -106,7 +107,9 @@ class ReportGeneratorController extends GetxController {
   Rx<SessionTracker> selectedSession = Rx<SessionTracker>(SessionTracker());
   Rx<List<String>> existingSessionsView = Rx<List<String>>([]);
   Rx<String> selectedSessionView = "".obs;
+  Rx<String> selectedSessionUserName = "".obs;
   Rx<String> roomSummaryValue = "".obs;
+  Rx<String> roomsSoldCountSummaryValue = "".obs;
   Rx<String> roomDebtValue = "".obs;
   Rx<String> conferenceSummaryValue = "".obs;
   Rx<String> conferenceAdvanceSummaryValue = "".obs;
@@ -139,6 +142,36 @@ class ReportGeneratorController extends GetxController {
     // totalDailyPaymentsCtr.text = "0";
   }
 
+  clearControllers(){
+    roomNumberController.clear();
+    conferencePaymentsCtr.clear();
+    conferenceAdvancePaymentsCtr.clear();
+    roomPaymentsCtr.clear();
+    roomDebtPaymentsCtr.clear();
+    laundryPaymentsCtr.clear();
+    roomServicePaymentsCtr.clear();
+    pettyCashOutCtr.clear();
+    totalDailyPaymentsCtr.clear();
+  }
+
+  clearSummaryValues(){
+    pettyCashSummaryValue.value = '';
+    roomServiceSummaryValue.value = '';
+    laundrySummaryValue.value = '';
+    conferenceSummaryValue.value='';
+    conferenceAdvanceSummaryValue.value='';
+    roomDebtValue.value='';
+    roomSummaryValue.value='';
+    roomsSoldCountSummaryValue.value='';
+  }
+
+  clearDataForNextReport(){
+    clearControllers();
+    clearSummaryValues();
+    reportExportInfo.value.clear();
+    summaryData.value.clear();
+  }
+
   Future<void> loadReportData() async {
     await getRoomsSoldInCurrentSession();
     await getConferenceActivityInCurrentSession();
@@ -157,6 +190,7 @@ class ReportGeneratorController extends GetxController {
     roomServicePaymentsCtr.text = roomServiceSummaryValue.value;
     roomDebtPaymentsCtr.text = roomDebtValue.value;
     pettyCashOutCtr.text = pettyCashSummaryValue.value;
+    updateUI();
 
 
   }
@@ -196,8 +230,7 @@ class ReportGeneratorController extends GetxController {
     }
   }
 
-  Future<void> submitReport(
-      Map<String, GlobalKey<SfDataGridState>> reportData) async {
+  Future<void> submitReport(Map<String, GlobalKey<SfDataGridState>> reportData) async {
     queTableKey(reportData['Rooms']!, "Rooms");
     queTableKey(reportData['Conference']!, "Conference");
     queTableKey(reportData['Room Service']!, "Room Service");
@@ -212,8 +245,7 @@ class ReportGeneratorController extends GetxController {
     reportExportInfo.value.add({sheetName: key});
   }
 
-  Future<void> exportTable(GlobalKey<SfDataGridState> tableKey,
-      {bool toExcel = true}) async {
+  Future<void> exportTable(GlobalKey<SfDataGridState> tableKey, {bool toExcel = true}) async {
     if (toExcel) {
       await ExportTableData().exportDataGridToExcel(
           key: tableKey,
@@ -240,41 +272,86 @@ class ReportGeneratorController extends GetxController {
     ExcelWorkBook excelWorkBook = ExcelWorkBook(
         sheetProperties: reportExportInfo.value, excelFileName: filePath);
     setSummaryData();
-    Workbook workbook =
-        excelWorkBook.createDailyReportSummary(summaryData.value);
+    Workbook workbook = excelWorkBook.createReportSummaryTemplate(summaryData.value,await getReportEmployeeDetails());
     await excelWorkBook.createFileWithSheetsFromSfTable(filePath, workbook);
 
     isExporting.value = false;
-    reportExportInfo.value.clear();
-    summaryData.value.clear();
+    clearDataForNextReport();
+
   }
 
-  handleReportConfigurationOptions(bool? isDailyReport) {
-    if (isDailyReport != null && isDailyReport) {
-      isHandoverReport.value = true;
-      isDailyReport = true;
-    } else if (isDailyReport != null && isDailyReport == false) {
-      isHandoverReport.value = false;
-      isDailyReport = false;
-    } else {
-      isHandoverReport.value = false;
-      isDailyReport = false;
+  getReportEmployeeDetails()async{
+    if(isHandoverReport.value){
+      logger.i('dailyReport');
+      return {
+        'name': loggedInUser.value.fullName,
+        'start': authController.sessionController.currentSession.value.dateCreated,
+        'end': DateTime.now().toIso8601String(),
+      };
+    }else if(searchByDateRange.value){
+      logger.i('dateRangeReport');
+      return {
+        'name': loggedInUser.value.fullName,
+        'start': reportStartDate.value.toIso8601String(),
+        'end': reportEndDate.value.toIso8601String(),
+      };
+    }else if(searchBySelectedSession.value){
+      logger.i('sessionReport');
+
+
+      return {
+        'name': selectedSessionUserName.value,
+        'start': selectedSession.value.dateCreated,
+        'end': selectedSession.value.dateEnded ?? DateTime.now().toIso8601String(),
+
+      };
+
     }
+    return {
+      'name': 'not_given',
+      'start': DateTime.now().toIso8601String(),
+      'end': DateTime.now().toIso8601String(),
+    };
+  }
+
+  handleHandoverConfigCheckboxState(bool? state){
+    if(searchByDateRange.value==false && searchBySelectedSession.value==false){
+      isHandoverReport.value = state ?? false;
+      isHandoverReport.refresh();
+      selectedSession.value = authController.sessionController.currentSession.value;
+    }
+  }
+
+  handleDateRangeConfigCheckboxState(bool? state){
+    if(isHandoverReport.value == false && searchBySelectedSession.value==false){
+      searchByDateRange.value= state ?? false;
+      searchByDateRange.refresh();
+    }
+  }
+
+  handleSessionConfigCheckboxState(bool? state) {
+    if(isHandoverReport.value == false && searchByDateRange.value==false){
+      searchBySelectedSession.value = state ?? false;
+      searchBySelectedSession.refresh();
+    }
+
   }
 
   setSummaryData() {
     logger.w('setting summary data');
 
     summaryData.value = {
-      LocalKeys.kRooms: strToDouble(roomPaymentsCtr.text),
+      LocalKeys.kRooms: strToDouble(roomPaymentsCtr.text+'.0'),
       '${LocalKeys.kRooms} ${LocalKeys.kDebts}':
-          strToDouble(roomDebtPaymentsCtr.text),
-      LocalKeys.kConference: strToDouble(conferencePaymentsCtr.text),
+          strToDouble(roomDebtPaymentsCtr.text+'.0'),
+      LocalKeys.kConference: strToDouble(conferencePaymentsCtr.text+'.0'),
       '${LocalKeys.kConference} Advance':
-          strToDouble(conferenceAdvancePaymentsCtr.text),
-      LocalKeys.kRoomService: strToDouble(roomServicePaymentsCtr.text),
-      LocalKeys.kLaundry: strToDouble(laundryPaymentsCtr.text),
-      LocalKeys.kPettyCash: strToDouble(pettyCashOutCtr.text)
+          strToDouble(conferenceAdvancePaymentsCtr.text+'.0'),
+      LocalKeys.kRoomService: strToDouble(roomServicePaymentsCtr.text+'.0'),
+      LocalKeys.kLaundry: strToDouble(laundryPaymentsCtr.text+'.0'),
+      LocalKeys.kPettyCash: strToDouble(pettyCashOutCtr.text+'.0'),
+      LocalKeys.kRooms+'Count': strToDouble(roomsSoldCountSummaryValue.value+'.0'),
+
     };
   }
 
@@ -326,6 +403,11 @@ class ReportGeneratorController extends GetxController {
         case PettyCashTableColumnNames.amountPaid:
           if(pettyCashSummaryValue.value=='') {
             pettyCashSummaryValue.value = summaryValue;
+          }
+          break;
+        case RoomsUsedColumnNames.roomNumber:
+          if(roomsSoldCountSummaryValue.value=='') {
+            roomsSoldCountSummaryValue.value = summaryValue;
           }
           break;
         default:
@@ -432,9 +514,13 @@ class ReportGeneratorController extends GetxController {
     return activity;
   }
 
-  setSessionForReport(String sessionView) {
+  setSessionForReport(String sessionView) async{
     selectedSessionView.value = sessionView;
     String sessionId = selectedSessionView.value.split('\n\n')[1];
+    String employeeId = existingSessions.value.firstWhere((element) => element.id == sessionId).employeeId ?? '';
+    selectedSessionUserName.value = await AdminUserRepository()
+        .getAdminUserNameByAppId(employeeId)
+        .then((value) => value);
     setSessionById(sessionId);
     searchBySelectedSession.value = true;
   }
@@ -453,6 +539,7 @@ class ReportGeneratorController extends GetxController {
       String userName = await AdminUserRepository()
           .getAdminUserNameByAppId(session.employeeId!)
           .then((value) => value);
+
 
       String startDate = DateTime.parse(session.dateCreated!).day.toString();
       String endDate =

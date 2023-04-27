@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/user_management/controller/user_profile_controller.dart';
 import 'package:hotel_pms/app/modules/user_management/tables/sources/employee_activity_table_source.dart';
+import 'package:hotel_pms/app/modules/user_management/tables/table/table_constants.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/text/big_text.dart';
@@ -42,7 +43,9 @@ class EmployeeTableView extends GetView<UserProfileController> {
                 ],
               ),
               SizedBox(
-                height: height*.62,
+                 height: height * UserManagementTableConstants.tableHeightFactor,
+                //height: height * .,
+
                 child: SfDataGrid(
                     key: employeeActivityTableKey,
                     source: source,

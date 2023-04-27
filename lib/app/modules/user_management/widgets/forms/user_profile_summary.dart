@@ -2,11 +2,8 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
-
 import '../../../../../core/resourses/color_manager.dart';
 import '../../../../../core/resourses/size_manager.dart';
-import '../../../../../core/values/app_constants.dart';
-import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/buttons/decorated_text_button.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/title_subtitle.dart';

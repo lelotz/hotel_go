@@ -62,7 +62,7 @@ class CollectedPaymentsRepository extends SqlDatabase{
     await SqlDatabase.instance.read(
         tableName:CollectedPaymentsTable.tableName,
         whereArgs: [appId,id],
-        where:'${CollectedPaymentsTable.id} = ? OR ${CollectedPaymentsTable.id} = ?'
+        where:'${CollectedPaymentsTable.employeeId} = ? OR ${CollectedPaymentsTable.id} = ?'
     ).then((value) {
       payments = CollectPayment().fromJsonList(value ?? []);
     });

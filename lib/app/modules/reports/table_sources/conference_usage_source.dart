@@ -61,7 +61,7 @@ class ConferenceUsageSource extends DataGridSource{
       GridSummaryColumn? summaryColumn,
       RowColumnIndex rowColumnIndex,
       String summaryValue) {
-    handoverFormController.getSummaryData(summaryColumn?.columnName ?? '',summaryValue);
+    handoverFormController.getSummaryData(summaryColumn!.columnName,summaryValue);
     return Center(child: BigText(text: summaryValue),);
   }
 

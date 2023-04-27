@@ -74,7 +74,7 @@ class RoomsUsedSource extends DataGridSource {
       GridSummaryColumn? summaryColumn,
       RowColumnIndex rowColumnIndex,
       String summaryValue) {
-    handoverFormController.getSummaryData(summaryColumn?.columnName ?? '',summaryValue);
+    handoverFormController.getSummaryData(summaryColumn!.columnName,summaryValue);
     return Padding(
         padding: const EdgeInsets.all(3),
       child: Center(

@@ -63,7 +63,7 @@ class RoomTransactionRepository extends SqlDatabase {
       await read(
           tableName: RoomTransactionsTable.tableName,
           where:
-          '${RoomTransactionsTable.id}=?',
+          '${RoomTransactionsTable.employeeId}=?',
           whereArgs: [appId])
           .then((value) {
         result = RoomTransaction().fromJsonList(value ?? []);
@@ -73,7 +73,7 @@ class RoomTransactionRepository extends SqlDatabase {
       await read(
           tableName: RoomTransactionsTable.tableName,
           where:
-          '${RoomTransactionsTable.id}=?',
+          '${RoomTransactionsTable.employeeId}=?',
           whereArgs: [id])
           .then((value) {
         result.addAll(RoomTransaction().fromJsonList(value ?? []));
@@ -110,7 +110,6 @@ class RoomTransactionRepository extends SqlDatabase {
           employeeFullName: Get.find<AuthController>().adminUser.value.fullName,
           guestId: row[RoomTransactionsTable.clientId],
           dateTime: DateTime.now().toIso8601String(),
-
 
       ).toJson());
     }
