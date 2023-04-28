@@ -5,6 +5,7 @@ import 'package:hotel_pms/app/data/local_storage/repository/room_data_repository
 import 'package:hotel_pms/app/data/local_storage/repository/room_status_repo.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../core/values/localization/local_keys.dart';
 import '../models_n/encrypted_data_model.dart';
@@ -54,7 +55,8 @@ Future<int> loadInitData(List<RoomData> roomData, List<RoomStatusModel> roomStat
 
 List<AdminUser> initAdminUsers = [
   AdminUser(
-    appId: "00001WH",
+    id: const Uuid().v1(),
+    appId: "tan@tan",
     fullName: "Dereck Olomi",
     position: AppConstants.userRoles[1],
     phone: "",
@@ -62,40 +64,62 @@ List<AdminUser> initAdminUsers = [
     status: 'ENABLED',
   ),
   AdminUser(
+    id: const Uuid().v1(),
     appId: "00002WH",
-    fullName: "Housekeeper Example",
+    fullName: "Makarius Sixbert",
     position: AppConstants.userRoles[600],
     phone: "0755148965",
     roomsSold: 0,
     status: 'ENABLED',
   ),
-  // AdminUser(
-  //   appId: "00002WH",
-  //   fullName: "Asha Lloyd",
-  //   position: AppConstants.userRoles[300],
-  //   phone: "",
-  //   roomsSold: 0,
-  //     status: 'ENABLED',
-  // ),
-  // AdminUser(
-  //   appId: "00003WH",
-  //   fullName: "Salama Joachim",
-  //   position: AppConstants.userRoles[300],
-  //   phone: "",
-  //   roomsSold: 0,
-  //   status: 'ENABLED',
-  //
-  //
-  // ),
-  // AdminUser(
-  //   appId: "00004WH",
-  //   fullName: "Esther Ritva",
-  //   position: AppConstants.userRoles[300],
-  //   phone: "",
-  //   roomsSold: 0,
-  //   status: 'ENABLED',
-  //
-  // ),
+  AdminUser(
+    id: const Uuid().v1(),
+    appId: "000000000000000000000000000",
+    fullName: "Mathew Nyanda",
+    position: AppConstants.userRoles[600],
+    phone: "",
+    roomsSold: 0,
+    status: 'ENABLED',
+  ),
+  AdminUser(
+    id: const Uuid().v1(),
+    appId: "dfjkfnwioefnwe0923r024fnwepi",
+    fullName: "Erasto Erasto",
+    position: AppConstants.userRoles[600],
+    phone: "",
+    roomsSold: 0,
+    status: 'ENABLED',
+  ),
+  AdminUser(
+    id: const Uuid().v1(),
+    appId: "232423salm",
+    fullName: "Salama Mohammed",
+    position: AppConstants.userRoles[300],
+    phone: "",
+    roomsSold: 0,
+      status: 'ENABLED',
+  ),
+  AdminUser(
+    id: const Uuid().v1(),
+    appId: "angelpaa23",
+    fullName: "Angel Daudi",
+    position: AppConstants.userRoles[300],
+    phone: "",
+    roomsSold: 0,
+    status: 'ENABLED',
+
+
+  ),
+  AdminUser(
+    id: const Uuid().v1(),
+    appId: "vee2001vee",
+    fullName: "Vero Joseph",
+    position: AppConstants.userRoles[300],
+    phone: "",
+    roomsSold: 0,
+    status: 'ENABLED',
+
+  ),
 ];
 
 List<RoomData> initRoomData = [

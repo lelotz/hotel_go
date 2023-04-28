@@ -41,13 +41,9 @@ class HotelIssuesSection extends GetView<ReportGeneratorController> {
                           await controller.processTableExports();
                         },
                         title: "Hotel Issues",
-                        onAddEntry: () {
-                          buildDialog(context, 'Hotel Issue',
-                              const HotelIssuesForm(),
-                              width: 400,
-                              height: 600,
-                              alignment: Alignment.center);
-                        },
+                        enableAddEntry: false,
+                        enableConfirmEntry: false,
+                        onAddEntry: () {},
                         onConfirmEntry: () {})
                   ],
                 ),

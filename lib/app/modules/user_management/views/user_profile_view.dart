@@ -5,6 +5,7 @@ import 'package:hotel_pms/app/modules/confirm_and_status_dialogs/view/confirm_di
 import 'package:hotel_pms/app/modules/user_management/controller/user_profile_controller.dart';
 import 'package:hotel_pms/app/modules/user_management/tables/table/employee_activity_table_view.dart';
 import 'package:hotel_pms/app/modules/user_management/tables/table/employee_collected_payment_table_view.dart';
+import 'package:hotel_pms/app/modules/user_management/tables/table/employee_sessions_table_view.dart';
 import 'package:hotel_pms/app/modules/user_management/widgets/forms/user_profile_summary.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
 import 'package:hotel_pms/widgets/mydividers.dart';
@@ -80,13 +81,15 @@ class UserProfileView extends GetView<UserProfileController> {
                             SmallText(text: 'All'),
                             SmallText(text: 'Payments'),
                             SmallText(text: 'Rooms'),
-                            SmallText(text: 'Laundry')
+                            SmallText(text: 'Laundry'),
+                            SmallText(text: 'Sessions')
                           ],
                           views: [
                             EmployeeTableView(),
                             EmployeeCollectedPaymentsTableView(),
                             EmployeeRoomTransactionsTableView(),
-                            EmployeeLaundryActivityTableView()
+                            EmployeeLaundryActivityTableView(),
+                            EmployeeSessionsTableView()
                           ]
                       )
                     )

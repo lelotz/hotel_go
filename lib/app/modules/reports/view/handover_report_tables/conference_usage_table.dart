@@ -38,19 +38,11 @@ class ConferenceUsageSection extends GetView<ReportGeneratorController> {
                               conferenceTableKey, 'Conference');
                           await controller.processTableExports();
                         },
-                        onAddEntry: () {
-                          buildDialog(
-                              context,
-                              'CONFERENCE',
-                              BookServiceForm(
-                                isRoom: 0,
-                              ),
-                              width: 700,
-                              height: 600,
-                              alignment: Alignment.center);
-                          // Get.to(()=>CheckInView());
-                        },
-                        onConfirmEntry: () {}),
+                        enableAddEntry: false,
+                        enableConfirmEntry: false,
+                        onAddEntry: () {},
+                        onConfirmEntry: () {}
+                    ),
                   ],
                 ),
                 SfDataGrid(

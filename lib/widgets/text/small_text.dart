@@ -12,6 +12,7 @@ class SmallText extends StatelessWidget {
   final FontWeight fontWeight;
   final FontStyle fontStyle;
   final TextOverflow overFlow;
+  final bool selectable;
 
   const SmallText({Key? key,
     this.color = ColorsManager.darkGrey,
@@ -21,12 +22,26 @@ class SmallText extends StatelessWidget {
     this.height=1.2,
     this.fontStyle = FontStyle.normal,
     this.fontWeight = FontWeight.w600,
-    this.overFlow=TextOverflow.ellipsis
+    this.overFlow=TextOverflow.ellipsis,
+    this.selectable = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return  selectable ? SelectableText(
+      text,
+      maxLines: maxLines,
+      // textHeightBehavior: TextHeightBehavior(leadingDistribution: TextLeadingDistribution.even),
+      // overflow: overFlow,
+      //strutStyle: StrutStyle(),
+      style: TextStyle(
+          color: color,
+          fontFamily: FontConstants.fontName,
+          fontWeight: fontWeight,
+          fontSize: Size.fromWidth(size).width,
+          height: height,
+          fontStyle: fontStyle
+      ),):Text(
       text,
       maxLines: maxLines,
       overflow: overFlow,

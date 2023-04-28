@@ -238,7 +238,7 @@ class SqlDatabase{
     String whereString = '';
     String currentString = '?$separator';
     for(int i = 0; i < n;i++){
-      currentString = i != n-1 ? '?$separator' : '?';
+      currentString = i == n-1 ? '?':'?$separator' ;
       whereString = whereString + currentString;
     }
     return whereString;

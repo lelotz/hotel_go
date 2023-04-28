@@ -50,6 +50,15 @@ class AdminUserRepository{
 
     return AdminUser().fromJsonList(response ?? []);;
   }
+
+  Future<List<AdminUser>> getAllAdminUsers()async{
+    List<Map<String, dynamic>>? response = await db.read(
+        tableName: AdminUsersTable.tableName,
+        readAll: true,
+    );
+
+    return AdminUser().fromJsonList(response ?? []);;
+  }
   Future<List<Map<String, dynamic>>?> getAdminUserById(String id)async{
     List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,

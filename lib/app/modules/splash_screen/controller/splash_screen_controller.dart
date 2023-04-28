@@ -2,15 +2,18 @@
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/modules/login_screen/views/auth_screen.dart';
+import 'package:hotel_pms/app/modules/user_data/controller/user_data_controller.dart';
 
 class SplashScreenController extends GetxController{
   Rx<bool> isInitialized = false.obs;
   Rx<bool> appDirectoryFound = false.obs;
   Rx<String> appDirectory = ''.obs;
   FileManager fileManager = FileManager();
+  UserData userData = Get.put(UserData(),permanent: true);
 
   @override
   Future<void> onReady() async{
+    await userData.onInit();
     await validateAppDirectory();
     super.onReady();
   }

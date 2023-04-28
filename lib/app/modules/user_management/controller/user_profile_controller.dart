@@ -5,12 +5,15 @@ import 'package:hotel_pms/app/data/local_storage/repository/guest_package_repo.d
 import 'package:hotel_pms/app/data/local_storage/repository/other_transactions_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/room_transaction_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/service_booking_repo.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/user_activity_repo.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
 import 'package:hotel_pms/app/data/models_n/guest_package_model.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
+import 'package:hotel_pms/app/data/models_n/session_activity_model.dart';
+import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/app/modules/user_management/controller/user_management_controller.dart';
 import 'package:hotel_pms/core/logs/logger_instance.dart';
@@ -54,6 +57,17 @@ class UserProfileController extends GetxController{
   Rx<List<GuestPackage>> employeePackageStorageActivity = Rx<List<GuestPackage>>([]);
   Rx<List<GuestPackage>> paginatedEmployeePackageStorageActivity = Rx<List<GuestPackage>>([]);
 
+  /// Sessions
+  Rx<List<SessionTracker>> employeeSessionsTrackerActivity = Rx<List<SessionTracker>>([]);
+  Rx<List<SessionTracker>> paginatedEmployeeSessionsTrackerActivity = Rx<List<SessionTracker>>([]);
+
+  /// Sessions Activity
+  Rx<List<SessionActivity>> employeeSessionActivity = Rx<List<SessionActivity>>([]);
+  Rx<List<SessionActivity>> paginatedEmployeeSessionActivity = Rx<List<SessionActivity>>([]);
+
+
+
+
 
 
   Rx<String> employeeKeyMetricTitle = "".obs;
@@ -76,6 +90,7 @@ class UserProfileController extends GetxController{
     await loadEmployeeCollectedPayments();
     await loadEmployeeOtherTransactions();
     await loadEmployeePackageTransactions();
+    await loadEmployeeSessions();
     setEmployeeKeyMetricTitle();
     updateUI();
     displayLoadedDataLogs();
@@ -134,6 +149,15 @@ class UserProfileController extends GetxController{
       employeeServiceBookingActivity.value = await ServiceBookingRepository().getServiceBookingByEmployeeId(appId: adminUser.value.appId,id: adminUser.value.id);
       employeeServiceBookingActivity.value.sort( (a,b)=> DateTime.parse(b.bookingDatetime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.bookingDatetime!).millisecondsSinceEpoch)
       );
+  }
+
+  loadEmployeeSessions()async{
+    employeeSessionsTrackerActivity.value = await SessionManagementRepository().getSessionTrackersByEmployeeId(appId: adminUser.value.appId,id: adminUser.value.id);
+    employeeSessionsTrackerActivity.value.sort((a,b)=> DateTime.parse(b.dateCreated!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateCreated!).millisecondsSinceEpoch));
+  }
+
+  loadEmployeeSessionActivity()async{
+
   }
 
   setEmployeeKeyMetricTitle(){

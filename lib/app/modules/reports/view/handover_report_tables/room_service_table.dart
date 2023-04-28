@@ -38,6 +38,8 @@ class RoomServiceTransactionsSection extends GetView<ReportGeneratorController> 
                               roomServiceTableKey, 'Room Service');
                           await controller.processTableExports();
                         },
+                        enableAddEntry: false,
+                        enableConfirmEntry: false,
                         onAddEntry: () {},
                         onConfirmEntry: () {}),
                   ],
@@ -48,7 +50,7 @@ class RoomServiceTransactionsSection extends GetView<ReportGeneratorController> 
                     tableSummaryRows: [
                       GridTableSummaryRow(
                           showSummaryInRow: false,
-                          title: '{Amount}{Service Count}',
+                          title: '{Amount}{Service Count}{Total}{Debts}',
                           columns: [
                             const GridSummaryColumn(
                                 name: 'Amount',
@@ -57,8 +59,18 @@ class RoomServiceTransactionsSection extends GetView<ReportGeneratorController> 
                             ),
                             const GridSummaryColumn(
                                 name: 'Service Count',
-                                columnName: RoomsServiceColumnNames.service,
+                                columnName: RoomsServiceColumnNames.roomNumber,
                                 summaryType: GridSummaryType.count
+                            ),
+                            const GridSummaryColumn(
+                                name: 'Debts',
+                                columnName: RoomsServiceColumnNames.debt,
+                                summaryType: GridSummaryType.sum
+                            ),
+                            const GridSummaryColumn(
+                                name: 'Total',
+                                columnName: RoomsServiceColumnNames.total,
+                                summaryType: GridSummaryType.sum
                             ),
                           ],
                           position: GridTableSummaryRowPosition.top
@@ -66,32 +78,51 @@ class RoomServiceTransactionsSection extends GetView<ReportGeneratorController> 
                     ],
                     columns: [
                       GridColumn(
-                          columnName: RoomsServiceColumnNames.roomNumber,
+                          columnName: RoomsServiceColumnNames.date,
                           columnWidthMode: ColumnWidthMode.fitByColumnName,
                           label: Container(
                               padding: const EdgeInsets.all(8.0),
                               alignment: Alignment.center,
                               child: SmallText(
-                                  text: LocalKeys.kRoomNumber.tr
+                                  text: LocalKeys.kDate.tr
                                       .toUpperCase()))),
                       GridColumn(
-                          columnName: RoomsServiceColumnNames.client,
+                          columnName: RoomsServiceColumnNames.time,
                           columnWidthMode: ColumnWidthMode.fitByColumnName,
                           label: Container(
                               padding: const EdgeInsets.all(8.0),
                               alignment: Alignment.center,
                               child: SmallText(
-                                  text:
-                                  LocalKeys.kClient.tr.toUpperCase()))),
+                                  text: LocalKeys.kTime.tr
+                                      .toUpperCase()))),
+                      GridColumn(
+                          columnName: RoomsServiceColumnNames.roomNumber,
+                          columnWidthMode: ColumnWidthMode.fitByCellValue,
+                          label: Container(
+                              padding: const EdgeInsets.all(8.0),
+                              alignment: Alignment.center,
+                              child: SmallText(
+                                  text: LocalKeys.kRoom.tr
+                                      .toUpperCase()))),
+                      GridColumn(
+                          columnName: RoomsServiceColumnNames.details,
+                          columnWidthMode: ColumnWidthMode.fitByColumnName,
+                          label: Container(
+                              padding: const EdgeInsets.all(8.0),
+                              alignment: Alignment.center,
+                              child: SmallText(
+                                  text: LocalKeys.kDetails.tr
+                                      .toUpperCase()))),
+
 
                       GridColumn(
-                          columnName: RoomsServiceColumnNames.employee,
+                          columnName: RoomsServiceColumnNames.total,
                           columnWidthMode: ColumnWidthMode.fitByColumnName,
                           label: Container(
                               padding: const EdgeInsets.all(8.0),
                               alignment: Alignment.center,
                               child: SmallText(
-                                  text: LocalKeys.kEmployee.tr
+                                  text: LocalKeys.kTotal.tr
                                       .toUpperCase()))),
                       GridColumn(
                           columnName: RoomsServiceColumnNames.amountPaid,
@@ -101,15 +132,15 @@ class RoomServiceTransactionsSection extends GetView<ReportGeneratorController> 
                               alignment: Alignment.center,
                               child: SmallText(
                                   text:
-                                  LocalKeys.kAmount.tr.toUpperCase()))),
+                                  LocalKeys.kPaid.tr.toUpperCase()))),
                       GridColumn(
-                          columnName: RoomsServiceColumnNames.service,
+                          columnName: RoomsServiceColumnNames.debt,
                           columnWidthMode: ColumnWidthMode.fitByColumnName,
                           label: Container(
                               padding: const EdgeInsets.all(8.0),
                               alignment: Alignment.center,
                               child: SmallText(
-                                  text: LocalKeys.kService.tr
+                                  text: LocalKeys.kDebts.tr
                                       .toUpperCase()))),
                     ]),
               ],

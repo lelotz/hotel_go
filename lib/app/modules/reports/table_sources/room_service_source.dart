@@ -2,7 +2,9 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../../core/utils/date_formatter.dart';
 import '../../../../widgets/text/big_text.dart';
+import '../../../../widgets/text/small_text.dart';
 import '../controller/handover_form_controller.dart';
 
 class RoomServiceSource extends DataGridSource{
@@ -30,7 +32,7 @@ class RoomServiceSource extends DataGridSource{
           return Container(
             alignment: Alignment.center,
             padding: const EdgeInsets.all(4.0),
-            child: Text(cell.value.toString()),
+            child: SmallText(text: cell.value.toString()),
           );
         }).toList());
   }
@@ -72,11 +74,13 @@ class RoomServiceSource extends DataGridSource{
         .paginatedRoomServiceTransactionsInCurrentSession.value
         .map<DataGridRow>((dataGridRow) {
       return DataGridRow(cells: [
+        DataGridCell<String>(columnName: RoomsServiceColumnNames.date, value: extractDate(DateTime.parse(dataGridRow.dateTime!))),
+        DataGridCell<String>(columnName: RoomsServiceColumnNames.time, value: extractTime(DateTime.parse(dataGridRow.dateTime!))),
         DataGridCell<int>(columnName: RoomsServiceColumnNames.roomNumber, value: dataGridRow.roomNumber),
-        DataGridCell<String>(columnName: RoomsServiceColumnNames.client, value: dataGridRow.clientName),
-        DataGridCell<String>(columnName: RoomsServiceColumnNames.employee, value: dataGridRow.employeeName),
-        DataGridCell<int>(columnName: RoomsServiceColumnNames.amountPaid, value: dataGridRow.amountCollected),
-        DataGridCell<String>(columnName: RoomsServiceColumnNames.service, value: dataGridRow.service),
+        DataGridCell<String>(columnName: RoomsServiceColumnNames.details, value: dataGridRow.transactionNotes),
+        DataGridCell<int>(columnName: RoomsServiceColumnNames.total, value: dataGridRow.grandTotal),
+        DataGridCell<int>(columnName: RoomsServiceColumnNames.amountPaid, value: dataGridRow.amountPaid),
+        DataGridCell<int>(columnName: RoomsServiceColumnNames.debt, value: dataGridRow.outstandingBalance),
       ]);
     }).toList(growable: false);
   }
@@ -84,9 +88,12 @@ class RoomServiceSource extends DataGridSource{
 
 class RoomsServiceColumnNames{
   static const String leading = "rooms_service_";
-  static const String employee = '${leading}employee';
   static const String roomNumber = '${leading}room_number';
-  static const String client = '${leading}client';
-  static const String service = '${leading}service';
+  static const String date = '${leading}date';
+  static const String time = '${leading}time';
+  static const String details = '${leading}details';
+  static const String action = '${leading}action';
+  static const String total = '${leading}total';
+  static const String debt = '${leading}debt';
   static const String amountPaid = '${leading}amount_paid';
 }

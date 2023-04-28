@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/internal_transaction_repo.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/other_transactions_repo.dart';
+import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:hotel_pms/app/modules/reports/controller/report_selector_controller.dart';
 import 'package:hotel_pms/app/modules/reports/table_sources/laundry_transactions_source.dart';
@@ -12,13 +14,11 @@ import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:logger/logger.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
-import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/hotel_issues_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/room_transaction_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/service_booking_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
-import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
 import 'package:hotel_pms/app/data/models_n/hotel_issues_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/service_booking_model.dart';
@@ -51,15 +51,15 @@ class ReportGeneratorController extends GetxController {
   Rx<List<ServiceBooking>> paginatedConferenceActivityCurrentSession =
       Rx<List<ServiceBooking>>([]);
 
-  Rx<List<CollectPayment>> laundryTransactionsInCurrentSession =
-      Rx<List<CollectPayment>>([]);
-  Rx<List<CollectPayment>> paginatedLaundryTransactionsInCurrentSession =
-      Rx<List<CollectPayment>>([]);
+  Rx<List<OtherTransactions>> laundryTransactionsInCurrentSession =
+      Rx<List<OtherTransactions>>([]);
+  Rx<List<OtherTransactions>> paginatedLaundryTransactionsInCurrentSession =
+      Rx<List<OtherTransactions>>([]);
 
-  Rx<List<CollectPayment>> roomServiceTransactionsInCurrentSession =
-      Rx<List<CollectPayment>>([]);
-  Rx<List<CollectPayment>> paginatedRoomServiceTransactionsInCurrentSession =
-      Rx<List<CollectPayment>>([]);
+  Rx<List<OtherTransactions>> roomServiceTransactionsInCurrentSession =
+      Rx<List<OtherTransactions>>([]);
+  Rx<List<OtherTransactions>> paginatedRoomServiceTransactionsInCurrentSession =
+      Rx<List<OtherTransactions>>([]);
 
   Rx<List<HotelIssues>> hotelIssuesInCurrentSession = Rx<List<HotelIssues>>([]);
   Rx<List<HotelIssues>> paginatedHotelIssuesInCurrentSession =
@@ -109,13 +109,21 @@ class ReportGeneratorController extends GetxController {
   Rx<String> selectedSessionView = "".obs;
   Rx<String> selectedSessionUserName = "".obs;
   Rx<String> roomSummaryValue = "".obs;
+  Rx<String> roomServiceSummaryValue = "".obs;
+  Rx<String> roomServiceCounterSummaryValue = "".obs;
+
+
+
   Rx<String> roomsSoldCountSummaryValue = "".obs;
   Rx<String> roomDebtValue = "".obs;
   Rx<String> conferenceSummaryValue = "".obs;
   Rx<String> conferenceAdvanceSummaryValue = "".obs;
+  Rx<String> laundryCounterSummaryValue = ''.obs;
+ // Rx<String> laundrySummaryValue = "".obs;
   Rx<String> laundrySummaryValue = "".obs;
+
   Rx<String> pettyCashSummaryValue = "".obs;
-  Rx<String> roomServiceSummaryValue = "".obs;
+  // Rx<String> roomServiceSummaryValue = "".obs;
   Logger logger = AppLogger.instance.logger;
 
   @override
@@ -131,15 +139,15 @@ class ReportGeneratorController extends GetxController {
   }
 
   initTextEditingControllers(){
-    // roomNumberController.text = "0";
-    // conferencePaymentsCtr.text = "0";
-    // conferenceAdvancePaymentsCtr.text = "0";
-    // roomPaymentsCtr.text = "0";
-    // roomDebtPaymentsCtr.text = "0";
-    // laundryPaymentsCtr.text = "0";
-    // roomServicePaymentsCtr.text = "0";
-    // pettyCashOutCtr.text = "0";
-    // totalDailyPaymentsCtr.text = "0";
+    roomNumberController.text = "0";
+    conferencePaymentsCtr.text = "0";
+    conferenceAdvancePaymentsCtr.text = "0";
+    roomPaymentsCtr.text = "0";
+    roomDebtPaymentsCtr.text = "0";
+    laundryPaymentsCtr.text = "0";
+    roomServicePaymentsCtr.text = "0";
+    pettyCashOutCtr.text = "0";
+    totalDailyPaymentsCtr.text = "0";
   }
 
   clearControllers(){
@@ -265,13 +273,13 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<void> processTableExports() async {
+    setSummaryData();
     isExporting.value = true;
     String filePath = await FileManager().generateFileName(
         userName: loggedInUser.value.fullName ?? 'system', category: 'Reports');
 
     ExcelWorkBook excelWorkBook = ExcelWorkBook(
         sheetProperties: reportExportInfo.value, excelFileName: filePath);
-    setSummaryData();
     Workbook workbook = excelWorkBook.createReportSummaryTemplate(summaryData.value,await getReportEmployeeDetails());
     await excelWorkBook.createFileWithSheetsFromSfTable(filePath, workbook);
 
@@ -287,6 +295,7 @@ class ReportGeneratorController extends GetxController {
         'name': loggedInUser.value.fullName,
         'start': authController.sessionController.currentSession.value.dateCreated,
         'end': DateTime.now().toIso8601String(),
+        'session': authController.sessionController.currentSession.value.id,
       };
     }else if(searchByDateRange.value){
       logger.i('dateRangeReport');
@@ -294,6 +303,9 @@ class ReportGeneratorController extends GetxController {
         'name': loggedInUser.value.fullName,
         'start': reportStartDate.value.toIso8601String(),
         'end': reportEndDate.value.toIso8601String(),
+        'session': '',
+
+
       };
     }else if(searchBySelectedSession.value){
       logger.i('sessionReport');
@@ -303,6 +315,8 @@ class ReportGeneratorController extends GetxController {
         'name': selectedSessionUserName.value,
         'start': selectedSession.value.dateCreated,
         'end': selectedSession.value.dateEnded ?? DateTime.now().toIso8601String(),
+        'session': authController.sessionController.currentSession.value.id,
+
 
       };
 
@@ -311,6 +325,8 @@ class ReportGeneratorController extends GetxController {
       'name': 'not_given',
       'start': DateTime.now().toIso8601String(),
       'end': DateTime.now().toIso8601String(),
+      'session': '',
+
     };
   }
 
@@ -338,7 +354,11 @@ class ReportGeneratorController extends GetxController {
   }
 
   setSummaryData() {
-    logger.w('setting summary data');
+    // updateUI();
+    update();
+    logger.i('updated controller');
+
+    summaryData.value.clear();
 
     summaryData.value = {
       LocalKeys.kRooms: strToDouble(roomPaymentsCtr.text+'.0'),
@@ -350,9 +370,12 @@ class ReportGeneratorController extends GetxController {
       LocalKeys.kRoomService: strToDouble(roomServicePaymentsCtr.text+'.0'),
       LocalKeys.kLaundry: strToDouble(laundryPaymentsCtr.text+'.0'),
       LocalKeys.kPettyCash: strToDouble(pettyCashOutCtr.text+'.0'),
-      LocalKeys.kRooms+'Count': strToDouble(roomsSoldCountSummaryValue.value+'.0'),
+      LocalKeys.kRoomService+"Count" : strToDouble(roomServiceTransactionsInCurrentSession.value.length.toString()),
+      LocalKeys.kRooms+'Count': strToDouble(roomsSoldInCurrentSession.value.length.toString()+'.0'),
+      LocalKeys.kLaundry+'Count': strToDouble(laundryTransactionsInCurrentSession.value.length.toString()+'.0'),
 
     };
+    summaryData.refresh();
   }
 
   setSessionById(String id) {
@@ -365,13 +388,13 @@ class ReportGeneratorController extends GetxController {
   }
 
   getSummaryData(String tableTitle, String summaryValue) {
+     logger.wtf('GET SUMMARY DATA $tableTitle $summaryValue');
     try{
       switch (tableTitle) {
         case RoomsUsedColumnNames.paid:
           if(roomSummaryValue.value =='') {
             roomSummaryValue.value = summaryValue;
           }
-
           break;
         case RoomsUsedColumnNames.debt:
           if(roomDebtValue.value=='') {
@@ -403,11 +426,6 @@ class ReportGeneratorController extends GetxController {
         case PettyCashTableColumnNames.amountPaid:
           if(pettyCashSummaryValue.value=='') {
             pettyCashSummaryValue.value = summaryValue;
-          }
-          break;
-        case RoomsUsedColumnNames.roomNumber:
-          if(roomsSoldCountSummaryValue.value=='') {
-            roomsSoldCountSummaryValue.value = summaryValue;
           }
           break;
         default:
@@ -450,9 +468,7 @@ class ReportGeneratorController extends GetxController {
         await getTransactionIdsByTransactionType(
             TransactionTypes.roomServiceTransaction);
     roomServiceTransactionsInCurrentSession.value =
-        await CollectedPaymentsRepository().getMultipleCollectedPaymentsByIds(
-            roomServiceTransactionsIds,
-            TransactionTypes.roomServiceTransaction);
+    await OtherTransactionsRepository().getMultipleOtherTransaction(roomServiceTransactionsIds);
   }
 
   Future<void> getHotelIssuesInCurrentSession() async {
@@ -471,20 +487,20 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<void> getRoomsSoldInCurrentSession() async {
-    List<String> roomTransactionsIds =
-        await getTransactionIdsByTransactionType(TransactionTypes.room);
-    roomsSoldInCurrentSession.value = await RoomTransactionRepository()
-        .getMultipleRoomTransactions(roomTransactionsIds);
+    List<String> roomTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.room);
+    roomsSoldInCurrentSession.value = await RoomTransactionRepository().getMultipleRoomTransactions(roomTransactionsIds);
   }
+
 
   Future<void> getLaundryTransactionsCurrentSession() async {
     List<String> laundryTransactionsIds =
         await getTransactionIdsByTransactionType(
-            TransactionTypes.laundryPayment);
+            TransactionTypes.laundryPayment.toUpperCase());
     laundryTransactionsInCurrentSession.value =
-        await CollectedPaymentsRepository().getMultipleCollectedPaymentsByIds(
-            laundryTransactionsIds, TransactionTypes.laundryPayment);
+    await OtherTransactionsRepository().getMultipleOtherTransaction(laundryTransactionsIds);
   }
+
+
 
   Future<List<SessionActivity>> getTransaction(String transactionType) async {
     List<SessionActivity> activity = [];
@@ -495,8 +511,9 @@ class ReportGeneratorController extends GetxController {
               selectedSession.value.id ??
                   authController.sessionTracker.value.id ??
                   '');
-      if(activity.length > 0){
-        logger.i('fetched ${activity.length} of ${transactionType} from session ${selectedSession.value.id ?? 'selected session was null used current session${authController.sessionTracker.value.id ?? 'auth controller empty'}'}');
+
+      if(activity.toSet().length > 0){
+        logger.i('fetched ${activity.toSet().length} of ${transactionType} from session ${selectedSession.value.id ?? 'selected session was null used current session${authController.sessionTracker.value.id ?? 'auth controller empty'}'}');
 
       }
     } else {
@@ -505,8 +522,8 @@ class ReportGeneratorController extends GetxController {
               transactionType,
               reportStartDate.value.toIso8601String(),
               reportEndDate.value.toIso8601String());
-      if(activity.length>0){
-        logger.i('fetched ${activity.length} of ${transactionType} from date range ${extractDate(reportStartDate.value)}-${extractDate(reportEndDate.value)}');
+      if(activity.toSet().length>0){
+        logger.i('fetched ${activity.toSet().length} of ${transactionType} from date range ${extractDate(reportStartDate.value)}-${extractDate(reportEndDate.value)}');
 
       }
     }

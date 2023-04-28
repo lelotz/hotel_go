@@ -1,14 +1,27 @@
 
 
+import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
-
+import 'package:hotel_pms/app/data/models_n/session_activity_model.dart';
+import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
+import 'package:uuid/uuid.dart';
+import 'package:get/get.dart';
 
 class OtherTransactionsRepository extends SqlDatabase{
   OtherTransactionsRepository();
   /// Other Transaction
   Future<int?> createOtherTransaction(Map<String,dynamic> row)async{
-    int? rowNumber = await create(OtherTransactionsTable.tableName, row);
+    int? rowNumber = await create(OtherTransactionsTable.tableName, row).then((value) async{
+      SessionManagementRepository().createNewSessionActivity(
+          SessionActivity(
+            id: Uuid().v1(),
+            sessionId: Get.find<AuthController>().sessionController.currentSession.value.id,
+            transactionId: row[OtherTransactionsTable.id],
+            transactionType: row[OtherTransactionsTable.paymentNotes],
+            dateTime: DateTime.now().toIso8601String()
+          ).toJson());
+    });
     return rowNumber;
   }
 
@@ -19,6 +32,19 @@ class OtherTransactionsRepository extends SqlDatabase{
         where: '${OtherTransactionsTable.roomTransactionId} = ?',
         whereArgs: [roomTransactionId]
     );
+  }
+
+  /// READ OtherTransaction
+  Future<List<OtherTransactions>> getMultipleOtherTransaction(List<String> ids)async{
+    List<OtherTransactions> result = [];
+     await read(
+        tableName: OtherTransactionsTable.tableName,
+        where: '${OtherTransactionsTable.id} IN (${buildNQuestionMarks(ids.length)})',
+        whereArgs: buildWhereArgsFromList(ids)
+    ).then((value) {
+      result = OtherTransactions().fromJsonList(value ?? []);
+     });
+     return result;
   }
   /// UPDATE OtherTransaction
   Future<int?> updateOtherTransaction(Map<String,dynamic> row) async{

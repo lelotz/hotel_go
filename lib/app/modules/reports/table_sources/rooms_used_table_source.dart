@@ -1,11 +1,13 @@
 import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/modules/reports/controller/handover_form_controller.dart';
+import 'package:hotel_pms/app/modules/user_data/controller/user_data_controller.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../widgets/text/big_text.dart';
+import '../../../../widgets/text/small_text.dart';
 
 class RoomsUsedSource extends DataGridSource {
   RoomsUsedSource({this.rowsPerPage = 20}) {
@@ -19,6 +21,7 @@ class RoomsUsedSource extends DataGridSource {
   }
 
   ReportGeneratorController handoverFormController = Get.find<ReportGeneratorController>();
+  UserData userData = Get.find<UserData>();
 
   List<DataGridRow> dataGridRows = [];
 
@@ -34,7 +37,7 @@ class RoomsUsedSource extends DataGridSource {
           return Container(
             alignment: Alignment.center,
             padding: const EdgeInsets.all(4.0),
-            child: Text(cell.value.toString()),
+            child: SmallText(text: cell.value.toString()),
           );
         }).toList());
   }
@@ -89,9 +92,8 @@ class RoomsUsedSource extends DataGridSource {
         .map<DataGridRow>((dataGridRow) {
 
       return DataGridRow(cells: [
-        DataGridCell<String>(columnName: RoomsUsedColumnNames.employee, value: dataGridRow.employeeId),
-        DataGridCell<int>(
-            columnName: RoomsUsedColumnNames.roomNumber, value: dataGridRow.roomNumber),
+        DataGridCell<String>(columnName: RoomsUsedColumnNames.employee, value: userData.userData.value[dataGridRow.employeeId]),
+        DataGridCell<int>(columnName: RoomsUsedColumnNames.roomNumber, value: dataGridRow.roomNumber),
         DataGridCell<int>(columnName: RoomsUsedColumnNames.value, value: dataGridRow.roomCost!),
         DataGridCell<int>(columnName: RoomsUsedColumnNames.paid, value: dataGridRow.roomAmountPaid),
         DataGridCell<int>(columnName: RoomsUsedColumnNames.debt, value: dataGridRow.roomOutstandingBalance),

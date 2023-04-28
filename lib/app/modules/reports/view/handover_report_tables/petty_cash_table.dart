@@ -40,17 +40,9 @@ class PettyCashUsageSection extends GetView<ReportGeneratorController> {
                               pettyCashTableKey, "Petty Cash");
                           await controller.processTableExports();
                         },
-                        onAddEntry: () {
-                          // buildDialog(
-                          //     context,
-                          //     'LAUNDRY',
-                          //     BookServiceForm(isRoom: 0,),
-                          //     width: 700,
-                          //     height: 600,
-                          //     alignment: Alignment.center
-                          // );
-                          // Get.to(()=>CheckInView());
-                        },
+                        enableAddEntry: false,
+                        enableConfirmEntry: false,
+                        onAddEntry: () {},
                         onConfirmEntry: () {})
                   ],
                 ),

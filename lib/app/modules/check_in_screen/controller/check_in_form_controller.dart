@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/client_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_status_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
+import 'package:hotel_pms/app/data/models_n/session_activity_model.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:hotel_pms/app/modules/reports/controller/handover_form_controller.dart';
@@ -263,6 +265,15 @@ class CheckInFormController extends GetxController{
       checkInArtifacts[CheckInArtifactsKeys.roomTransactions] = roomTransaction.id;
       checkInArtifacts['${CheckInArtifactsKeys.roomTransactions}value'] = roomTransaction.toJson();
     });
+    await SessionManagementRepository().createNewSessionActivity(
+        SessionActivity(
+          id: Uuid().v1(),
+          sessionId: Get.find<AuthController>().sessionController.currentSession.value.id,
+          transactionType: LocalKeys.kRoom,
+          transactionId: roomTransaction.id,
+          dateTime: DateTime.now().toIso8601String(),
+
+    ).toJson());
   }
   Future<void> updateRoomData()async{
     selectedRoomData.value.currentTransactionId = transactionId;

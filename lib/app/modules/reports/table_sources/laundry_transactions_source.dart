@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:get/get.dart';
 import '../../../../widgets/text/big_text.dart';
+import '../../../../widgets/text/small_text.dart';
 import '../controller/handover_form_controller.dart';
 
 class LaundryTransactionsSource extends DataGridSource{
@@ -29,7 +31,7 @@ class LaundryTransactionsSource extends DataGridSource{
           return Container(
             alignment: Alignment.center,
             padding: const EdgeInsets.all(4.0),
-            child: Text(cell.value.toString()),
+            child: SmallText(text: cell.value.toString()),
           );
         }).toList());
   }
@@ -68,11 +70,14 @@ class LaundryTransactionsSource extends DataGridSource{
         .paginatedLaundryTransactionsInCurrentSession.value
         .map<DataGridRow>((dataGridRow) {
       return DataGridRow(cells: [
+        DataGridCell<String>(columnName: LaundryTableColumnNames.date, value: extractDate(DateTime.parse(dataGridRow.dateTime!))),
+        DataGridCell<String>(columnName: LaundryTableColumnNames.time, value: extractTime(DateTime.parse(dataGridRow.dateTime!))),
         DataGridCell<int>(columnName: LaundryTableColumnNames.roomNumber, value: dataGridRow.roomNumber),
-        DataGridCell<String>(columnName: LaundryTableColumnNames.client, value: dataGridRow.clientName),
-        DataGridCell<String>(columnName: LaundryTableColumnNames.employee, value: dataGridRow.employeeName),
-        DataGridCell<int>(columnName: LaundryTableColumnNames.amountPaid, value: dataGridRow.amountCollected),
-        DataGridCell<String>(columnName: LaundryTableColumnNames.service, value: dataGridRow.service),
+        DataGridCell<String>(columnName: LaundryTableColumnNames.details, value: '${dataGridRow.transactionNotes!.split(':')[0]} ${dataGridRow.transactionNotes!.split(':')[1]}'),
+        DataGridCell<String>(columnName: LaundryTableColumnNames.action, value: '${dataGridRow.transactionNotes!.split(':')[2]}'),
+        DataGridCell<int>(columnName: LaundryTableColumnNames.total, value: dataGridRow.grandTotal),
+        DataGridCell<int>(columnName: LaundryTableColumnNames.amountPaid, value: dataGridRow.amountPaid),
+        DataGridCell<int>(columnName: LaundryTableColumnNames.debt, value: dataGridRow.outstandingBalance),
 
       ]);
     }).toList(growable: false);
@@ -81,9 +86,12 @@ class LaundryTransactionsSource extends DataGridSource{
 
 class LaundryTableColumnNames{
   static const String leading = "laundry_";
-  static const String employee = '${leading}employee';
   static const String roomNumber = '${leading}room_number';
-  static const String client = '${leading}client';
-  static const String service = '${leading}service';
+  static const String date = '${leading}date';
+  static const String time = '${leading}time';
+  static const String details = '${leading}details';
+  static const String action = '${leading}action';
+  static const String total = '${leading}total';
+  static const String debt = '${leading}debt';
   static const String amountPaid = '${leading}amount_paid';
 }
