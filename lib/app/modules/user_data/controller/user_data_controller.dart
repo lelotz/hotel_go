@@ -17,13 +17,14 @@ class UserData extends GetxController{
   getUserData()async{
     users.value.clear();
     users.value = await AdminUserRepository().getAllAdminUsers();
+    print(userData.value);
     setUserData();
   }
 
   setUserData()async{
     userData.value.clear();
     for(AdminUser user in users.value){
-      userData.value.addAll({user.id!: user.fullName,user.appId!:user.fullName});
+      userData.value.addAll({user.id!: user.fullName});
       userData.refresh();
     }
   }

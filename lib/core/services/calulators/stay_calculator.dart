@@ -2,9 +2,8 @@
 import 'package:hotel_pms/app/data/local_storage/repository/room_transaction_repo.dart';
 import 'package:hotel_pms/app/data/models_n/room_data_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
-
-import '../../../core/values/app_constants.dart';
-import '../../data/models_n/other_transactions_model.dart';
+import '../../values/app_constants.dart';
+import '../../../app/data/models_n/other_transactions_model.dart';
 
 class StayCalculator {
   int roomPrice = 0;
@@ -49,26 +48,21 @@ class StayCalculator {
     int amountAdded = newCost - roomTransaction.roomCost!;
     roomTransaction.roomCost = newCost;
     roomTransaction.grandTotal = roomTransaction.grandTotal! + amountAdded;
-
     roomTransaction.roomOutstandingBalance = roomTransaction.roomCost! - roomTransaction.roomAmountPaid!;
     roomTransaction.outstandingBalance = roomTransaction.grandTotal! - roomTransaction.amountPaid!;
 
-    await RoomTransactionRepository().updateRoomTransaction(
+    await RoomTransactionRepository().updateRoomTransaction
+      (
         roomTransaction.toJson(), createUserActivity: true,
         updateDetails: 'Badilisha Check-Out Day',
         unit: 'Tarehe',
-    );
+      );
 
     return roomTransaction;
-
   }
 
   int getDaysStayed(RoomTransaction roomTransaction,{String? newCheckOutDate}){
     return DateTime.parse(newCheckOutDate ?? roomTransaction.checkOutDate!).difference(DateTime.parse(roomTransaction.checkInDate!)).inDays;
   }
-
-
-
-
 
 }

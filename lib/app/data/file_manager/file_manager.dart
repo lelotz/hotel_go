@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../../core/logs/local_logger.dart';
 import '../../../core/logs/logger_instance.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/utils/useful_math.dart';
@@ -12,6 +13,7 @@ class FileManager{
   static FileManager? _instance;
   static String defaultStoragePath = Platform.isWindows ? "Hotels_Go\\" : "Hotels_Go/";
   Logger logger = AppLogger.instance.logger;
+  LocalLogger Log = LocalLogger.instance;
 
   FileManager._internal(){
     _instance = this;
@@ -32,12 +34,21 @@ class FileManager{
       appDirectory = "C:\\";
       directory = Directory(appDirectory);
       if(appDirectory != directory.path) logger.e({'error':'Failed to get app directory','defaultDirectory': appDirectory},e);
+      // await Log.exportLog(data: {'title':'Main directory error: fallback directory ${directory.path}'}, error: e.toString());
       return directory;
     }
     return directory;
 
   }
+  Future<String> get executableDirectory async{
+    try{
+      return Directory.current.path + "\\data\\flutter_assets\\";
+    }catch(e){
+      await Log.exportLog(data: {'title':'Main directory error: fallback directory C:\\'}, error: e.toString());
+      return "C:\\";
+    }
 
+  }
 
   createFolder(String path)async{
 
@@ -46,11 +57,11 @@ class FileManager{
     try{
       if(appDir.path.isNotEmpty && await directory.exists() == false) {
         directory.create();
-      } else {
-
       }
     }catch(e){
       logger.e(e);
+      Log.exportLog(data: {'title':'CreateFolder error: ${directory.path}'}, error: e.toString());
+
     }
 
   }
@@ -61,8 +72,11 @@ class FileManager{
       file = await file.writeAsBytes(bytes, flush: true,mode: append ? FileMode.append : FileMode.write );
     }on PathNotFoundException catch(e) {
       logger.e({'':'writeFile','pathNotFound': filePath}, e);
+      Log.exportLog(data: {'title':'writeFile PathNotFound: ${filePath}'}, error: e.toString());
+
     }catch (otherError){
       logger.e({'':'writeFile','otherErrors': filePath}, otherError);
+      Log.exportLog(data: {'title':'writeFile error: ${filePath}'}, error: otherError.toString());
     }
     return file;
   }
@@ -79,15 +93,27 @@ class FileManager{
       file = await File(path).create(recursive: true);
     }catch (e){
       logger.e('',e);
+      Log.exportLog(data: {'title':'getNewFile error: ${path}'}, error: e.toString());
+
     }
     return file;
   }
 
+  Future<List<int>> getVirtualFile(String path)async{
+    List<int> imageBytes = [];
+    try{
+      imageBytes = await File(path).readAsBytesSync();
+    }catch (e){
+      logger.e('',e);
+      Log.exportLog(data: {'title':'getVirtualFile error: ${path}'}, error: e.toString());
+
+    }
+    return imageBytes;
+  }
+
   Future<String> generateFileName({String userName="system",String category="none"}) async {
     createFolder(category);
-    String subfolder =
-    extractDate(DateTime.now())
-        .replaceAll('-', '_');
+    String subfolder = extractDate(DateTime.now()).replaceAll('-', '_');
     String fileName = userName;
     fileName = fileName.replaceAll(' ', '');
     fileName = '${fileName}_$subfolder' '_${category}_';

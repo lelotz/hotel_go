@@ -27,7 +27,7 @@ import '../../../data/local_storage/repository/user_activity_repo.dart';
 import '../../../data/models_n/room_data_model.dart';
 import '../../homepage_screen/controller/homepage_controller.dart';
 import '../../sales_module/controller/sales_controller.dart';
-import '../../stay_calculator/stay_calculator.dart';
+import '../../../../core/services/calulators/stay_calculator.dart';
 
 class CheckInFormController extends GetxController{
   Logger logger = AppLogger.instance.logger;
@@ -298,7 +298,7 @@ class CheckInFormController extends GetxController{
     //logger.i({'updateAdminUserFromAuth': aU.appId});
     aU = AdminUser.incrementRoomsSold(aU.toJson());
     await AdminUserRepository().updateAdminUser(aU.toJson()).then((value) {
-      checkInArtifacts[CheckInArtifactsKeys.employeeId] = aU.appId;
+      checkInArtifacts[CheckInArtifactsKeys.employeeId] = aU.id;
       checkInArtifacts['${CheckInArtifactsKeys.employeeId}value'] = aU.toJson();
     });
     await Get.find<AuthController>().updateAdminUser();

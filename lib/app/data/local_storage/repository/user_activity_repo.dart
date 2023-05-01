@@ -43,14 +43,14 @@ class UserActivityRepository extends SqlDatabase {
     return userActivity;
   }
 
-  Future<List<UserActivity>> getUserActivityByUserAppId(
-      String appId,
+  Future<List<UserActivity>> getUserActivityByUserId(
+      String userId,
       {String? tableName = UserActivityTable.tableName}) async {
     List<UserActivity> userActivity = [];
     await read(
         tableName: tableName,
         where: '${UserActivityTable.employeeId} = ?',
-        whereArgs: [appId]).then((value) {
+        whereArgs: [userId]).then((value) {
       userActivity = UserActivity.fromJsonList(value?? []);
     });
 

@@ -49,7 +49,7 @@ class HotelIssuesFormController extends GetxController{
     await HotelIssuesRepository().createHotelIssue(
       HotelIssues(
         id: id,
-        employeeId: authController.adminUser.value.appId,
+        employeeId: authController.adminUser.value.id,
         roomNumber: roomNumber.value.isNotEmpty ? int.parse(roomNumber.value) : 0,
         issueDescription: issueDescription.text,
         stepsTaken: stepsTakenDescription.text,

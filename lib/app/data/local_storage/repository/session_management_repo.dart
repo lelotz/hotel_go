@@ -51,12 +51,12 @@ class SessionManagementRepository  extends SqlDatabase{
     return foundSessions;
   }
 
-  Future<List<SessionTracker>> getSessionTrackersByEmployeeId({String? appId,String? id})async{
+  Future<List<SessionTracker>> getSessionTrackersByEmployeeId({String? id})async{
     List<SessionTracker> foundSessions = [];
     await read(
       tableName: SessionTrackerTable.tableName,
-      where: '${SessionTrackerTable.employeeId}=? OR ${SessionTrackerTable.employeeId}=?',
-      whereArgs: [appId,id]
+      where: '${SessionTrackerTable.employeeId}=?',
+      whereArgs: [id]
     ).then((value) {
       foundSessions = SessionTracker().fromJsonList(value ?? []);
     });

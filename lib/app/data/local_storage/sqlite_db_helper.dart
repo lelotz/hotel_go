@@ -100,7 +100,6 @@ class SqlDatabase{
     Database? db = await instance.database;
     try{
       rowNumber = await db?.insert(tableName, row,conflictAlgorithm: ConflictAlgorithm.replace) ?? -1;
-      //if(tableName == SessionTrackerTable.tableName) logger.i({'title': 'WRITE DB','data':row,'tableName': tableName});
     }catch(e){
       logger.e({'title': 'WRITE DB','data':row,'tableName': tableName},e.toString());
     }
@@ -135,7 +134,7 @@ class SqlDatabase{
     }catch(e){
       Map<String,dynamic> errorInfo = {'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
       logger.e(errorInfo,e.toString());
-      await Log.exportLog(data: errorInfo, error: e.toString());
+      await Log.exportSqlLog(data: errorInfo, error: e.toString());
     }
     //await db?.close();
 
@@ -155,7 +154,7 @@ class SqlDatabase{
     }catch(e){
       Map<String,dynamic> errorInfo = {'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
       logger.e(errorInfo,e.toString());
-      await Log.exportLog(data: errorInfo, error: e.toString());
+      await Log.exportSqlLog(data: errorInfo, error: e.toString());
     }
     //await db?.close();
 
@@ -187,7 +186,7 @@ class SqlDatabase{
     }catch(e){
       Map<String,dynamic> errorInfo = {'title': 'UPDATE','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
       logger.e(errorInfo,e.toString());
-      await Log.exportLog(data: errorInfo, error: e.toString());
+      await Log.exportSqlLog(data: errorInfo, error: e.toString());
     }
     //await db?.close();
 
@@ -215,7 +214,7 @@ class SqlDatabase{
     }catch(e){
       Map<String,dynamic> errorInfo = {'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
       logger.e(errorInfo,e.toString());
-      await Log.exportLog(data: errorInfo, error: e.toString());
+      await Log.exportSqlLog(data: errorInfo, error: e.toString());
 
     }
     //await db?.close();

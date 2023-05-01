@@ -71,7 +71,7 @@ class PettyCashTableSource extends DataGridSource{
       return DataGridRow(cells: [
         DataGridCell<String>(columnName: PettyCashTableColumnNames.receiverName, value: dataGridRow.beneficiaryName),
         DataGridCell<String>(columnName: PettyCashTableColumnNames.department, value: dataGridRow.department),
-        DataGridCell<String>(columnName: PettyCashTableColumnNames.employeeId, value: dataGridRow.employeeId),
+        DataGridCell<String>(columnName: PettyCashTableColumnNames.employeeId, value: handoverFormController.userData.userData.value[dataGridRow.employeeId!]),
         DataGridCell<String>(columnName: PettyCashTableColumnNames.description, value: dataGridRow.description),
         DataGridCell<int>(columnName: PettyCashTableColumnNames.amountPaid, value: dataGridRow.transactionValue),
 

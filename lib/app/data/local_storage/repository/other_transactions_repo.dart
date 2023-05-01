@@ -55,13 +55,13 @@ class OtherTransactionsRepository extends SqlDatabase{
     return rowId;
   }
 
-  Future<List<OtherTransactions>> getOtherTransactionsByEmployeeId({String? appId,String? id})async{
+  Future<List<OtherTransactions>> getOtherTransactionsByEmployeeId({String? id})async{
     List<OtherTransactions> result = [];
 
     await read(
       tableName: OtherTransactionsTable.tableName,
-      where: '${OtherTransactionsTable.employeeId}=? OR ${OtherTransactionsTable.employeeId}=?',
-      whereArgs: [appId,id]
+      where: '${OtherTransactionsTable.employeeId}=?',
+      whereArgs: [id]
     ).then((value) {
       result = OtherTransactions().fromJsonList(value ?? []);
     });

@@ -10,11 +10,14 @@ class SplashScreenController extends GetxController{
   Rx<String> appDirectory = ''.obs;
   FileManager fileManager = FileManager();
   UserData userData = Get.put(UserData(),permanent: true);
+  Rx<String> appExecutablePath = Rx<String>('');
+
 
   @override
   Future<void> onReady() async{
     await userData.onInit();
     await validateAppDirectory();
+    appExecutablePath.value = await fileManager.executableDirectory;
     super.onReady();
   }
 

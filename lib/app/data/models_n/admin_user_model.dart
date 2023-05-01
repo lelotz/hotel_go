@@ -1,7 +1,7 @@
 
 class AdminUser {
   String? id;
-  String? appId;
+
   String? fullName;
   String? firstName;
   String? lastName;
@@ -12,7 +12,7 @@ class AdminUser {
 
   AdminUser(
       {
-        this.appId,
+
         this.id,
         this.fullName,
         this.firstName,
@@ -42,7 +42,7 @@ class AdminUser {
     int totalRoomsSold = json['roomsSold'];
     totalRoomsSold += 1;
     status = json['status'];
-    appId = json['appId'];
+
     fullName = json['fullName'];
     firstName = json['firstName'];
     lastName = json['lastName'];
@@ -54,7 +54,7 @@ class AdminUser {
 
 
   AdminUser.fromJson(Map<String, dynamic> json) {
-    appId = json['appId'];
+
     fullName = json['fullName'];
     firstName = json['firstName'];
     lastName = json['lastName'];
@@ -79,7 +79,7 @@ class AdminUser {
       firstName = fullName!.split(' ')[0];
       lastName = fullName!.split(' ')[1];
     }    final Map<String, dynamic> data = <String, dynamic>{};
-    data['appId'] = appId;
+
     data['fullName'] = fullName;
     data['firstName'] = firstName;
     data['lastName'] = lastName;

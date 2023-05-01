@@ -32,17 +32,18 @@ class CreateUserController extends GetxController{
 
   Future<void> createNewEmployee({bool isNewAdmin=false})async{
     initiatedUserCreation.value = true;
-    await AdminUserRepository().createAdminUser(AdminUser(
+    AdminUser newUser = AdminUser(
       id: const Uuid().v1(),
-      appId: userIdController.text,
       fullName: fullNameController.text,
       phone: phoneController.text,
       position: newUserPosition.value,
       status: 'ENABLED',
       roomsSold: 0,
-    ).toJson()).then((value) async{
+    );
+    await AdminUserRepository().createAdminUser(
+        newUser.toJson()).then((value) async{
       if(value != null && value > 0) {
-        await encryptNewUserPassword();
+        await encryptNewUserPassword(newUser.id!);
         userSuccessfullyCreated.value = true;
         Navigator.of(Get.overlayContext!).pop();
       }
@@ -57,8 +58,12 @@ class CreateUserController extends GetxController{
 
   }
 
-  encryptNewUserPassword()async{
-    await EncryptedDataRepository().createEncryptedData(EncryptedData(userId: userIdController.text,data: passWordController.text).toJson());
+  encryptNewUserPassword(String userId)async{
+    await EncryptedDataRepository().createEncryptedData(
+        EncryptedData(
+            userId: userId,
+            data: passWordController.text
+        ).toJson());
   }
 
 }

@@ -15,8 +15,8 @@ class AdminUserRepository{
   Future<List<Map<String, dynamic>>?> getAdminUser(Map<String,dynamic> row)async{
     List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,
-        where: '${AdminUsersTable.appId} = ?',
-        whereArgs: [row[AdminUsersTable.appId]]
+        where: '${AdminUsersTable.id} = ?',
+        whereArgs: [row[AdminUsersTable.id]]
     );
     return response;
   }
@@ -32,15 +32,6 @@ class AdminUserRepository{
     return 'Not Found';
   }
 
-  Future<String> getAdminUserNameByAppId(String id)async{
-    List<Map<String, dynamic>>? response = await getAdminUserByAppId(id);
-    AdminUser user = AdminUser();
-    if(response!=null && response.isNotEmpty){
-      user = AdminUser().fromJsonList(response).first;
-    }
-
-    return user.fullName ?? 'Not Found';
-  }
   Future<List<AdminUser>> getAdminUserByName(String name)async{
     List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,
@@ -48,7 +39,7 @@ class AdminUserRepository{
         whereArgs: [name]
     );
 
-    return AdminUser().fromJsonList(response ?? []);;
+    return AdminUser().fromJsonList(response ?? []);
   }
 
   Future<List<AdminUser>> getAllAdminUsers()async{
@@ -57,7 +48,7 @@ class AdminUserRepository{
         readAll: true,
     );
 
-    return AdminUser().fromJsonList(response ?? []);;
+    return AdminUser().fromJsonList(response ?? []);
   }
   Future<List<Map<String, dynamic>>?> getAdminUserById(String id)async{
     List<Map<String, dynamic>>? response = await db.read(
@@ -68,14 +59,6 @@ class AdminUserRepository{
     return response;
   }
 
-  Future<List<Map<String, dynamic>>?> getAdminUserByAppId(String id)async{
-    List<Map<String, dynamic>>? response = await db.read(
-        tableName: AdminUsersTable.tableName,
-        where: '${AdminUsersTable.appId} = ?',
-        whereArgs: [id]
-    );
-    return response;
-  }
   Future<List<Map<String, dynamic>>?> getAdminUserByPosition(String position)async{
     List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,
@@ -88,9 +71,9 @@ class AdminUserRepository{
 
   Future<int?> updateAdminUser(Map<String,dynamic> row) async{
 
-    String id = row[AdminUsersTable.appId];
+    String id = row[AdminUsersTable.id];
     int? rowId = await db.update(tableName: AdminUsersTable.tableName,
-        row: row,where: '${AdminUsersTable.appId} = ?',whereArgs: [id]
+        row: row,where: '${AdminUsersTable.id} = ?',whereArgs: [id]
     );
     return rowId;
   }
@@ -101,7 +84,6 @@ class AdminUserRepository{
 class AdminUsersTable{
   static const String tableName = "admin_users";
   static const String id = "id";
-  static const String appId = "appId";
   static const String fullName = "fullName";
   static const String firstName = "firstName";
   static const String lastName = "lastName";
@@ -112,8 +94,8 @@ class AdminUsersTable{
   String sql =
   '''
       CREATE TABLE IF NOT EXISTS $tableName(
-        $appId TEXT PRIMARY KEY,
-        $id TEXT NOT NULL,
+       
+        $id TEXT PRIMARY KEY,
         $fullName TEXT NOT NULL,
         $firstName TEXT,
         $lastName TEXT,

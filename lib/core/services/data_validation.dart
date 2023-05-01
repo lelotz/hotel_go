@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 import '../values/localization/messages.dart';
@@ -7,9 +6,7 @@ class DataValidation {
 
   static isAlphabeticOnly(String controller){
     controller = controller.removeAllWhitespace;
-
     if(isNotEmpty(controller)!=null) return isNotEmpty(controller);
-
     if(controller.isAlphabetOnly == false){
       return AppMessages.alphabeticOnly.tr;
     }
@@ -46,9 +43,7 @@ class DataValidation {
   }
 
   static isNumeric(String controller){
-
     if(isNotEmpty(controller) != null) return isNotEmpty(controller);
-
     if(controller.isNumericOnly == false){
       return AppMessages.numericOnly.tr;
     }else if(stringToInt(controller) < 0){

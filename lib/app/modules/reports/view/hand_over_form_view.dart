@@ -59,7 +59,6 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     children: [
-                      // EmptyIllustration(),
                       Row(
                         children: [
                           const BigText(text: "Export Report"),
@@ -71,12 +70,12 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                               : IconButton(
                                   onPressed: () async {
                                     await controller.submitReport({
-                                      'Rooms': roomsTableKey,
-                                      'Conference': conferenceTableKey,
-                                      'Room Service': roomServiceTableKey,
-                                      'Laundry': laundryTableKey,
-                                      'Hotel Issues': hotelIssuesTableKey,
-                                      'Petty Cash' : pettyCashTableKey,
+                                      LocalKeys.kRooms: roomsTableKey,
+                                      LocalKeys.kConference: conferenceTableKey,
+                                      LocalKeys.kRoomService: roomServiceTableKey,
+                                      LocalKeys.kLaundry: laundryTableKey,
+                                      LocalKeys.kHotelIssues: hotelIssuesTableKey,
+                                      LocalKeys.kPettyCash : pettyCashTableKey,
                                     });
                                   },
                                   icon: const Icon(Icons.save_alt_outlined)))

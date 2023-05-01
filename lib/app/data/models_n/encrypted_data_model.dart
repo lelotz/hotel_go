@@ -16,4 +16,12 @@ class EncryptedData {
     data['data'] = this.data;
     return data;
   }
+
+  List<EncryptedData> fromJsonList(List<Map<String,dynamic>> value){
+    List<EncryptedData> result = [];
+    for(Map<String,dynamic> element in value){
+      result.add(EncryptedData.fromJson(element));
+    }
+    return result;
+  }
 }

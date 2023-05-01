@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
     final botToastBuilder = BotToastInit();
     return GetMaterialApp(
       title: 'Hotel PMS',
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       theme: getApplicationTheme(),
       defaultTransition: Transition.fadeIn,
       darkTheme: Themes.dark,

@@ -4,6 +4,7 @@ import 'package:hotel_pms/app/data/local_storage/repository/conference_booking_d
 import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
 import 'package:hotel_pms/app/data/models_n/service_booking_model.dart';
 import 'package:hotel_pms/app/modules/book_service/controller/book_service_controller.dart';
+import 'package:hotel_pms/core/services/calulators/conference_calculator.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
@@ -83,7 +84,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
   /// SERVICE COST
   TextEditingController serviceValueController = TextEditingController();
 
-  Rx<bool> isPackage = false.obs;
+  Rx<bool> isPackage = true.obs;
   Rx<bool> isHourly = false.obs;
   Rx<bool> isDaily = false.obs;
   Rx<bool> isRestaurant = false.obs;
@@ -127,6 +128,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
       isPackage.refresh();
     }
     conferencePackage.text = "45000";
+    updateServiceValue();
 
   }
   updateIsDaily(bool isSelected){
@@ -136,6 +138,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
       isDaily.value = isSelected;
       isDaily.refresh();
       conferencePackage.text = "200000";
+      updateServiceValue();
     }
   }
   updateIsHourly(bool isSelected){
@@ -145,6 +148,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
       isHourly.value = isSelected;
       isHourly.refresh();
       conferencePackage.text = "30000";
+      updateServiceValue();
     }
 
   }
@@ -155,6 +159,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
       isRestaurant.value = isSelected;
       isRestaurant.refresh();
       conferencePackage.text = "50000";
+      updateServiceValue();
     }
 
   }
@@ -259,7 +264,8 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
   }
 
   String parseTimeOfDayToString(TimeOfDay? time){
-    return '${time!.hour }:${time.minute}';
+    String minute  = time!.minute <= 9 ? '0${time.minute}' : time.minute.toString();
+    return '${time.hour }:$minute';
   }
 
 
@@ -352,17 +358,27 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
   }
 
   updateServiceValue(){
-    if(isPackage.value){
-      serviceValueController.text = ((stringToInt(conferencePackage.text) * stringToInt(peopleCountController.text))* selectedDatesCount.value).toString();
-
-    }else if(isHourly.value){
-      serviceValueController.text = (stringToInt(conferencePackage.text) * stringToInt(hoursBookedController.text)).toString();
-
-    }else if(isDaily.value){
-      serviceValueController.text = (stringToInt(conferencePackage.text )* selectedDatesCount.value).toString();
-
+    if(selectedConferenceDates.value.length>0){
+      serviceValueController.text = getServiceValueByBookingType().toString();
     }
+    
+  }
+  
+  int getServiceValueByBookingType(){
+    selectedConferenceDates.refresh();
+    int days = selectedConferenceDates.value.length;
+    logger.i("conf days count : $days");
 
+    if(isDaily.value){
+      return ConferenceCalculator.calculatePriceForDaily(int.parse(conferencePackage.text), days);
+    }else if(isPackage.value){
+      return ConferenceCalculator.calculatePriceForPackage(int.parse(conferencePackage.text), peopleCount: int.parse(peopleCountController.text), days: days);
+    }else if(isHourly.value){
+      return ConferenceCalculator.calculatePriceForHourly(int.parse(conferencePackage.text), hours: int.parse(hoursBookedController.text));
+    }else if(isRestaurant.value){
+      return ConferenceCalculator.calculatePriceForRestaurant(int.parse(conferencePackage.text), days: days);
+    }
+    return 0;
   }
 
   Future<void> createConferenceBooking({int isRoom=0})async{
@@ -370,7 +386,6 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
     /// CREATE ConferenceBookingDetails
     /// CREATE COLLECTED PAYMENT
     bookingInitiated.value = true;
-    serviceValueController.text = (stringToInt(conferencePackage.text) * stringToInt(peopleCountController.text)).toString();
     await ServiceBookingRepository().createServiceBooking(
         ServiceBooking(
             id: bookServiceId.value,employeeId: authController.adminUser.value.id,
@@ -379,7 +394,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
             serviceStartDate: getBiggestDate()['startDate']?.toIso8601String(),
             serviceEndEndDate: getBiggestDate()['endDate']?.toIso8601String(),
             name: nameController.text,phone: phoneController.text,peopleCount: int.parse(peopleCountController.text),
-            serviceValue: int.parse(serviceValueController.text),
+            serviceValue: stringToInt(serviceValueController.text),
             advancePayment: advancePaymentController.text, invoiceNo: conferencePackage.text,
             bookingType: TransactionTypes.conferenceBooking +': ' + getPackageTypeLabel(), bookingStatus: 'ACTIVE', isRoom: isRoom
         ).toJson()).catchError((onError){

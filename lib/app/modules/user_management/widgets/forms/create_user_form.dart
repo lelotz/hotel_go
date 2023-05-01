@@ -93,8 +93,8 @@ class CreateUserForm extends GetView<CreateUserController> {
                           padding: const EdgeInsets.only(
                               left: 20, right: 20, top: 15, bottom: 10),
                           child: TextFieldInput(
-                            textEditingController: controller.userIdController,
-                            hintText: 'User id',
+                            textEditingController: controller.passWordController,
+                            hintText: 'Password',
                             validation: DataValidation.isNotEmpty,
                           ),
                         ),

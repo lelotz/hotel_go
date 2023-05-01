@@ -98,7 +98,6 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                    ],
                  )),
                  thinDivider(),
-
                  Row(
                    crossAxisAlignment: CrossAxisAlignment.start,
                    children: [

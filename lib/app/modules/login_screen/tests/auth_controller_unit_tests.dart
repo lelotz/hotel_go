@@ -19,7 +19,7 @@ import '../../../data/models_n/admin_user_model.dart';
     //expect(authController.adminUser.value.toJson(), AdminUser().toJson());
 
     expect(authController.fullNameCtrl.text, initAdminUsers[mockIndex].fullName!);
-    expect(authController.adminUserPasswordCtrl.text, initAdminUsers[mockIndex].appId!);
+   // expect(authController.adminUserPasswordCtrl.text, initAdminUsers[mockIndex].!);
     expect(authController.adminUser.value, initAdminUsers[mockIndex]);
     expect(authController.isLoading.value, false);
     expect(authController.isLoggedOut.value, false);

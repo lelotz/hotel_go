@@ -33,7 +33,7 @@ Future<int> loadInitData(List<RoomData> roomData, List<RoomStatusModel> roomStat
 
   for(AdminUser element in adminUsers){
     await AdminUserRepository().createAdminUser(element.toJson());
-    await EncryptedDataRepository().createEncryptedData(EncryptedData(userId: element.appId,data: '').toJson());
+    await EncryptedDataRepository().createEncryptedData(EncryptedData(userId: element.id,data: userPassWords[element.id]).toJson());
   }
 
   //  Future.forEach(adminUsers, (element) async{
@@ -52,11 +52,23 @@ Future<int> loadInitData(List<RoomData> roomData, List<RoomStatusModel> roomStat
   return 0;
 
 }
+Map<String,dynamic> userPassWords = {
+  initAdminUsers[0].id! : 'tan@tan',
+  initAdminUsers[1].id! : const Uuid().v1(),
+  initAdminUsers[2].id! : const Uuid().v1(),
+  initAdminUsers[3].id! : const Uuid().v1(),
+  initAdminUsers[4].id! : '232423salm',
+  initAdminUsers[5].id! : 'angelpaa23',
+  initAdminUsers[6].id! : 'vee2001vee',
+
+};
+
+
 
 List<AdminUser> initAdminUsers = [
   AdminUser(
     id: const Uuid().v1(),
-    appId: "tan@tan",
+
     fullName: "Dereck Olomi",
     position: AppConstants.userRoles[1],
     phone: "",
@@ -65,7 +77,7 @@ List<AdminUser> initAdminUsers = [
   ),
   AdminUser(
     id: const Uuid().v1(),
-    appId: "00002WH",
+
     fullName: "Makarius Sixbert",
     position: AppConstants.userRoles[600],
     phone: "0755148965",
@@ -74,7 +86,7 @@ List<AdminUser> initAdminUsers = [
   ),
   AdminUser(
     id: const Uuid().v1(),
-    appId: "000000000000000000000000000",
+
     fullName: "Mathew Nyanda",
     position: AppConstants.userRoles[600],
     phone: "",
@@ -83,7 +95,7 @@ List<AdminUser> initAdminUsers = [
   ),
   AdminUser(
     id: const Uuid().v1(),
-    appId: "dfjkfnwioefnwe0923r024fnwepi",
+
     fullName: "Erasto Erasto",
     position: AppConstants.userRoles[600],
     phone: "",
@@ -92,7 +104,7 @@ List<AdminUser> initAdminUsers = [
   ),
   AdminUser(
     id: const Uuid().v1(),
-    appId: "232423salm",
+
     fullName: "Salama Mohammed",
     position: AppConstants.userRoles[300],
     phone: "",
@@ -101,7 +113,7 @@ List<AdminUser> initAdminUsers = [
   ),
   AdminUser(
     id: const Uuid().v1(),
-    appId: "angelpaa23",
+
     fullName: "Angel Daudi",
     position: AppConstants.userRoles[300],
     phone: "",
@@ -112,7 +124,7 @@ List<AdminUser> initAdminUsers = [
   ),
   AdminUser(
     id: const Uuid().v1(),
-    appId: "vee2001vee",
+
     fullName: "Vero Joseph",
     position: AppConstants.userRoles[300],
     phone: "",

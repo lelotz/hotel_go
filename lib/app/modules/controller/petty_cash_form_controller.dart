@@ -62,7 +62,7 @@ class PettyCashFormController extends GetxController {
     await InternalTransactionRepository()
         .createInternalTransaction(InternalTransaction(
                 id: pettyCashId,
-                employeeId: authController.adminUser.value.appId,
+                employeeId: authController.adminUser.value.id,
                 beneficiaryName: beneficiaryNameCtrl.text,
                 description: descriptionCtrl.text,
                 transactionType: LocalKeys.kPettyCash,
@@ -74,7 +74,7 @@ class PettyCashFormController extends GetxController {
         .then((value) async {
       await PettyCashRepository().createPettyCashTransaction(PettyCashStatus(
         id: const Uuid().v1(),
-        employeeId: authController.adminUser.value.appId,
+        employeeId: authController.adminUser.value.id,
         dateTime: DateTime.now().toIso8601String(),
         availableCash: "0",
         usedCash: "0",

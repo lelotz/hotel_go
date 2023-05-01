@@ -1,16 +1,22 @@
 
 
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
+import 'package:hotel_pms/app/data/models_n/encrypted_data_model.dart';
 
 class EncryptedDataRepository {
   SqlDatabase db = SqlDatabase.instance;
   EncryptedDataRepository();
 
-  Future<List<Map<String, dynamic>>?> getEncryptedDataByUserId(String userId)async{
-    return await db.read(
+  Future<List<EncryptedData>> getEncryptedDataByUserId(String userId)async{
+    List<EncryptedData> result = [];
+   await db.read(
       tableName: EncryptedDataTable.tableName,
       where: '${EncryptedDataTable.userId}=?',whereArgs: [userId]
-    );
+    ).then((value) {
+      result = EncryptedData().fromJsonList(value??[]);
+
+   });
+   return result;
   }
   Future<int?> createEncryptedData(Map<String,dynamic> row)async{
     return await db.create(EncryptedDataTable.tableName, row);

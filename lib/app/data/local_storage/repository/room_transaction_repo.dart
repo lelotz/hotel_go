@@ -57,18 +57,8 @@ class RoomTransactionRepository extends SqlDatabase {
     return result;
   }
 
-  Future<List<RoomTransaction>> getRoomTransactionsByEmployeeId({String? appId,String? id})async{
+  Future<List<RoomTransaction>> getRoomTransactionsByEmployeeId({String? id})async{
     List<RoomTransaction> result = [];
-    if(appId!=null){
-      await read(
-          tableName: RoomTransactionsTable.tableName,
-          where:
-          '${RoomTransactionsTable.employeeId}=?',
-          whereArgs: [appId])
-          .then((value) {
-        result = RoomTransaction().fromJsonList(value ?? []);
-      });
-    }
     if(id!=null){
       await read(
           tableName: RoomTransactionsTable.tableName,
@@ -106,7 +96,7 @@ class RoomTransactionRepository extends SqlDatabase {
           description: updateDetails,
           unit: unit ?? '',
           roomTransactionId: row[RoomTransactionsTable.id],
-          employeeId: Get.find<AuthController>().adminUser.value.appId,
+          employeeId: Get.find<AuthController>().adminUser.value.id,
           employeeFullName: Get.find<AuthController>().adminUser.value.fullName,
           guestId: row[RoomTransactionsTable.clientId],
           dateTime: DateTime.now().toIso8601String(),

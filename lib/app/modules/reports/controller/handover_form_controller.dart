@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
-import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/internal_transaction_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/other_transactions_repo.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
@@ -10,6 +9,7 @@ import 'package:hotel_pms/app/modules/reports/table_sources/laundry_transactions
 import 'package:hotel_pms/app/modules/reports/table_sources/petty_cash_source.dart';
 import 'package:hotel_pms/app/modules/reports/table_sources/room_service_source.dart';
 import 'package:hotel_pms/core/logs/logger_instance.dart';
+import 'package:hotel_pms/core/services/calulators/summary_calculator.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:logger/logger.dart';
@@ -25,6 +25,7 @@ import 'package:hotel_pms/app/data/models_n/service_booking_model.dart';
 import 'package:hotel_pms/app/data/models_n/session_activity_model.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
+import '../../../../core/logs/local_logger.dart';
 import '../../../../core/services/table_services.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -32,10 +33,12 @@ import 'package:get/get.dart';
 import '../../../data/models_n/internl_transaction_model.dart';
 import '../table_sources/conference_usage_source.dart';
 import '../table_sources/rooms_used_table_source.dart';
+import '../../user_data/controller/user_data_controller.dart';
+
 
 class ReportGeneratorController extends GetxController {
   ReportGeneratorController();
-
+  LocalLogger Log = LocalLogger.instance;
   Map<String, dynamic>? reportConfigs;
 
   AuthController authController = Get.find<AuthController>();
@@ -125,10 +128,12 @@ class ReportGeneratorController extends GetxController {
   Rx<String> pettyCashSummaryValue = "".obs;
   // Rx<String> roomServiceSummaryValue = "".obs;
   Logger logger = AppLogger.instance.logger;
+  UserData userData = Get.find<UserData>();
 
   @override
   Future<void> onInit() async {
     super.onInit();
+    logger.i(userData.userData.value);
     reportConfigs = reportSelectorController.reportConfigs;
     setReportConfigsFromReportSelector();
     await loadExistingSessions();
@@ -191,16 +196,14 @@ class ReportGeneratorController extends GetxController {
   }
 
   updateSummaryValues(){
-    roomPaymentsCtr.text = roomSummaryValue.value;
-    conferencePaymentsCtr.text = conferenceSummaryValue.value;
-    conferenceAdvancePaymentsCtr.text = conferenceAdvanceSummaryValue.value;
-    laundryPaymentsCtr.text = laundrySummaryValue.value;
-    roomServicePaymentsCtr.text = roomServiceSummaryValue.value;
-    roomDebtPaymentsCtr.text = roomDebtValue.value;
-    pettyCashOutCtr.text = pettyCashSummaryValue.value;
+    roomPaymentsCtr.text = SummaryCalculator.calculateRoomAmountPaid(roomsSoldInCurrentSession.value).toString();
+    conferencePaymentsCtr.text = SummaryCalculator.calculateConferenceCosts(conferenceActivityCurrentSession.value).toString();
+    conferenceAdvancePaymentsCtr.text = SummaryCalculator.calculateConferenceAdvancePayments(conferenceActivityCurrentSession.value).toString();
+    laundryPaymentsCtr.text = SummaryCalculator.calculateRoomServiceAmountPaid(laundryTransactionsInCurrentSession.value).toString();
+    roomServicePaymentsCtr.text = SummaryCalculator.calculateRoomServiceAmountPaid(roomServiceTransactionsInCurrentSession.value).toString();
+    roomDebtPaymentsCtr.text = SummaryCalculator.calculateRoomDebts(roomsSoldInCurrentSession.value).toString();
+    pettyCashOutCtr.text = SummaryCalculator.calculatePettyCashGiven(pettyCashTransactions.value).toString();
     updateUI();
-
-
   }
 
   updateUI({bool onInit = false}) {
@@ -239,18 +242,22 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<void> submitReport(Map<String, GlobalKey<SfDataGridState>> reportData) async {
-    queTableKey(reportData['Rooms']!, "Rooms");
-    queTableKey(reportData['Conference']!, "Conference");
-    queTableKey(reportData['Room Service']!, "Room Service");
-    queTableKey(reportData['Laundry']!, "Laundry");
-    queTableKey(reportData['Hotel Issues']!, "Hotel Issues");
-    queTableKey(reportData['Petty Cash']!, "Petty Cash");
-
+    queTableKey(reportData[LocalKeys.kRooms], LocalKeys.kRooms);
+    queTableKey(reportData[LocalKeys.kConference], LocalKeys.kConference);
+    queTableKey(reportData[LocalKeys.kRoomService], LocalKeys.kRoomService);
+    queTableKey(reportData[LocalKeys.kLaundry], LocalKeys.kLaundry);
+    queTableKey(reportData[LocalKeys.kHotelIssues], LocalKeys.kHotelIssues);
+    queTableKey(reportData[LocalKeys.kPettyCash], LocalKeys.kPettyCash);
+    updateSummaryValues();
     await processTableExports();
   }
 
-  queTableKey(GlobalKey<SfDataGridState> key, String sheetName) {
-    reportExportInfo.value.add({sheetName: key});
+  queTableKey(GlobalKey<SfDataGridState>? key, String sheetName) {
+    if(key!=null) {
+      reportExportInfo.value.add({sheetName: key});
+    }else{
+      Log.exportLog(data: {'title': 'key for table $sheetName'}, error: 'KEY IS NULL');
+    }
   }
 
   Future<void> exportTable(GlobalKey<SfDataGridState> tableKey, {bool toExcel = true}) async {
@@ -280,7 +287,7 @@ class ReportGeneratorController extends GetxController {
 
     ExcelWorkBook excelWorkBook = ExcelWorkBook(
         sheetProperties: reportExportInfo.value, excelFileName: filePath);
-    Workbook workbook = excelWorkBook.createReportSummaryTemplate(summaryData.value,await getReportEmployeeDetails());
+    Workbook workbook = await excelWorkBook.createReportSummaryTemplate(summaryData.value,await getReportEmployeeDetails());
     await excelWorkBook.createFileWithSheetsFromSfTable(filePath, workbook);
 
     isExporting.value = false;
@@ -388,7 +395,7 @@ class ReportGeneratorController extends GetxController {
   }
 
   getSummaryData(String tableTitle, String summaryValue) {
-     logger.wtf('GET SUMMARY DATA $tableTitle $summaryValue');
+    // logger.wtf('GET SUMMARY DATA $tableTitle $summaryValue');
     try{
       switch (tableTitle) {
         case RoomsUsedColumnNames.paid:
@@ -535,9 +542,7 @@ class ReportGeneratorController extends GetxController {
     selectedSessionView.value = sessionView;
     String sessionId = selectedSessionView.value.split('\n\n')[1];
     String employeeId = existingSessions.value.firstWhere((element) => element.id == sessionId).employeeId ?? '';
-    selectedSessionUserName.value = await AdminUserRepository()
-        .getAdminUserNameByAppId(employeeId)
-        .then((value) => value);
+    selectedSessionUserName.value = userData.userData.value[employeeId];
     setSessionById(sessionId);
     searchBySelectedSession.value = true;
   }
@@ -553,9 +558,8 @@ class ReportGeneratorController extends GetxController {
     });
 
     for (SessionTracker session in existingSessions.value) {
-      String userName = await AdminUserRepository()
-          .getAdminUserNameByAppId(session.employeeId!)
-          .then((value) => value);
+
+      String userName = userData.userData.value[session.employeeId!];
 
 
       String startDate = DateTime.parse(session.dateCreated!).day.toString();

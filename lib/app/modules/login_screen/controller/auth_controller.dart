@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/local_storage/innit_data.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
@@ -39,15 +40,17 @@ class AuthController extends GetxController {
   bool? isTest = false;
   Logger logger = AppLogger.instance.logger;
 
+
   List<String> routes = [];
 
   AuthController({this.isTest});
 
   // @override
-  // onInit(){
+  // onInit()async{
   //   super.onInit();
   //   fullNameCtrl.text = 'Dereck Olomi';
   //   adminUserPasswordCtrl.text = '00001WH';
+  //
   // }
 
   @override
@@ -70,8 +73,8 @@ class AuthController extends GetxController {
 
   /// Authentication has 3 main steps
   ///
-  /// 1. Fetch [AdminUser] by Name TODO: Change to by appId
-  /// 2. User [AdminUser.appId] to match appId to encrypted password
+  /// 1. Fetch [AdminUser] by Name
+  /// 2. User [AdminUser.id] to match encrypted password with the same [AdminUser.id]
   /// 3. Create new session [SessionTracker] if the last session is not logged out
   ///
   /// Recommendations from Testing
@@ -79,15 +82,16 @@ class AuthController extends GetxController {
   /// 2. Ensure [CurrentSessionTable] is empty before creating a new session.
 
   Future<bool> validateLoginAttempt() async {
+
     await AdminUserRepository()
-        .getAdminUserByAppId(adminUserPasswordCtrl.text)
-        .then((value) {
-      if (value != null && value.isNotEmpty) {
-        adminUser.value = AdminUser.fromJson(value[0]);
-        // adminUser.refresh();
+        .getAdminUserByName(fullNameCtrl.text)
+        .then((value)async{
+      if (value.isNotEmpty) {
+        adminUser.value = value[0];
+
       }
     });
-    if (adminUser.value.appId == null) {
+    if (adminUser.value.id == null) {
       authResult.value = 'Umekosea jina au password';
       return false;
     }
@@ -101,7 +105,7 @@ class AuthController extends GetxController {
     await authenticateUser();
 
     if (isAuthenticated.value) {
-      await sessionController.validateNewSession(adminUser.value.appId!);
+      await sessionController.validateNewSession(adminUser.value.id!);
       sessionTracker.value = sessionController.currentSession.value;
     } else {
       logger.w({'failed to auth user': adminUser.value.toJson()});
@@ -121,14 +125,14 @@ class AuthController extends GetxController {
 
   Future<void> authenticateUser() async {
     await EncryptedDataRepository()
-        .getEncryptedDataByUserId(adminUser.value.appId!)
+        .getEncryptedDataByUserId(adminUser.value.id!)
         .then((value) async {
-      if (value != null &&
+      if (
           value.length == 1 &&
-          value.first['userId'] == adminUser.value.appId) {
+          value.first.userId == adminUser.value.id) {
         isAuthenticated.value = true;
         authResult.value = LocalKeys.kSuccess;
-      } else if (value != null && value.isEmpty) {
+      } else if (value.isEmpty) {
         authResult.value = LocalKeys.kInvalidCredentials;
       }
     });
@@ -149,7 +153,7 @@ class AuthController extends GetxController {
     isLoggedOut.value = true;
     hasInitiatedLogout.value = false;
 
-    if (adminUser.value.appId != AdminUser().appId) {
+    if (adminUser.value.id != AdminUser().id) {
       logOutResult.value = "Error logging out";
       displayLogOutError.value = true;
       isLoggedOut.value = true;
@@ -178,7 +182,7 @@ class AuthController extends GetxController {
             activityId: const Uuid().v1(),
             activityStatus: wasSuccess ? 'SUCCESSFUL' : 'ERROR',
             activityValue: 0,
-            employeeId: adminUser.appId,
+            employeeId: adminUser.id,
             employeeFullName: adminUser.fullName,
             description: 'logInAttempt',
             dateTime: DateTime.now().toIso8601String(),
@@ -190,7 +194,7 @@ class AuthController extends GetxController {
   Future<int> createLogOutUserActivity() async {
     return await UserActivityRepository().createUserActivity(UserActivity(
       activityId: const Uuid().v1(),
-      employeeId: adminUser.value.appId,
+      employeeId: adminUser.value.id,
       employeeFullName: adminUser.value.fullName,
       guestId: '-',
       activityValue: 0,

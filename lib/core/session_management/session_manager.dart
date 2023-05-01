@@ -1,6 +1,7 @@
 
 import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
 import 'package:hotel_pms/app/modules/login_screen/views/confirm_current_session_popup.dart';
+import 'package:hotel_pms/app/modules/user_data/controller/user_data_controller.dart';
 
 import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:hotel_pms/widgets/dialogs/dialod_builder.dart';
@@ -23,6 +24,7 @@ class SessionManager extends GetxController {
 
   Rx<bool> sessionExists = false.obs;
   bool isTest = false;
+  UserData userData = Get.find<UserData>();
 
   SessionManager({this.isTest = false});
 
@@ -45,7 +47,7 @@ class SessionManager extends GetxController {
 
   linkRogueSessionIdsToEmployeeNames()async{
     for(SessionTracker session in rogueSessions.value){
-      String employeeName = await AdminUserRepository().getAdminUserNameByAppId(session.employeeId!);
+      String employeeName = userData.userData.value[session.employeeId!];
       rogueSessionNames.addAll({session.employeeId:employeeName});
     }
   }

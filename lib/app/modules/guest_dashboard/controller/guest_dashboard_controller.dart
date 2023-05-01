@@ -5,7 +5,7 @@ import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/app/modules/guest_dashboard/controller/payment_data_controller.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
-import 'package:hotel_pms/app/modules/stay_calculator/stay_calculator.dart';
+import 'package:hotel_pms/core/services/calulators/stay_calculator.dart';
 import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';

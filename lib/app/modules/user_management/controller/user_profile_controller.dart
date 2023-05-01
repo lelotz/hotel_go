@@ -107,7 +107,7 @@ class UserProfileController extends GetxController{
 
   loadUserActivity()async{
     userActivity.value.clear();
-    userActivity.value = await UserActivityRepository().getUserActivityByUserAppId(adminUser.value.appId!);
+    userActivity.value = await UserActivityRepository().getUserActivityByUserId(adminUser.value.id!);
     userActivity.value.sort((a,b)=> DateTime.parse(b.dateTime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateTime!).millisecondsSinceEpoch)
     );
     updateUI();
@@ -116,13 +116,13 @@ class UserProfileController extends GetxController{
 
   loadEmployeeRoomTransactions()async{
     employeeRoomTransactions.value = await RoomTransactionRepository().
-      getRoomTransactionsByEmployeeId(appId: adminUser.value.appId,id: adminUser.value.id);
+      getRoomTransactionsByEmployeeId(id: adminUser.value.id);
     employeeRoomTransactions.value.sort(
             (a,b)=> DateTime.parse(b.date!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.date!).millisecondsSinceEpoch));
   }
 
   loadEmployeeOtherTransactions()async{
-    employeeOtherTransactions.value = await OtherTransactionsRepository().getOtherTransactionsByEmployeeId(appId: adminUser.value.appId,id: adminUser.value.id);
+    employeeOtherTransactions.value = await OtherTransactionsRepository().getOtherTransactionsByEmployeeId(id: adminUser.value.id);
     sortEmployeeOtherTransactions();
   }
   
@@ -135,24 +135,24 @@ class UserProfileController extends GetxController{
     employeeRoomServiceActivity.value.sort((a,b)=> DateTime.parse(b.dateTime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateTime!).millisecondsSinceEpoch));
   }
   loadEmployeePackageTransactions()async{
-    employeePackageStorageActivity.value = await GuestPackageRepository().getStoredGuestPackageByEmployeeId(appId: adminUser.value.appId,id: adminUser.value.id);
+    employeePackageStorageActivity.value = await GuestPackageRepository().getStoredGuestPackageByEmployeeId(id: adminUser.value.id);
     employeePackageStorageActivity.value.sort((a,b)=> DateTime.parse(b.dateStored!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateStored!).millisecondsSinceEpoch)
     );
   }
   loadEmployeeCollectedPayments()async{
-    employeeCollectedPaymentsActivity.value = await CollectedPaymentsRepository().getCollectedPaymentsByEmployeeId(appId: adminUser.value.appId,id: adminUser.value.id);
+    employeeCollectedPaymentsActivity.value = await CollectedPaymentsRepository().getCollectedPaymentsByEmployeeId(id: adminUser.value.id);
     employeeCollectedPaymentsActivity.value.sort((a,b)=> DateTime.parse(b.dateTime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateTime!).millisecondsSinceEpoch)
     );
   }
 
   loadEmployeeBookedServices()async{
-      employeeServiceBookingActivity.value = await ServiceBookingRepository().getServiceBookingByEmployeeId(appId: adminUser.value.appId,id: adminUser.value.id);
+      employeeServiceBookingActivity.value = await ServiceBookingRepository().getServiceBookingByEmployeeId(id: adminUser.value.id);
       employeeServiceBookingActivity.value.sort( (a,b)=> DateTime.parse(b.bookingDatetime!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.bookingDatetime!).millisecondsSinceEpoch)
       );
   }
 
   loadEmployeeSessions()async{
-    employeeSessionsTrackerActivity.value = await SessionManagementRepository().getSessionTrackersByEmployeeId(appId: adminUser.value.appId,id: adminUser.value.id);
+    employeeSessionsTrackerActivity.value = await SessionManagementRepository().getSessionTrackersByEmployeeId(id: adminUser.value.id);
     employeeSessionsTrackerActivity.value.sort((a,b)=> DateTime.parse(b.dateCreated!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateCreated!).millisecondsSinceEpoch));
   }
 

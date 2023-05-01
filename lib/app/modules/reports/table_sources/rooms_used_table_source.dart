@@ -92,7 +92,7 @@ class RoomsUsedSource extends DataGridSource {
         .map<DataGridRow>((dataGridRow) {
 
       return DataGridRow(cells: [
-        DataGridCell<String>(columnName: RoomsUsedColumnNames.employee, value: userData.userData.value[dataGridRow.employeeId]),
+        DataGridCell<String>(columnName: RoomsUsedColumnNames.employee, value: userData.userData.value[dataGridRow.employeeId] ??dataGridRow.employeeId ),
         DataGridCell<int>(columnName: RoomsUsedColumnNames.roomNumber, value: dataGridRow.roomNumber),
         DataGridCell<int>(columnName: RoomsUsedColumnNames.value, value: dataGridRow.roomCost!),
         DataGridCell<int>(columnName: RoomsUsedColumnNames.paid, value: dataGridRow.roomAmountPaid),

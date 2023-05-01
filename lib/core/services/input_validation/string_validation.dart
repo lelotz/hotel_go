@@ -1,8 +1,6 @@
 
 
 bool isAlphabeticOnly(String givenString,{String divider=' ',bool useDivider=false}){
-
-
   String workingString = givenString;
   bool result = false;
   if(useDivider){

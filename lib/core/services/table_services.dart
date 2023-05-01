@@ -1,7 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/core/resourses/color_manager.dart';
-import 'package:hotel_pms/core/session_management/session_manager.dart';
-
+import 'package:get_storage/get_storage.dart';
 
 // External package imports
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -12,6 +11,7 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Column, Row;
 // Local import
 import 'dart:io';
 import 'package:get/get.dart';
+import '../logs/local_logger.dart';
 import '../values/assets.dart';
 import '../values/localization/local_keys.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
@@ -36,9 +36,11 @@ class ExcelWorkBook{
   List<Map<String,GlobalKey<SfDataGridState>>> sheetProperties;
   String excelFileName;
   Logger logger = AppLogger.instance.logger;
+  LocalLogger Log = LocalLogger.instance;
+  FileManager fileManager = FileManager();
 
   Future<Directory?> get storageDirectory async {
-    return await FileManager().directoryPath;
+    return await fileManager.directoryPath;
   }
 
 
@@ -56,11 +58,15 @@ class ExcelWorkBook{
 
           sheetIndex++;
         }catch (e){
-          logger.e({'error_sheet':e.toString(),'sheetName':sheetData.keys.first});
+          logger.e({'error_sheet':e.toString(),'sheetName':sheetData.values.first});
+          Log.exportLog(data: {'title':sheetData[sheetData.values.first],'data': 'ket state for table '}, error: e.toString());
+
         }
 
       }else{
-        logger.i({'sheetNameEmpty':sheetData[sheetData.keys.first]});
+        logger.i({'sheetNameEmpty':sheetData[sheetData.values.first]});
+        Log.exportLog(data: {'title':sheetData[sheetData.values.first]}, error: {'sheetNameEmpty':sheetData[sheetData.keys.first]}.toString());
+
       }
     }
 
@@ -135,13 +141,29 @@ class ExcelWorkBook{
     return sheet;
   }
 
-  Workbook createReportSummaryTemplate(Map<String,dynamic> excelData,Map<String,dynamic> employeeDetails){
+  Future<Worksheet> addPictureToSheet(Worksheet sheet,{required String picturePath,int row=2,column=7})async{
+    try{
+      List<int> imageBytes =  await fileManager.getVirtualFile(picturePath);
+      sheet.pictures.addStream(row, column, imageBytes);
+      Picture picture = sheet.pictures[0];
+      // Re-size an image
+      picture.height = 100;
+      picture.width = 100;
+    }catch(e){
+      await Log.exportLog(data: {'title': 'addPictureToSheet'}, error: e.toString());
+    }
+
+    return sheet;
+  }
+
+  Future<Workbook> createReportSummaryTemplate(Map<String,dynamic> excelData,Map<String,dynamic> employeeDetails)async{
     logger.i(excelData);
     Workbook workbook = Workbook();
 
     Worksheet sheet = workbook.worksheets[0];
     sheet.enableSheetCalculations();
     sheet.name = 'Summary';
+    sheet = await addPictureToSheet(sheet, picturePath: kDebugMode ? Assets.kLogo : await fileManager.executableDirectory + Assets.kLogo);
     sheet = setEmployeeDetailsBorder(sheet);
     sheet = mergeRows('D', 17, 'J', 34, sheet);
     
@@ -180,17 +202,6 @@ class ExcelWorkBook{
 
     summaryTableRange.cellStyle.borders.all.lineStyle = LineStyle.thin;
 
-
-
-
-
-    // Adding an image.
-    final List<int> imageBytes = File(Assets.kLogo).readAsBytesSync();
-    sheet.pictures.addStream(2, 7, imageBytes);
-    Picture picture = sheet.pictures[0];
-    // Re-size an image
-    picture.height = 100;
-    picture.width = 100;
 
 
     sheet.getRangeByName('C10').columnWidth = 9.0;
@@ -259,12 +270,6 @@ class ExcelWorkBook{
     sheet.getRangeByName('L23').setNumber(excelData[LocalKeys.kRoomService]);
 
 
-    // /// Laundry
-    // sheet.getRangeByName('C24').setNumber(7);
-    // sheet.getRangeByName('D24:J24').setText('   ' + LocalKeys.kLaundry);
-    // sheet.getRangeByName('K24').setText('');
-    // sheet.getRangeByName('L24').setNumber(excelData[LocalKeys.kLaundry]);
-
     /// Petty Cash
     sheet.getRangeByName('C24').setNumber(7);
     sheet.getRangeByName('D24:J24').setText('   ' + LocalKeys.kPettyCash);
@@ -275,49 +280,10 @@ class ExcelWorkBook{
     sheet.getRangeByName('D36:J36').setText(employeeDetails['session']);
 
 
-
-
-
-
-
-
-
-
-
-    // sheet.getRangeByName('B6:C6').cellStyle.bold = true;
-    // //sheet.getRangeByName('B6:C6').columnWidth = 20;
-    // sheet.getRangeByName('B6').setText('ITEM');
-    // sheet.getRangeByName('C6').setText('COLLECTED PAYMENT');
-    //
-    // sheet.getRangeByName('B7').setText(LocalKeys.kRooms);
-    // sheet.getRangeByName('B8').setText(LocalKeys.kLaundry);
-    // sheet.getRangeByName('B9').setText(LocalKeys.kConference);
-    // sheet.getRangeByName('B10').setText('${LocalKeys.kConference} Advance');
-    // sheet.getRangeByName('B11').setText(LocalKeys.kRoomService);
-    // sheet.getRangeByName('B12').setText('${LocalKeys.kRooms} ${LocalKeys.kDebts}');
-    // sheet.getRangeByName('B13').setText(LocalKeys.kPettyCash);
-    //
-    // sheet.getRangeByName('B15').setText('TOTAL');
-    // sheet.getRangeByName('B15:C15').cellStyle.bold = true;
-    // sheet.getRangeByName('C15').cellStyle.numberFormat = '###,###,##0.00';
-    // sheet.getRangeByName('C15').setFormula('=SUM(C7:C11)');
-    //
-    // sheet.getRangeByName('C7').setNumber(excelData[LocalKeys.kRooms]);
-    // sheet.getRangeByName('C8').setNumber(excelData[LocalKeys.kLaundry]);
-    //
-    // sheet.getRangeByName('C9').setNumber(excelData[LocalKeys.kConference]);
-    // sheet.getRangeByName('C10').setNumber(excelData['${LocalKeys.kConference} Advance']);
-    // sheet.getRangeByName('C11').setNumber(excelData[LocalKeys.kRoomService]);
-    // sheet.getRangeByName('C12').setNumber(excelData['${LocalKeys.kRooms} ${LocalKeys.kDebts}']);
-    // sheet.getRangeByName('C12').cellStyle.fontColor = '#ff0000';
-    // sheet.getRangeByName('C13').setNumber(excelData[LocalKeys.kPettyCash]);
-    // sheet.getRangeByName('C13').cellStyle.fontColor = '#ff0000';
-    // sheet.getRangeByName('C7:C13').cellStyle.numberFormat = '###,###,##0.00';
-
     return workbook;
   }
 
-  Workbook buildDailyReportTemplate(Map<String,dynamic> excelData){
+  Workbook buildDailyReportTemplate_deprecated(Map<String,dynamic> excelData){
     Workbook workbook = Workbook();
 
     Worksheet sheet = workbook.worksheets[0];

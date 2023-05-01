@@ -45,7 +45,7 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,
       } ,
     ),
     title: Obx(
-      () => buildAppBarTitle(appBarTitle,
+      () => buildAppBarTitle(appBarTitle ,
           onTitleTap: onTitleTap,
           statusColor: getAppBarStatusColor(
               sessionExists:

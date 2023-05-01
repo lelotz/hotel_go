@@ -57,12 +57,12 @@ class CollectedPaymentsRepository extends SqlDatabase{
     return payments;
   }
 
-  Future<List<CollectPayment>> getCollectedPaymentsByEmployeeId({String? appId,String? id})async{
+  Future<List<CollectPayment>> getCollectedPaymentsByEmployeeId({String? id})async{
     List<CollectPayment> payments= [];
     await SqlDatabase.instance.read(
         tableName:CollectedPaymentsTable.tableName,
-        whereArgs: [appId,id],
-        where:'${CollectedPaymentsTable.employeeId} = ? OR ${CollectedPaymentsTable.id} = ?'
+        whereArgs: [id],
+        where:'${CollectedPaymentsTable.employeeId} = ?'
     ).then((value) {
       payments = CollectPayment().fromJsonList(value ?? []);
     });

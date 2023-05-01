@@ -12,7 +12,7 @@ int stringToInt(String? givenString){
     if(result < 0) return 0;
   }catch(e){
     logger.e({'str->int ERROR': '','str': givenString},e);
-    return 0;
+
 
   }
 
