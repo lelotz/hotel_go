@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/check_in_screen/view/check_in_form_view.dart';
 import 'package:hotel_pms/app/modules/reports/controller/report_selector_controller.dart';
 import 'package:hotel_pms/app/modules/reports/view/handover_report_tables/petty_cash_table.dart';
+import 'package:hotel_pms/app/modules/reports/view/handover_report_tables/room_debts_collected.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
@@ -38,6 +39,7 @@ class HandoverReport extends GetView<ReportGeneratorController> {
   final GlobalKey<SfDataGridState> conferenceTableKey =
       GlobalKey<SfDataGridState>();
   final GlobalKey<SfDataGridState> roomsTableKey = GlobalKey<SfDataGridState>();
+  final GlobalKey<SfDataGridState> roomsDebtsTableKey = GlobalKey<SfDataGridState>();
   final GlobalKey<SfDataGridState> pettyCashTableKey = GlobalKey<SfDataGridState>();
 
 
@@ -76,6 +78,7 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                                       LocalKeys.kLaundry: laundryTableKey,
                                       LocalKeys.kHotelIssues: hotelIssuesTableKey,
                                       LocalKeys.kPettyCash : pettyCashTableKey,
+                                      LocalKeys.kRooms+LocalKeys.kDebts : roomsDebtsTableKey
                                     });
                                   },
                                   icon: const Icon(Icons.save_alt_outlined)))
@@ -83,6 +86,7 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                       ),
                       const ReportConfigurationForm(),
                       RoomsUsedSection(roomsTableKey: roomsTableKey,),
+                      RoomsDebtsSection(roomsTableKey: roomsDebtsTableKey),
                       ConferenceUsageSection(conferenceTableKey: conferenceTableKey,),
                       LaundryUsageSection(laundryTableKey: laundryTableKey,),
                       RoomServiceTransactionsSection(roomServiceTableKey: roomServiceTableKey,),
@@ -167,6 +171,7 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                             onTap: ()async{
                               await controller.loadReportData();
                               controller.updateUI();
+
 
                             },
                             child:Padding(

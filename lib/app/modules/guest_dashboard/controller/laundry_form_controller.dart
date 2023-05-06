@@ -18,6 +18,7 @@ import '../../../data/local_storage/repository/other_transactions_repo.dart';
 import '../../../data/local_storage/repository/room_transaction_repo.dart';
 import '../../../data/local_storage/repository/user_activity_repo.dart';
 import '../../../data/models_n/admin_user_model.dart';
+import '../../login_screen/controller/auth_controller.dart';
 import 'guest_dashboard_controller.dart';
 
 class LaundryFormController extends GetxController {
@@ -129,6 +130,8 @@ class LaundryFormController extends GetxController {
       grandTotal: stringToInt(laundryPriceCtrl.text),
       amountPaid: 0,
       outstandingBalance: stringToInt(laundryPriceCtrl.text),
+      sessionId: Get.find<AuthController>().sessionController.currentSession.value.id,
+
     );
     receivedLaundryBuffer.value.add(newLaundry);
 

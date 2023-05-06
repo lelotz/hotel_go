@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
+import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/internal_transaction_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/other_transactions_repo.dart';
+import 'package:hotel_pms/app/data/models_n/collect_payment_model.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:hotel_pms/app/modules/reports/controller/report_selector_controller.dart';
@@ -48,6 +52,11 @@ class ReportGeneratorController extends GetxController {
       Rx<List<RoomTransaction>>([]);
   Rx<List<RoomTransaction>> paginatedRoomsSoldInCurrentSession =
       Rx<List<RoomTransaction>>([]);
+
+  Rx<List<RoomTransaction>> roomsDebtsCollectedInCurrentSession =
+  Rx<List<RoomTransaction>>([]);
+  Rx<List<RoomTransaction>> paginatedRoomDebtsCollectedInCurrentSession =
+  Rx<List<RoomTransaction>>([]);
 
   Rx<List<ServiceBooking>> conferenceActivityCurrentSession =
       Rx<List<ServiceBooking>>([]);
@@ -436,7 +445,7 @@ class ReportGeneratorController extends GetxController {
           }
           break;
         default:
-          logger.w('Table name $tableTitle does not exist');
+          //logger.w('Table name $tableTitle does not exist');
       }
     }catch(e){
       logger.w('summary data error ${e.toString()}');
@@ -450,7 +459,7 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<List<String>> getTransactionIdsByTransactionType(String transactionType) async {
-    return getSessionActivityIds(await getTransaction(transactionType));
+    return getSessionActivityIds(await getSessionActivityByType(transactionType));
   }
 
   List<String> getSessionActivityIds(List<SessionActivity> transactions) {
@@ -463,8 +472,41 @@ class ReportGeneratorController extends GetxController {
     return transactionsIds;
   }
 
+  List<String> getRoomTransactionIds(List<RoomTransaction> transactions) {
+    List<String> transactionsIds = [];
+    for (RoomTransaction transaction in transactions) {
+      if (transaction.id != null) {
+        transactionsIds.add(transaction.id!);
+      }
+    }
+    return transactionsIds;
+  }
+
+  List<String> getCollectedPaymentRoomTransactionIds(List<CollectPayment> transactions) {
+    List<String> transactionsIds = [];
+    for (CollectPayment transaction in transactions) {
+      if (transaction.roomTransactionId != null) {
+        transactionsIds.add(transaction.roomTransactionId!);
+      }
+    }
+    return transactionsIds;
+  }
+
+  getRoomDebtsCollected()async{
+    List<SessionActivity> roomSessionActivity = await SessionManagementRepository().getSessionActivityByTransactionTypeAndExcludeSessionId(LocalKeys.kRoom, selectedSession.value.id!);
+    List<RoomTransaction> roomTransactions = await RoomTransactionRepository().getMultipleRoomTransactions(getSessionActivityIds(roomSessionActivity));
+    List<CollectPayment> collectedPayments = await CollectedPaymentsRepository().getMultipleCollectedPaymentsByIds(getRoomTransactionIds(roomTransactions), LocalKeys.kRoom);
+
+    for(RoomTransaction transaction in roomTransactions){
+
+
+    }
+  }
+
+
+
   Future<void> getPettyCashTransactions() async {
-    List<String> pettyCashTransactionsIds = getSessionActivityIds(await getTransaction(TransactionTypes.pettyCash));
+    List<String> pettyCashTransactionsIds = getSessionActivityIds(await getSessionActivityByType(TransactionTypes.pettyCash));
 
     pettyCashTransactions.value = await InternalTransactionRepository()
         .getMultipleInternalTransactionByIds(pettyCashTransactionsIds);
@@ -495,7 +537,19 @@ class ReportGeneratorController extends GetxController {
 
   Future<void> getRoomsSoldInCurrentSession() async {
     List<String> roomTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.room);
-    roomsSoldInCurrentSession.value = await RoomTransactionRepository().getMultipleRoomTransactions(roomTransactionsIds);
+    int debts = 0;
+    int sold = 0;
+    List<RoomTransaction> roomTransactions = await RoomTransactionRepository().getMultipleRoomTransactions(roomTransactionsIds);
+    for(RoomTransaction transaction in roomTransactions){
+      if(transaction.sessionId == selectedSession.value.id){
+        roomsSoldInCurrentSession.value.add(transaction);
+        sold++;
+      }else{
+        roomsDebtsCollectedInCurrentSession.value.add(transaction);
+        debts++;
+      }
+    }
+    logger.i('sold : $sold debts : $debts');
   }
 
 
@@ -509,7 +563,7 @@ class ReportGeneratorController extends GetxController {
 
 
 
-  Future<List<SessionActivity>> getTransaction(String transactionType) async {
+  Future<List<SessionActivity>> getSessionActivityByType(String transactionType) async {
     List<SessionActivity> activity = [];
     if (isHandoverReport.value || searchBySelectedSession.value) {
       activity = await SessionManagementRepository()

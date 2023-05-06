@@ -22,7 +22,13 @@ class SplashScreen extends GetView<SplashScreenController> {
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: SmallText(text: controller.appDirectory.value),
+                        child: Obx(() => Column(
+                          children: [
+                            SmallText(text: controller.appDirectory.value),
+                            SmallText(text: controller.currentStep.value),
+
+                          ],
+                        ))
                       ),
                     ),
                     controller.isInitialized.value

@@ -78,6 +78,8 @@ class SessionManagementRepository  extends SqlDatabase{
 
 
 
+
+
   Future<List<Map<String, dynamic>>?> getSessionByEmployeeIdAndDate(String id,String date)async{
     List<Map<String, dynamic>>? session = [];
 
@@ -149,6 +151,28 @@ class SessionManagementRepository  extends SqlDatabase{
       tableName: SessionActivityTable.tableName,
       where: '${SessionActivityTable.transactionType}=?',
       whereArgs: [transactionType]
+    ).then((value) {
+      result = SessionActivity().fromJsonList(value ?? []);
+    });
+    return result;
+  }
+  Future<List<SessionActivity>> getSessionActivityByTransactionId(String transactionId)async{
+    List<SessionActivity> result = [];
+    await SqlDatabase.instance.read(
+        tableName: SessionActivityTable.tableName,
+        where: '${SessionActivityTable.transactionId}=?',
+        whereArgs: [transactionId]
+    ).then((value) {
+      result = SessionActivity().fromJsonList(value ?? []);
+    });
+    return result;
+  }
+  Future<List<SessionActivity>> getSessionActivityByTransactionTypeAndExcludeSessionId(String transactionType,String sessionId)async{
+    List<SessionActivity> result = [];
+    await SqlDatabase.instance.read(
+        tableName: SessionActivityTable.tableName,
+        where: '${SessionActivityTable.transactionType}=? AND ${SessionActivityTable.sessionId} NOT EQUAL TO = ?',
+        whereArgs: [transactionType,sessionId]
     ).then((value) {
       result = SessionActivity().fromJsonList(value ?? []);
     });

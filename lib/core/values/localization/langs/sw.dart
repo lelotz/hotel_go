@@ -4,7 +4,6 @@ import '../local_keys.dart';
 
 Map<String, String> sw = {
 
-
   /// Messages
   AppMessages.numericOnly : 'Ingiza namba tu',
   AppMessages.alphabeticOnly : 'Ingiza herufi tu',

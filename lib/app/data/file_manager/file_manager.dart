@@ -130,25 +130,26 @@ class FileManager{
 
     String appDirectory = await getAppStorageDirectory();
     // Creating a file
-    File file = File(appDirectory + filePath);
+    File file = File(filePath);
 
     //check if file exists
     if (await file.exists()) {
       try {
         // reading the file and saving it as a String
         fileContent = await file.readAsString();
+        logger.i('read file content : ${fileContent}');
       } catch (e) {
         logger.e({'error':'reading jsonFile'},e.toString());
       }
     }
     // decoding Json string fileContent into a map
     // It will be converted to a User model
-    return json.decode(fileContent!);
+    return json.decode(fileContent ?? "{'key':'value'}");
   }
 
-  dynamic writeJsonFile(dynamic data,String path) async {
+  dynamic writeJsonFile(dynamic data,String path,{FileMode fileMode = FileMode.write}) async {
     File file = File(path);
-    await file.writeAsString(json.encode(data));
+    await file.writeAsString(json.encode(data),mode: fileMode);
     return data;
   }
 

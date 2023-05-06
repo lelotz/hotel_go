@@ -10,6 +10,7 @@ class OtherTransactions {
   String? paymentNotes;
   String? transactionNotes;
   String? dateTime;
+  String? sessionId;
 
   OtherTransactions(
       {this.id,
@@ -22,6 +23,7 @@ class OtherTransactions {
         this.grandTotal,
         this.paymentNotes,
         this.transactionNotes,
+        this.sessionId,
         this.dateTime});
 
   OtherTransactions.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class OtherTransactions {
     grandTotal = json['grandTotal'];
     paymentNotes = json['paymentNotes'];
     transactionNotes = json['transactionNotes'];
+    sessionId = json['sessionId'];
     dateTime = json['dateTime'];
   }
   List<OtherTransactions> fromJsonList(List<Map<String,dynamic>> value){
@@ -58,6 +61,7 @@ class OtherTransactions {
     data['paymentNotes'] = paymentNotes;
     data['transactionNotes'] = transactionNotes;
     data['dateTime'] = dateTime;
+    data['sessionId'] = sessionId;
     return data;
   }
 }

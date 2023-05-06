@@ -20,10 +20,12 @@ class RoomTransaction {
   String? goingTo;
   int? grandTotal;
   int? otherCosts;
+  String? sessionId;
 
   RoomTransaction(
       {this.id,
         this.clientId,
+        this.sessionId,
         this.employeeId,
         this.roomNumber,
         this.paymentNotes,
@@ -53,6 +55,7 @@ class RoomTransaction {
     outstandingBalance = json['outstandingBalance'];
     paymentNotes = json['paymentNotes'];
     transactionNotes = json['transactionNotes'];
+    sessionId = json['sessionId'];
     date = json['date'];
     time = json['time'];
     checkInDate = json['checkInDate'];
@@ -97,6 +100,7 @@ class RoomTransaction {
     data['otherCosts'] = otherCosts;
     data['roomAmountPaid'] = roomAmountPaid;
     data['roomOutstandingBalance']=roomOutstandingBalance;
+    data['sessionId'] = sessionId;
     return data;
   }
 }

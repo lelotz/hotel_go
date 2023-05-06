@@ -7,13 +7,14 @@ import '../../../../../widgets/loading_animation/loading_animation.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import '../../controller/handover_form_controller.dart';
+import '../../table_sources/room_debts_from_previous_sessions_source.dart';
 import '../../table_sources/rooms_used_table_source.dart';
 import '../hand_over_form_view.dart';
 
-class RoomsUsedSection extends GetView<ReportGeneratorController> {
-  RoomsUsedSection({Key? key, required this.roomsTableKey}) : super(key: key);
+class RoomsDebtsSection extends GetView<ReportGeneratorController> {
+  RoomsDebtsSection({Key? key, required this.roomsTableKey}) : super(key: key);
 
-  final RoomsUsedSource _roomSoldSource = RoomsUsedSource();
+  final RoomsDebtsSource _roomDebtsSource = RoomsDebtsSource();
 
   final GlobalKey<SfDataGridState> roomsTableKey;
   final double minColumnWidth = 150;
@@ -21,7 +22,7 @@ class RoomsUsedSection extends GetView<ReportGeneratorController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportGeneratorController>(
-       // init: ReportGeneratorController(),
+      // init: ReportGeneratorController(),
         builder: (controller) => Card(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -31,7 +32,7 @@ class RoomsUsedSection extends GetView<ReportGeneratorController> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const BigText(text: "Vyumba vilivyotumika leo"),
+                    const BigText(text: "Malipo ya Vyumba Siku za Nyuma"),
                     tableHeader(
                         onRefreshEntries: controller.loadReportData,
                         title: "Rooms Sold",
@@ -53,7 +54,7 @@ class RoomsUsedSection extends GetView<ReportGeneratorController> {
                   key: roomsTableKey,
                   headerGridLinesVisibility: GridLinesVisibility.none,
                   isScrollbarAlwaysShown: true,
-                  source: _roomSoldSource,
+                  source: _roomDebtsSource,
                   tableSummaryRows: [
                     GridTableSummaryRow(
                         title: '{Rooms Sold}',

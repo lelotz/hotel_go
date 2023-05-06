@@ -69,6 +69,19 @@ class OtherTransactionsRepository extends SqlDatabase{
     return result;
   }
 
+  Future<List<OtherTransactions>> getAllOtherTransactions()async{
+    List<OtherTransactions> result = [];
+
+    await read(
+        tableName: OtherTransactionsTable.tableName,
+       readAll: true
+    ).then((value) {
+      result = OtherTransactions().fromJsonList(value ?? []);
+    });
+
+    return result;
+  }
+
 }
 
 /// Other Transactions Table
@@ -85,7 +98,7 @@ class OtherTransactionsTable{
   static const String paymentNotes = "paymentNotes";
   static const String dateTime = "dateTime";
   static const String grandTotal = "grandTotal";
-
+  static const String sessionId = "sessionId";
   String sql =
   '''
     CREATE TABLE IF NOT EXISTS $tableName(
@@ -99,6 +112,7 @@ class OtherTransactionsTable{
     $id TEXT PRIMARY KEY,
     $clientId TEXT NOT NULL,
     $roomTransactionId TEXT NOT NULL,
+    $sessionId TEXT,
     $employeeId TEXT NOT NULL )
   ''';
 }

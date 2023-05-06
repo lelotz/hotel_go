@@ -259,6 +259,7 @@ class CheckInFormController extends GetxController{
       paymentNotes: outstandingBalance.value != 0 ? LocalKeys.kRequestedPaymentAtCheckOut : "",
       transactionNotes: '',
       date: DateTime.now().toIso8601String(),
+      sessionId: Get.find<AuthController>().sessionController.currentSession.value.id,
       time: extractTime(DateTime.now()),
     );
     await RoomTransactionRepository().createRoomTransaction(roomTransaction.toJson()).then((value) {

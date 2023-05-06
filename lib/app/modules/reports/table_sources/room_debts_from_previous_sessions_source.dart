@@ -10,10 +10,10 @@ import '../../../../core/utils/date_formatter.dart';
 import '../../../../widgets/text/big_text.dart';
 import '../../../../widgets/text/small_text.dart';
 
-class RoomsUsedSource extends DataGridSource {
-  RoomsUsedSource({this.rowsPerPage = 20}) {
-    handoverFormController.paginatedRoomsSoldInCurrentSession.value =
-        handoverFormController.roomsSoldInCurrentSession.value;
+class RoomsDebtsSource extends DataGridSource {
+  RoomsDebtsSource({this.rowsPerPage = 20}) {
+    handoverFormController.paginatedRoomDebtsCollectedInCurrentSession.value =
+        handoverFormController.roomsDebtsCollectedInCurrentSession.value;
     buildPaginatedDataGridRows();
   }
 
@@ -47,16 +47,16 @@ class RoomsUsedSource extends DataGridSource {
   Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
     num startIndex = newPageIndex * rowsPerPage;
     num endIndex = startIndex + rowsPerPage;
-    if (startIndex < handoverFormController.roomsSoldInCurrentSession.value.length &&
-        endIndex <= handoverFormController.roomsSoldInCurrentSession.value.length) {
-      handoverFormController.paginatedRoomsSoldInCurrentSession.value =
-          handoverFormController.roomsSoldInCurrentSession.value
+    if (startIndex < handoverFormController.roomsDebtsCollectedInCurrentSession.value.length &&
+        endIndex <= handoverFormController.roomsDebtsCollectedInCurrentSession.value.length) {
+      handoverFormController.paginatedRoomDebtsCollectedInCurrentSession.value =
+          handoverFormController.roomsDebtsCollectedInCurrentSession.value
               .getRange(startIndex as int, endIndex as int)
               .toList(growable: false);
       buildPaginatedDataGridRows();
       notifyListeners();
     } else {
-      handoverFormController.paginatedRoomsSoldInCurrentSession.value = [];
+      handoverFormController.paginatedRoomDebtsCollectedInCurrentSession.value = [];
     }
 
     return true;
@@ -80,7 +80,7 @@ class RoomsUsedSource extends DataGridSource {
       String summaryValue) {
     handoverFormController.getSummaryData(summaryColumn!.columnName,summaryValue);
     return Padding(
-        padding: const EdgeInsets.all(3),
+      padding: const EdgeInsets.all(3),
       child: Center(
         child:  BigText(text: summaryValue),
       ),
@@ -89,16 +89,17 @@ class RoomsUsedSource extends DataGridSource {
 
   buildPaginatedDataGridRows() {
     dataGridRows = handoverFormController
-        .paginatedRoomsSoldInCurrentSession.value
+        .paginatedRoomDebtsCollectedInCurrentSession.value
         .map<DataGridRow>((dataGridRow) {
 
       return DataGridRow(cells: [
-        DataGridCell<String>(columnName: RoomsUsedColumnNames.employee, value: userData.userData.value[dataGridRow.employeeId] ??dataGridRow.employeeId ),
-        DataGridCell<int>(columnName: RoomsUsedColumnNames.roomNumber, value: dataGridRow.roomNumber),
-        DataGridCell<String>(columnName: RoomsUsedColumnNames.checkInDate, value: extractDate(DateTime.parse(dataGridRow.checkInDate!)) ),
-        DataGridCell<int>(columnName: RoomsUsedColumnNames.value, value: dataGridRow.roomCost!),
-        DataGridCell<int>(columnName: RoomsUsedColumnNames.paid, value: dataGridRow.roomAmountPaid),
-        DataGridCell<int>(columnName: RoomsUsedColumnNames.debt, value: dataGridRow.roomOutstandingBalance),
+        DataGridCell<String>(columnName: RoomsDebtsColumnNames.employee, value: userData.userData.value[dataGridRow.employeeId] ??dataGridRow.employeeId ),
+        DataGridCell<int>(columnName: RoomsDebtsColumnNames.roomNumber, value: dataGridRow.roomNumber),
+        DataGridCell<String>(columnName: RoomsDebtsColumnNames.checkInDate, value: extractDate(DateTime.parse(dataGridRow.checkInDate!)) ),
+
+        DataGridCell<int>(columnName: RoomsDebtsColumnNames.value, value: dataGridRow.roomCost!),
+        DataGridCell<int>(columnName: RoomsDebtsColumnNames.paid, value: dataGridRow.roomAmountPaid),
+        DataGridCell<int>(columnName: RoomsDebtsColumnNames.debt, value: dataGridRow.roomOutstandingBalance),
 
         // DataGridCell<String>(columnName: 'GUEST', value: dataGridRow.clientId),
       ]);
@@ -107,8 +108,8 @@ class RoomsUsedSource extends DataGridSource {
   }
 }
 
-class RoomsUsedColumnNames{
-  static const String leading = "rooms_used_";
+class RoomsDebtsColumnNames{
+  static const String leading = "rooms_debts_";
   static const String employee = '${leading}employee';
   static const String roomNumber = '${leading}room_number';
   static const String checkInDate = '${leading}check_in_date';

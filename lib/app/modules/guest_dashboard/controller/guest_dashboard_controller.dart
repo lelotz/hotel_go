@@ -141,16 +141,20 @@ class GuestDashboardController extends GetxController{
 
   Future<void> extendGuestStay(DateTime? newCheckOutDate)async{
     RoomTransaction roomTransaction = RoomTransaction();
-    await RoomTransactionRepository().getRoomTransaction(selectedRoom!.value.currentTransactionId!).then((value) {
+    await RoomTransactionRepository().getRoomTransaction(selectedRoom.value.currentTransactionId!).then((value) {
       if(value != null){
         roomTransaction = RoomTransaction().fromJsonList(value).first;
       }
     });
-    await stayCalculator.updateStayCostByCheckOutDate(newCheckOutDate!.toIso8601String(), roomTransaction);
-    await paymentDataController.getCurrentRoomTransaction();
-    paymentDataController.update();
-    parseCheckInOutDate();
-    await getUserActivity();
+
+    if(roomTransaction.id != null){
+      await stayCalculator.updateStayCostByCheckOutDate(newCheckOutDate!.toIso8601String(), roomTransaction);
+      await paymentDataController.getCurrentRoomTransaction();
+      paymentDataController.update();
+      parseCheckInOutDate();
+      await getUserActivity();
+    }
+
 
   }
 

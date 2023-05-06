@@ -61,6 +61,7 @@ class RoomServiceFormController extends GetxController {
       grandTotal: stringToInt(serviceCost.text),
       outstandingBalance: stringToInt(serviceCost.text),
       amountPaid: 0,
+      sessionId: Get.find<AuthController>().sessionController.currentSession.value.id,
     );
     receivedRoomServiceBuffer.value.add(roomService);
     updateUI();

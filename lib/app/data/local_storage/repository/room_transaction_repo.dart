@@ -57,6 +57,15 @@ class RoomTransactionRepository extends SqlDatabase {
     return result;
   }
 
+  /// READ RoomTransaction by id
+  Future<List<RoomTransaction>> getAllRoomTransactions() async {
+    List<RoomTransaction> result = [];
+    await read(tableName: RoomTransactionsTable.tableName,readAll: true)
+        .then((value) {
+      result = RoomTransaction().fromJsonList(value ?? []);
+    });
+    return result;
+  }
   Future<List<RoomTransaction>> getRoomTransactionsByEmployeeId({String? id})async{
     List<RoomTransaction> result = [];
     if(id!=null){
@@ -112,6 +121,8 @@ class RoomTransactionsTable {
   static const String tableName = "room_transactions";
   static const String id = "id";
   static const String clientId = "clientId";
+  static const String sessionId = "sessionId";
+
   static const String employeeId = "employeeId";
   static const String roomNumber = "roomNumber";
   static const String amountPaid = "amountPaid";
@@ -151,6 +162,7 @@ class RoomTransactionsTable {
         $checkInDate INT NOT NULL,
         $checkOutDate INT NOT NULL,
         $arrivingFrom TEXT NOT NULL,
+        $sessionId TEXT,
         $goingTo TEXT NOT NULL )
       ''';
 }

@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
-
 import '../../../data/models_n/admin_user_model.dart';
 
 class UserData extends GetxController{
@@ -17,7 +16,6 @@ class UserData extends GetxController{
   getUserData()async{
     users.value.clear();
     users.value = await AdminUserRepository().getAllAdminUsers();
-    print(userData.value);
     setUserData();
   }
 

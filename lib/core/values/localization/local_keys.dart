@@ -68,6 +68,7 @@ class LocalKeys {
   static const String kUserManagement = "User Management";
 
   /// General
+  static const String kPayment = "Payment";
   static const String kNewShift = "New Shift";
   static const String kContinue = "Continue";
   static const String kExtendStay = "Extend Stay";
