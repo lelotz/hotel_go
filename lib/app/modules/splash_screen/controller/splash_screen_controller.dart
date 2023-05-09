@@ -13,7 +13,7 @@ class SplashScreenController extends GetxController{
   // kDebugMode ? Assets.kLogo : await fileManager.executableDirectory + Assets.kLogo
   String configFilePath = kDebugMode ?
     Directory.current.path + '\\assets\\configs\\configs.json'
-      : Directory.current.path + "\\data\\flutter_assets\\configs\\configs.json";
+      : Directory.current.path + "\\data\\flutter_assets\\assets\\configs\\configs.json";
   Rx<bool> isInitialized = false.obs;
   Rx<bool> isInjectingSessionIdToRoomTransactions = false.obs;
 
@@ -30,8 +30,10 @@ class SplashScreenController extends GetxController{
 
   @override
   Future<void> onReady() async{
+    currentStep.value = configFilePath;
     logger.i(configFilePath);
-    await loadLocalizationData();
+    // currentStep.value = 'Getting userData';
+    // await loadLocalizationData();
     await loadConfigs();
     currentStep.value = 'Getting userData';
     await userData.onInit();

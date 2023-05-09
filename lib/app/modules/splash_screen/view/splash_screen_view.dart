@@ -31,9 +31,9 @@ class SplashScreen extends GetView<SplashScreenController> {
                         ))
                       ),
                     ),
-                    controller.isInitialized.value
-                        ? const SizedBox()
-                        : loadingAnimation(actionStatement: 'Initializing',size: 30),
+                    Obx(() => controller.isInitialized.value
+                        ? SmallText(text: controller.currentStep.value)
+                        : loadingAnimation(actionStatement: 'Initializing',size: 30),)
                   ],
                 ),
               ),
