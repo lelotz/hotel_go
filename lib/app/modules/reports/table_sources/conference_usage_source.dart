@@ -84,7 +84,7 @@ class ConferenceUsageSource extends DataGridSource{
 }
 
 class ConferenceTableColumnNames{
-  static const String leading = "conference_";
+  static const String leading = "";
   static const String name = '${leading}name';
   static const String eventType = '${leading}event_type';
   static const String advance = '${leading}advance';

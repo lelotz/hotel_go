@@ -82,7 +82,7 @@ class PettyCashTableSource extends DataGridSource{
 }
 
 class PettyCashTableColumnNames{
-  static const String leading = "petty_cash_";
+  static const String leading = "";
   static const String employeeId = '${leading}employee';
   static const String receiverName = '${leading}receiver_name';
   static const String department = '${leading}department';

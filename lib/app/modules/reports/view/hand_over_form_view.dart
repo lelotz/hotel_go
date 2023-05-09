@@ -86,7 +86,7 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                       ),
                       const ReportConfigurationForm(),
                       RoomsUsedSection(roomsTableKey: roomsTableKey,),
-                      RoomsDebtsSection(roomsTableKey: roomsDebtsTableKey),
+                      RoomsDebtsSection(roomsDebtTableKey: roomsDebtsTableKey),
                       ConferenceUsageSection(conferenceTableKey: conferenceTableKey,),
                       LaundryUsageSection(laundryTableKey: laundryTableKey,),
                       RoomServiceTransactionsSection(roomServiceTableKey: roomServiceTableKey,),
@@ -98,12 +98,13 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                             hoverColor: ColorsManager.primaryAccent,
                             onTap: () async {
                               await controller.submitReport({
-                                'Rooms': roomsTableKey,
-                                'Conference': conferenceTableKey,
-                                'Room Service': roomServiceTableKey,
-                                'Laundry': laundryTableKey,
-                                'Hotel Issues': hotelIssuesTableKey,
-                                'Petty Cash' : pettyCashTableKey,
+                                LocalKeys.kRooms: roomsTableKey,
+                                LocalKeys.kConference: conferenceTableKey,
+                                LocalKeys.kRoomService: roomServiceTableKey,
+                                LocalKeys.kLaundry: laundryTableKey,
+                                LocalKeys.kHotelIssues: hotelIssuesTableKey,
+                                LocalKeys.kPettyCash : pettyCashTableKey,
+                                LocalKeys.kRooms+LocalKeys.kDebts : roomsDebtsTableKey
                               });
                             },
                             child: Padding(
@@ -294,7 +295,7 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                       ],
                     ),
                   ): const SizedBox(),),
-                  Obx(() => controller.searchBySelectedSession.value ?  SessionsDropdown(): SizedBox())
+                  Obx(() => controller.searchBySelectedSession.value ?  SizedBox(child: SessionsDropdown(selectedSession: controller.existingSessions.value[0].obs,)): SizedBox())
                 ],
               ),
             ));

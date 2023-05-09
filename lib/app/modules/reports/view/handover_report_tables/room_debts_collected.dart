@@ -12,11 +12,11 @@ import '../../table_sources/rooms_used_table_source.dart';
 import '../hand_over_form_view.dart';
 
 class RoomsDebtsSection extends GetView<ReportGeneratorController> {
-  RoomsDebtsSection({Key? key, required this.roomsTableKey}) : super(key: key);
+  RoomsDebtsSection({Key? key, required this.roomsDebtTableKey}) : super(key: key);
 
   final RoomsDebtsSource _roomDebtsSource = RoomsDebtsSource();
 
-  final GlobalKey<SfDataGridState> roomsTableKey;
+  final GlobalKey<SfDataGridState> roomsDebtTableKey;
   final double minColumnWidth = 150;
 
   @override
@@ -37,7 +37,7 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                         onRefreshEntries: controller.loadReportData,
                         title: "Rooms Sold",
                         onSave: () async {
-                          controller.queTableKey(roomsTableKey, 'Rooms');
+                          controller.queTableKey(roomsDebtTableKey, 'Rooms');
                           await controller.processTableExports();
                         },
                         onAddEntry: () {
@@ -49,9 +49,8 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                         onConfirmEntry: () {}),
                   ],
                 ),
-                controller.initialized
-                    ? SfDataGrid(
-                  key: roomsTableKey,
+                SfDataGrid(
+                  key: roomsDebtTableKey,
                   headerGridLinesVisibility: GridLinesVisibility.none,
                   isScrollbarAlwaysShown: true,
                   source: _roomDebtsSource,
@@ -62,19 +61,19 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                         columns: const [
                           GridSummaryColumn(
                               name: "Rooms Sold",
-                              columnName: RoomsUsedColumnNames.roomNumber,
+                              columnName: RoomsDebtsColumnNames.roomNumber,
                               summaryType: GridSummaryType.count),
                           GridSummaryColumn(
                               name: "Value",
-                              columnName: RoomsUsedColumnNames.value,
+                              columnName: RoomsDebtsColumnNames.value,
                               summaryType: GridSummaryType.sum),
                           GridSummaryColumn(
                               name: "Paid",
-                              columnName: RoomsUsedColumnNames.paid,
+                              columnName: RoomsDebtsColumnNames.paid,
                               summaryType: GridSummaryType.sum),
                           GridSummaryColumn(
                               name: "Debts",
-                              columnName: RoomsUsedColumnNames.debt,
+                              columnName: RoomsDebtsColumnNames.debt,
                               summaryType: GridSummaryType.sum),
                         ],
                         position: GridTableSummaryRowPosition.top)
@@ -83,7 +82,7 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                     GridColumn(
                         columnWidthMode:
                         ColumnWidthMode.fitByColumnName,
-                        columnName: RoomsUsedColumnNames.employee,
+                        columnName: RoomsDebtsColumnNames.employee,
                         label: Container(
                             padding: const EdgeInsets.all(8.0),
                             alignment: Alignment.center,
@@ -91,19 +90,18 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                                 text: LocalKeys.kEmployee.tr
                                     .toUpperCase()))),
                     GridColumn(
-                        columnWidthMode:
-                        ColumnWidthMode.fitByColumnName,
-                        columnName: RoomsUsedColumnNames.roomNumber,
+                        columnWidthMode: ColumnWidthMode.fitByColumnName,
+                        columnName: RoomsDebtsColumnNames.roomNumber,
                         label: Container(
                             padding: const EdgeInsets.all(8.0),
                             alignment: Alignment.center,
                             child: SmallText(
-                                text: LocalKeys.kRoomNumber.tr
+                                text: LocalKeys.kRoom.tr
                                     .toUpperCase()))),
                     GridColumn(
                         columnWidthMode:
                         ColumnWidthMode.fitByColumnName,
-                        columnName: RoomsUsedColumnNames.checkInDate,
+                        columnName: RoomsDebtsColumnNames.checkInDate,
                         label: Container(
                             padding: const EdgeInsets.all(8.0),
                             alignment: Alignment.center,
@@ -112,7 +110,7 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                                     .toUpperCase()))),
                     GridColumn(
                         minimumWidth: minColumnWidth,
-                        columnName: RoomsUsedColumnNames.value,
+                        columnName: RoomsDebtsColumnNames.value,
                         label: Container(
                             padding: const EdgeInsets.all(8.0),
                             alignment: Alignment.center,
@@ -122,7 +120,7 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                     GridColumn(
                       // columnWidthMode: ColumnWidthMode.fitByCellValue,
                         minimumWidth: minColumnWidth,
-                        columnName: RoomsUsedColumnNames.paid,
+                        columnName: RoomsDebtsColumnNames.paid,
                         label: Container(
                             padding: const EdgeInsets.all(8.0),
                             alignment: Alignment.center,
@@ -132,7 +130,7 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                     GridColumn(
                       // columnWidthMode: ColumnWidthMode.fitByCellValue,
                         minimumWidth: minColumnWidth,
-                        columnName: RoomsUsedColumnNames.debt,
+                        columnName: RoomsDebtsColumnNames.debt,
                         label: Container(
                             padding: const EdgeInsets.all(8.0),
                             alignment: Alignment.center,
@@ -141,7 +139,6 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                                     .toUpperCase()))),
                   ],
                 )
-                    : loadingAnimation(actionStatement: 'Initializing')
               ],
             ),
           ),

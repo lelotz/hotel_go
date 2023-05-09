@@ -102,14 +102,16 @@ class _GeneralDropdownMenuState extends State<GeneralDropdownMenu> {
         },
         borderRadius: BorderRadius.circular(widget.borderRadius),
         icon: const Icon(Icons.keyboard_arrow_down),
+
         items: widget.menuItems.map((String menuItem){
           return  DropdownMenuItem(
+
             onTap: (){
               setState(() {
                 widget.currentItem = menuItem.toString();
               });
             },
-            alignment: Alignment.center,
+            alignment: Alignment.centerLeft,
             value:menuItem,
             child: Padding(
               padding: const EdgeInsets.only(left: 8),

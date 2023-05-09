@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -46,28 +48,25 @@ class ExcelWorkBook{
 
   createFileWithSheetsFromSfTable(String filePath,Workbook workbook, {bool launchFile=false})async{
 
-    logger.i({'creating workbook': sheetProperties.length});
+    logger.w({'creating workbook': sheetProperties.length});
     int sheetIndex = 0;
 
 
     for(Map<String,GlobalKey<SfDataGridState>> sheetData in sheetProperties){
-      if(sheetData[sheetData.keys.first] != null && sheetData[sheetData.keys.first]!.currentState !=null){
         try{
-          Worksheet worksheet = workbook.worksheets.addWithName(sheetData.keys.first);
-          sheetData[sheetData.keys.first]?.currentState?.exportToExcelWorksheet(worksheet,defaultRowHeight: 26,exportRowHeight: false);
-
+          for(String key in sheetData.keys){
+            Worksheet worksheet = workbook.worksheets.addWithName(key);
+            SfDataGridState? currentKeyState = sheetData[key]?.currentState;
+            if(currentKeyState!=null){
+              sheetData[key]?.currentState?.exportToExcelWorksheet(worksheet,defaultRowHeight: 26,exportRowHeight: false);
+            }
+          }
           sheetIndex++;
         }catch (e){
-          logger.e({'error_sheet':e.toString(),'sheetName':sheetData.values.first});
+          logger.e({'error_sheet':e.toString(),'sheetName':sheetData.keys.first});
           Log.exportLog(data: {'title':sheetData[sheetData.values.first],'data': 'ket state for table '}, error: e.toString());
 
         }
-
-      }else{
-        logger.i({'sheetNameEmpty':sheetData[sheetData.values.first]});
-        Log.exportLog(data: {'title':sheetData[sheetData.values.first]}, error: {'sheetNameEmpty':sheetData[sheetData.keys.first]}.toString());
-
-      }
     }
 
     logger.i({'workbook created': workbook.worksheets.count});
@@ -156,7 +155,53 @@ class ExcelWorkBook{
     return sheet;
   }
 
-  Future<Workbook> createReportSummaryTemplate(Map<String,dynamic> excelData,Map<String,dynamic> employeeDetails)async{
+  Worksheet writeSummaryRow(Worksheet sheet,Map<String,dynamic> data,Map<String,dynamic> dataCount, {int startRow = 18}){
+    double index = 1;
+    for(String element in data.keys){
+      // sheet = writeCountSummaryData(sheet, dataCount, element,startRow);
+      sheet.getRangeByName('C$startRow').setNumber(index);
+      sheet.getRangeByName('D$startRow:J$startRow').setText('   ' + element);
+      sheet.getRangeByName('L$startRow').setNumber(data[element]);
+      sheet.getRangeByName('K$startRow').setNumber(dataCount[element+',Count'] ?? 0.0);
+      logger.w("value test ${sheet.getRangeByName('D$startRow:J$startRow').text}");
+
+      index++;
+      startRow++;
+    }
+    return sheet;
+  }
+
+  Worksheet writeCountSummaryData(Worksheet sheet, Map<String,dynamic>data,String summaryTitle,int currentRow){
+    for(String element in data.keys){
+      String root = element.split(',')[0];
+
+
+      if(summaryTitle == root){
+        String range = 'K$currentRow';
+        sheet.getRangeByName(range).setNumber(data[element] ?? 0.0);
+        ;
+        logger.w('found summaryCountData $element value ${data[element]} @ ' + 'K$currentRow'
+            '\n written data ${sheet.getRangeByName(range).text}');
+      }else{
+        sheet.getRangeByName('K$currentRow').setNumber(0.0);
+      }
+    }
+    return sheet;
+
+  }
+
+  Range getRangeByName(String name,Worksheet sheet){
+    try{
+      return sheet.getRangeByName(name);
+    }catch(e){
+      Log.exportLog(data: {'title':'getRangeByName : $name'}, error: e.toString());
+      logger.e(e.toString());
+    }
+    return Range(sheet);
+  }
+
+  Future<Workbook> createReportSummaryTemplate(Map<String,dynamic> excelData,Map<String,dynamic> excelDataCount,Map<String,dynamic> employeeDetails)async{
+    int summaryEntriesCount = excelData.length;
     logger.i(excelData);
     Workbook workbook = Workbook();
 
@@ -172,7 +217,9 @@ class ExcelWorkBook{
     wholeDocumentRange.cellStyle.fontSize = 11;
 
     Range footerRange = sheet.getRangeByName('C1:L8');
+    int lastRow = excelData.length+3;
     Range summaryTableRange = sheet.getRangeByName('C15:L34');
+    //Range summaryTableRange = getRangeByName('C15:L$lastRow', sheet);
     Range summaryTableHeaderRange = sheet.getRangeByName('C15:L16');
     Range summaryTableColumnsRange = sheet.getRangeByName('C17:L17');
     Range summaryTableBodyRange = sheet.getRangeByName('C18:L34');
@@ -181,6 +228,8 @@ class ExcelWorkBook{
     Range summaryTableUnitRange = sheet.getRangeByName('J18:J34');
     Range summaryTableValueRange = sheet.getRangeByName('L18:L34');
     Range employeeDetailsRange = sheet.getRangeByName('C10:F13');
+
+
 
 
     footerRange.merge();
@@ -232,49 +281,51 @@ class ExcelWorkBook{
     sheet.getRangeByName('K17').setText('Unit');
     sheet.getRangeByName('L17').setText('Value');
 
-    /// Rooms
-    sheet.getRangeByName('C18').setNumber(1);
-    sheet.getRangeByName('D18:J18').setText('   ' + LocalKeys.kRooms);
-    sheet.getRangeByName('K18').setNumber(excelData[LocalKeys.kRooms+'Count']);
-    sheet.getRangeByName('L18').setNumber(excelData[LocalKeys.kRooms]);
+    writeSummaryRow(sheet, excelData,excelDataCount);
 
-    /// Rooms Debts
-    sheet.getRangeByName('C19').setNumber(2);
-    sheet.getRangeByName('D19:J19').setText('${LocalKeys.kRooms} ${LocalKeys.kDebts}');
-    sheet.getRangeByName('K19').setNumber(null);
-    sheet.getRangeByName('L19').setNumber(excelData['${LocalKeys.kRooms} ${LocalKeys.kDebts}']);
-
-
-    /// Conference
-    sheet.getRangeByName('C21').setNumber(4);
-    sheet.getRangeByName('D21:J21').setText('   ' + LocalKeys.kConference);
-    sheet.getRangeByName('K21').setNumber(null);
-    sheet.getRangeByName('L21').setNumber(excelData[LocalKeys.kConference]);
-
-    /// Conference Advance
-    sheet.getRangeByName('C20').setNumber(3);
-    sheet.getRangeByName('D20:J20').setText('   ${LocalKeys.kConference} Advance');
-    sheet.getRangeByName('K20').setNumber(null);
-    sheet.getRangeByName('L20').setNumber(excelData['${LocalKeys.kConference} Advance']);
-
-    /// Laundry
-    sheet.getRangeByName('C22').setNumber(5);
-    sheet.getRangeByName('D22:J22').setText('   ' + LocalKeys.kLaundry);
-    sheet.getRangeByName('K22').setNumber(excelData[LocalKeys.kLaundry+'Count']);
-    sheet.getRangeByName('L22').setNumber(excelData[LocalKeys.kLaundry]);
-
-    /// Room Service
-    sheet.getRangeByName('C23').setNumber(6);
-    sheet.getRangeByName('D23:J23').setText('   ' + LocalKeys.kRoomService);
-    sheet.getRangeByName('K23').setNumber(excelData[LocalKeys.kRoomService+'Count']);
-    sheet.getRangeByName('L23').setNumber(excelData[LocalKeys.kRoomService]);
-
-
-    /// Petty Cash
-    sheet.getRangeByName('C24').setNumber(7);
-    sheet.getRangeByName('D24:J24').setText('   ' + LocalKeys.kPettyCash);
-    sheet.getRangeByName('K24').setText('');
-    sheet.getRangeByName('L24').setNumber(excelData[LocalKeys.kPettyCash]);
+    // /// Rooms
+    // sheet.getRangeByName('C18').setNumber(1);
+    // sheet.getRangeByName('D18:J18').setText('   ' + LocalKeys.kRooms);
+    // sheet.getRangeByName('K18').setNumber(excelData[LocalKeys.kRooms+'Count']);
+    // sheet.getRangeByName('L18').setNumber(excelData[LocalKeys.kRooms]);
+    //
+    // /// Rooms Debts
+    // sheet.getRangeByName('C19').setNumber(2);
+    // sheet.getRangeByName('D19:J19').setText('${LocalKeys.kRooms} ${LocalKeys.kDebts}');
+    // sheet.getRangeByName('K19').setNumber(null);
+    // sheet.getRangeByName('L19').setNumber(excelData['${LocalKeys.kRooms} ${LocalKeys.kDebts}']);
+    //
+    //
+    // /// Conference
+    // sheet.getRangeByName('C21').setNumber(4);
+    // sheet.getRangeByName('D21:J21').setText('   ' + LocalKeys.kConference);
+    // sheet.getRangeByName('K21').setNumber(null);
+    // sheet.getRangeByName('L21').setNumber(excelData[LocalKeys.kConference]);
+    //
+    // /// Conference Advance
+    // sheet.getRangeByName('C20').setNumber(3);
+    // sheet.getRangeByName('D20:J20').setText('   ${LocalKeys.kConference} Advance');
+    // sheet.getRangeByName('K20').setNumber(null);
+    // sheet.getRangeByName('L20').setNumber(excelData['${LocalKeys.kConference} Advance']);
+    //
+    // /// Laundry
+    // sheet.getRangeByName('C22').setNumber(5);
+    // sheet.getRangeByName('D22:J22').setText('   ' + LocalKeys.kLaundry);
+    // sheet.getRangeByName('K22').setNumber(excelData[LocalKeys.kLaundry+'Count']);
+    // sheet.getRangeByName('L22').setNumber(excelData[LocalKeys.kLaundry]);
+    //
+    // /// Room Service
+    // sheet.getRangeByName('C23').setNumber(6);
+    // sheet.getRangeByName('D23:J23').setText('   ' + LocalKeys.kRoomService);
+    // sheet.getRangeByName('K23').setNumber(excelData[LocalKeys.kRoomService+'Count']);
+    // sheet.getRangeByName('L23').setNumber(excelData[LocalKeys.kRoomService]);
+    //
+    //
+    // /// Petty Cash
+    // sheet.getRangeByName('C24').setNumber(7);
+    // sheet.getRangeByName('D24:J24').setText('   ' + LocalKeys.kPettyCash);
+    // sheet.getRangeByName('K24').setText('');
+    // sheet.getRangeByName('L24').setNumber(excelData[LocalKeys.kPettyCash]);
 
     sheet.getRangeByName('D36:J36').merge();
     sheet.getRangeByName('D36:J36').setText(employeeDetails['session']);

@@ -85,7 +85,7 @@ class LaundryTransactionsSource extends DataGridSource{
 }
 
 class LaundryTableColumnNames{
-  static const String leading = "laundry_";
+  static const String leading = "";
   static const String roomNumber = '${leading}room_number';
   static const String date = '${leading}date';
   static const String time = '${leading}time';

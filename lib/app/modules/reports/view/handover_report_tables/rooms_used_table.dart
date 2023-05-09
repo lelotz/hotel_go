@@ -21,7 +21,6 @@ class RoomsUsedSection extends GetView<ReportGeneratorController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportGeneratorController>(
-       // init: ReportGeneratorController(),
         builder: (controller) => Card(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -97,7 +96,7 @@ class RoomsUsedSection extends GetView<ReportGeneratorController> {
                             padding: const EdgeInsets.all(8.0),
                             alignment: Alignment.center,
                             child: SmallText(
-                                text: LocalKeys.kRoomNumber.tr
+                                text: LocalKeys.kRoom.tr
                                     .toUpperCase()))),
                     GridColumn(
                         columnWidthMode:

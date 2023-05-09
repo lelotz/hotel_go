@@ -108,6 +108,7 @@ class ReportGeneratorController extends GetxController {
   Rx<bool> searchByDateRange = false.obs;
 
   Rx<Map<String, dynamic>> summaryData = Rx<Map<String, dynamic>>({});
+  Rx<Map<String, dynamic>> summaryDataCount = Rx<Map<String, dynamic>>({});
 
   Rx<int> reportDayOffset = Rx<int>(-1);
 
@@ -187,6 +188,16 @@ class ReportGeneratorController extends GetxController {
     roomsSoldCountSummaryValue.value='';
   }
 
+  clearTableData(){
+    roomsDebtsCollectedInCurrentSession.value.clear();
+    roomsSoldInCurrentSession.value.clear();
+    laundryTransactionsInCurrentSession.value.clear();
+    roomServiceTransactionsInCurrentSession.value.clear();
+    pettyCashTransactions.value.clear();
+    hotelIssuesInCurrentSession.value.clear();
+    conferenceActivityCurrentSession.value.clear();
+  }
+
   clearDataForNextReport(){
     clearControllers();
     clearSummaryValues();
@@ -195,6 +206,8 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<void> loadReportData() async {
+    isExporting.value = false;
+    clearTableData();
     await getRoomsSoldInCurrentSession();
     await getConferenceActivityInCurrentSession();
     await getLaundryTransactionsCurrentSession();
@@ -216,13 +229,6 @@ class ReportGeneratorController extends GetxController {
   }
 
   updateUI({bool onInit = false}) {
-    // roomsSoldInCurrentSession.refresh();
-    // roomsSoldInCurrentSession.update((val) {});
-    // conferenceActivityCurrentSession.refresh();
-    // laundryTransactionsInCurrentSession.refresh();
-    // roomServiceTransactionsInCurrentSession.refresh();
-    // hotelIssuesInCurrentSession.refresh();
-    // pettyCashTransactions.refresh();
     onInit ? null : update();
   }
 
@@ -252,6 +258,7 @@ class ReportGeneratorController extends GetxController {
 
   Future<void> submitReport(Map<String, GlobalKey<SfDataGridState>> reportData) async {
     queTableKey(reportData[LocalKeys.kRooms], LocalKeys.kRooms);
+    queTableKey(reportData[LocalKeys.kRooms+LocalKeys.kDebts], LocalKeys.kRooms+LocalKeys.kDebts);
     queTableKey(reportData[LocalKeys.kConference], LocalKeys.kConference);
     queTableKey(reportData[LocalKeys.kRoomService], LocalKeys.kRoomService);
     queTableKey(reportData[LocalKeys.kLaundry], LocalKeys.kLaundry);
@@ -265,6 +272,7 @@ class ReportGeneratorController extends GetxController {
     if(key!=null) {
       reportExportInfo.value.add({sheetName: key});
     }else{
+      logger.e('Error queing table key ${sheetName}. Key is null ${key}');
       Log.exportLog(data: {'title': 'key for table $sheetName'}, error: 'KEY IS NULL');
     }
   }
@@ -296,7 +304,7 @@ class ReportGeneratorController extends GetxController {
 
     ExcelWorkBook excelWorkBook = ExcelWorkBook(
         sheetProperties: reportExportInfo.value, excelFileName: filePath);
-    Workbook workbook = await excelWorkBook.createReportSummaryTemplate(summaryData.value,await getReportEmployeeDetails());
+    Workbook workbook = await excelWorkBook.createReportSummaryTemplate(summaryData.value,summaryDataCount.value,await getReportEmployeeDetails());
     await excelWorkBook.createFileWithSheetsFromSfTable(filePath, workbook);
 
     isExporting.value = false;
@@ -370,11 +378,8 @@ class ReportGeneratorController extends GetxController {
   }
 
   setSummaryData() {
-    // updateUI();
-    update();
-    logger.i('updated controller');
-
     summaryData.value.clear();
+    summaryDataCount.value.clear();
 
     summaryData.value = {
       LocalKeys.kRooms: strToDouble(roomPaymentsCtr.text+'.0'),
@@ -386,11 +391,14 @@ class ReportGeneratorController extends GetxController {
       LocalKeys.kRoomService: strToDouble(roomServicePaymentsCtr.text+'.0'),
       LocalKeys.kLaundry: strToDouble(laundryPaymentsCtr.text+'.0'),
       LocalKeys.kPettyCash: strToDouble(pettyCashOutCtr.text+'.0'),
-      LocalKeys.kRoomService+"Count" : strToDouble(roomServiceTransactionsInCurrentSession.value.length.toString()),
-      LocalKeys.kRooms+'Count': strToDouble(roomsSoldInCurrentSession.value.length.toString()+'.0'),
-      LocalKeys.kLaundry+'Count': strToDouble(laundryTransactionsInCurrentSession.value.length.toString()+'.0'),
+    };
+    summaryDataCount.value = {
+      LocalKeys.kRoomService+",Count" : strToDouble(roomServiceTransactionsInCurrentSession.value.length.toString()),
+      LocalKeys.kRooms+',Count': strToDouble(roomsSoldInCurrentSession.value.length.toString()+'.0'),
+      LocalKeys.kLaundry+',Count': strToDouble(laundryTransactionsInCurrentSession.value.length.toString()+'.0'),
 
     };
+    summaryDataCount.refresh();
     summaryData.refresh();
   }
 
@@ -399,6 +407,9 @@ class ReportGeneratorController extends GetxController {
       if (session.id == id) {
         selectedSession.value = session;
       }
+    }
+    if(id==''){
+      logger.w('Failed set session with ID:$id');
     }
     selectedSession.refresh();
   }
@@ -492,16 +503,7 @@ class ReportGeneratorController extends GetxController {
     return transactionsIds;
   }
 
-  getRoomDebtsCollected()async{
-    List<SessionActivity> roomSessionActivity = await SessionManagementRepository().getSessionActivityByTransactionTypeAndExcludeSessionId(LocalKeys.kRoom, selectedSession.value.id!);
-    List<RoomTransaction> roomTransactions = await RoomTransactionRepository().getMultipleRoomTransactions(getSessionActivityIds(roomSessionActivity));
-    List<CollectPayment> collectedPayments = await CollectedPaymentsRepository().getMultipleCollectedPaymentsByIds(getRoomTransactionIds(roomTransactions), LocalKeys.kRoom);
 
-    for(RoomTransaction transaction in roomTransactions){
-
-
-    }
-  }
 
 
 
@@ -536,6 +538,7 @@ class ReportGeneratorController extends GetxController {
   }
 
   Future<void> getRoomsSoldInCurrentSession() async {
+
     List<String> roomTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.room);
     int debts = 0;
     int sold = 0;
@@ -601,43 +604,43 @@ class ReportGeneratorController extends GetxController {
     searchBySelectedSession.value = true;
   }
 
+  String getSessionDayRange(SessionTracker session){
+    String startDate = DateTime.parse(session.dateCreated!).day.toString();
+    String endDate = DateTime.parse(session.dateEnded ?? DateTime.now().toIso8601String()).day.toString();
+    String dayRange = startDate == endDate ? '$endDate' : '$startDate - $endDate';
+    return dayRange;
+  }
+
+  String getSessionTimeRange(SessionTracker session){
+    return extractTime(DateTime.parse(
+        session.dateCreated ?? DateTime.now().toIso8601String())) +
+        ' - ' +
+        extractTime(DateTime.parse(
+            session.dateEnded ?? DateTime.now().toIso8601String()));
+  }
+
+  String getSessionDatesRange(SessionTracker session){
+    String dayRange = getSessionDayRange(session);
+    return '${getMonthName(DateTime.parse(session.dateCreated ?? DateTime.now().toIso8601String()).month)}, $dayRange';
+  }
+
   Future<void> loadExistingSessions() async {
     existingSessions.value.clear();
     existingSessionsView.value.clear();
     await SessionManagementRepository().getAllSessionTrackers().then((value) {
       existingSessions.value = value;
-      existingSessions.value.sort((a, b) => DateTime.parse(b.dateCreated!)
-          .millisecondsSinceEpoch
-          .compareTo(DateTime.parse(a.dateCreated!).millisecondsSinceEpoch));
+      existingSessions.value.sort((a, b) => DateTime.parse(b.dateCreated!).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateCreated!).millisecondsSinceEpoch));
     });
 
     for (SessionTracker session in existingSessions.value) {
-
       String userName = userData.userData.value[session.employeeId!];
-
-
-      String startDate = DateTime.parse(session.dateCreated!).day.toString();
-      String endDate =
-          DateTime.parse(session.dateEnded ?? DateTime.now().toIso8601String())
-              .day
-              .toString();
-      String dayRange =
-          startDate == endDate ? '$endDate' : '$startDate - $endDate';
-      String dates =
-          '        ${getMonthName(DateTime.parse(session.dateCreated ?? DateTime.now().toIso8601String()).month)}, $dayRange';
-      String time = extractTime(DateTime.parse(
-              session.dateCreated ?? DateTime.now().toIso8601String())) +
-          ' - ' +
-          extractTime(DateTime.parse(
-              session.dateEnded ?? DateTime.now().toIso8601String()));
-      existingSessionsView.value
-          .add('${userName} ${dates}\n$time\n\n${session.id}');
+      String dates = getSessionDatesRange(session);
+      String time = getSessionTimeRange(session);
+      existingSessionsView.value.add('${userName} ${dates}\n$time\n\n${session.id}');
     }
-    // existingSessionsView.value.sort();
+
     existingSessionsView.refresh();
     logger.i('sessions loaded ${existingSessions.value.length}');
-
-    setSessionById(
-        authController.sessionController.currentSession.value.id ?? '');
+    setSessionById(authController.sessionController.currentSession.value.id ?? '');
   }
 }

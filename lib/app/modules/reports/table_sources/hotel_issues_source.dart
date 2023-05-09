@@ -89,7 +89,7 @@ class HotelIssuesSource extends DataGridSource{
 }
 
 class HotelIssuesTableColumnNames{
-  static const String leading = "hotel_issues_";
+  static const String leading = "";
   static const String issueType = '${leading}issue_type';
   static const String roomNumber = '${leading}room_number';
   static const String status = '${leading}status';

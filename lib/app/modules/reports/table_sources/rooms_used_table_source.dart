@@ -108,11 +108,10 @@ class RoomsUsedSource extends DataGridSource {
 }
 
 class RoomsUsedColumnNames{
-  static const String leading = "rooms_used_";
+  static const String leading = "";
   static const String employee = '${leading}employee';
-  static const String roomNumber = '${leading}room_number';
+  static const String roomNumber = 'room';
   static const String checkInDate = '${leading}check_in_date';
-
   static const String value = '${leading}value';
   static const String paid = '${leading}paid';
   static const String debt = '${leading}debt';
