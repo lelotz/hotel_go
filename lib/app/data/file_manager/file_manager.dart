@@ -87,10 +87,22 @@ class FileManager{
     return '${directory!.path}\\' ;
   }
 
-  Future<File> getNewFile(String path)async{
+  Future<File> createNewFile(String path)async{
     late File file;
     try{
       file = await File(path).create(recursive: true);
+    }catch (e){
+      logger.e('',e);
+      Log.exportLog(data: {'title':'getNewFile error: ${path}'}, error: e.toString());
+
+    }
+    return file;
+  }
+
+  File getFile(String path){
+    late File file;
+    try{
+      file = File(path);
     }catch (e){
       logger.e('',e);
       Log.exportLog(data: {'title':'getNewFile error: ${path}'}, error: e.toString());
@@ -148,8 +160,13 @@ class FileManager{
   }
 
   dynamic writeJsonFile(dynamic data,String path,{FileMode fileMode = FileMode.write}) async {
-    File file = File(path);
-    await file.writeAsString(json.encode(data),mode: fileMode);
+
+    File file = await getFile(path);
+    try{
+      await file.writeAsString(json.encode(data),mode: fileMode);
+    }catch(e){
+      Log.exportLog(data: {'title': 'Error writing Json file'}, error: e.toString());
+    }
     return data;
   }
 
@@ -161,6 +178,6 @@ Future<void> logTest ()async{
   String logFileName = 'roomTransactions_'+ extractDate(DateTime.now())+'.txt';
   String logPath = 'Logs\\${extractDate(DateTime.now())}\\';
   await fileManager.createFolder(logPath);
-  File currentLogFile = await fileManager.getNewFile(baseDirectory + logPath + logFileName);
+  File currentLogFile = await fileManager.createNewFile(baseDirectory + logPath + logFileName);
    await fileManager.writeFile(await currentLogFile.exists() ? '\nappednd'.codeUnits:'helloWorld'.codeUnits, filePath: currentLogFile.path,append: await currentLogFile.exists() ? true:false);
 }

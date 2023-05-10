@@ -184,7 +184,7 @@ class CheckInFormController extends GetxController{
   }
 
   checkInGuest()async {
-    // stayCost();
+
 
     await createClientProfile().then((value) async{
         await createRoomTransaction().then((value) async{
@@ -239,11 +239,12 @@ class CheckInFormController extends GetxController{
     });
   }
   Future<void> createRoomTransaction()async {
+
     RoomTransaction roomTransaction = RoomTransaction(
       id: transactionId,
       clientId: userId,
       employeeId: await employeeId,
-      checkOutDate: checkOutDate.value.toIso8601String(),
+      checkOutDate: resetTimeInDateTime(checkOutDate.value,toGivenHM: true,hour: 10,minute: 0),
       checkInDate: checkInDate.value.toIso8601String(),
       arrivingFrom: comingFromCtrl.text,
       goingTo: goingToCtrl.text,

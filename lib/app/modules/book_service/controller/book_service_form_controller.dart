@@ -332,7 +332,7 @@ class BookServiceFormController extends GetxController with GlobalCalculations{
     await ServiceBookingRepository().createServiceBooking(
         ServiceBooking(
           id: bookServiceId.value,employeeId:authController.adminUser.value.id,
-          bookingDatetime:resetTimeInDateTime(DateTime.now()),roomNumber: int.parse(roomNumberController.text),
+          bookingDatetime: resetTimeInDateTime(DateTime.now()),roomNumber: int.parse(roomNumberController.text),
           bookingExpiryDateTime: resetTimeInDateTime(bookingServiceStartDate.value.add(const Duration(days: -1))),
           serviceStartDate: resetTimeInDateTime(bookingServiceStartDate.value),
           serviceEndEndDate: bookingServiceEndDate.value.toIso8601String(),

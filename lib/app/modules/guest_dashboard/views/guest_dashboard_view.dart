@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/guest_dashboard/widgets/cards/house_keeping_status.dart';
 import 'package:hotel_pms/app/modules/homepage_screen/views/homepage_view.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
+import 'package:hotel_pms/core/utils/date_formatter.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
 import 'package:hotel_pms/widgets/dropdown_menu/custom_dropdown_menu.dart';
 import 'package:hotel_pms/widgets/icons/app_icon.dart';
@@ -158,18 +159,28 @@ class GuestDashboardView extends GetView<GuestDashboardController> {
                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                  children: [
                                                    //const AppIcon(icon: Icons.calendar_month,iconSize: 20,useBackground: true,),
-                                                   LabeledText(
-                                                     title: LocalKeys.kCheckIn.tr,
-                                                     subtitle: controller.checkInDate.value,
-                                                     subtitleColor: ColorsManager.darkGrey,
-                                                     titleSize: AppSize.size16,subtitleSize: AppSize.size20,
+                                                   Column(
+                                                     children: [
+                                                       LabeledText(
+                                                         title: LocalKeys.kCheckIn.tr,
+                                                         subtitle: controller.checkInDate.value,
+                                                         subtitleColor: ColorsManager.darkGrey,
+                                                         titleSize: AppSize.size16,subtitleSize: AppSize.size20,
+                                                       ),
+                                                       SmallText(text: extractTime(DateTime.tryParse(controller.checkInDate.value) ?? DateTime.parse(resetTimeInDateTime(DateTime.now()))))
+                                                     ],
                                                    ),
                                                    SizedBox(width: const Size.fromWidth(10).width,),
                                                    const SmallText(text: "|",size: 40,),
                                                    SizedBox(width: const Size.fromWidth(10).width,),
-                                                   LabeledText(
-                                                     title: LocalKeys.kCheckout, subtitle: controller.checkOutDate.value,subtitleColor: ColorsManager.darkGrey,
-                                                     titleSize: AppSize.size16,subtitleSize: AppSize.size20,
+                                                   Column(
+                                                     children: [
+                                                       LabeledText(
+                                                         title: LocalKeys.kCheckout, subtitle: controller.checkOutDate.value,subtitleColor: ColorsManager.darkGrey,
+                                                         titleSize: AppSize.size16,subtitleSize: AppSize.size20,
+                                                       ),
+                                                       SmallText(text: extractTime(DateTime.tryParse(controller.checkOutDate.value) ?? DateTime.parse(resetTimeInDateTime(DateTime.now()))))
+                                                     ],
                                                    ),
 
                                                  ],

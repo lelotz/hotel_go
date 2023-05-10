@@ -36,9 +36,13 @@ String extractTime(DateTime time){
   return "${time.hour}:$minute";
 }
 
-String resetTimeInDateTime(DateTime date,{bool toEndOfDay = false}){
-  return toEndOfDay ? '${DateTime(date.year, date.month, date.day, 23, 59, 59, 0, 0).toIso8601String()}Z':
-                      '${DateTime(date.year, date.month, date.day, 0, 0, 0, 0, 0).toIso8601String()}Z';
+String resetTimeInDateTime(DateTime date,{bool toEndOfDay = false,bool toGivenHM =false,int hour =10,int minute=0}){
+  if(toEndOfDay){
+    return '${DateTime(date.year, date.month, date.day, 23, 59, 59, 0, 0).toIso8601String()}';
+  }else if(toGivenHM){
+    return '${DateTime(date.year, date.month, date.day, hour, minute, 0, 0, 0).toIso8601String()}';
+  }
+  return '${DateTime(date.year, date.month, date.day, 0, 0, 0, 0, 0).toIso8601String()}';
 }
 
 Widget selectDate(BuildContext context,DateTime? selectedDate,Function(DateTime? selectedDate) showDatePicker){

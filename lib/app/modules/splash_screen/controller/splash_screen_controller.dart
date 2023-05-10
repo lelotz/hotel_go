@@ -82,10 +82,10 @@ class SplashScreenController extends GetxController{
     appDirectory.value = await fileManager.directoryPath.then((value) => value == null ? '' : value.path);
     isInitialized.value = true;
     if(appDirectory.value != '') appDirectoryFound.value = true;
-
-    if(appDirectoryFound.value){
-      Future.delayed(const Duration(seconds: 2), (){Get.to(()=>LandingPage());});
-
+    if(appDirectoryFound.value) {
+      Get.to(() => LandingPage());
+    }else{
+      currentStep.value = 'Error getting appDirectory ${appDirectory.value}';
     }
   }
 
