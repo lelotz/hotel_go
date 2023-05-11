@@ -54,6 +54,8 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                   headerGridLinesVisibility: GridLinesVisibility.none,
                   isScrollbarAlwaysShown: true,
                   source: _roomDebtsSource,
+                  shrinkWrapRows: true,
+                  verticalScrollPhysics: NeverScrollableScrollPhysics(),
                   tableSummaryRows: [
                     GridTableSummaryRow(
                         title: '{Rooms Sold}',

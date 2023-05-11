@@ -49,6 +49,8 @@ class PettyCashUsageSection extends GetView<ReportGeneratorController> {
                 SfDataGrid(
                     key: pettyCashTableKey,
                     source: _pettyCashTableSource,
+                    shrinkWrapRows: true,
+                    verticalScrollPhysics: NeverScrollableScrollPhysics(),
                     tableSummaryRows: [
                       GridTableSummaryRow(
                           showSummaryInRow: false,

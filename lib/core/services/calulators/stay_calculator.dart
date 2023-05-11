@@ -66,8 +66,7 @@ class StayCalculator {
 
   int getDaysStayed(RoomTransaction roomTransaction,{String? newCheckOutDate}){
     int differenceInHours = DateTime.parse(newCheckOutDate ?? roomTransaction.checkOutDate!).difference(DateTime.parse(roomTransaction.checkInDate!)).inHours;
-    // logger.w('Getting days for more dates MORE than one day apart days : ${(differenceInHours/24).ceil()} hours apart : $differenceInHours');
+    logger.w('Getting days for more dates MORE than one day apart. Days : ${(differenceInHours/24).ceil()} Hours : $differenceInHours');
     return (differenceInHours/24).ceil();
   }
-
 }

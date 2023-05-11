@@ -48,6 +48,8 @@ class ConferenceUsageSection extends GetView<ReportGeneratorController> {
                 SfDataGrid(
                     key: conferenceTableKey,
                     source: conferenceUsageSource,
+                    shrinkWrapRows: true,
+                    verticalScrollPhysics: NeverScrollableScrollPhysics(),
                     tableSummaryRows: [
                       GridTableSummaryRow(
                           showSummaryInRow: false,

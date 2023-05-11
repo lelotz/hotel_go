@@ -50,6 +50,8 @@ class HotelIssuesSection extends GetView<ReportGeneratorController> {
                 SfDataGrid(
                     source: _hotelIssuesSource,
                     key: hotelIssuesTableKey,
+                    shrinkWrapRows: true,
+                    verticalScrollPhysics: NeverScrollableScrollPhysics(),
                     columns: [
                       GridColumn(
                           columnName: HotelIssuesTableColumnNames.roomNumber,

@@ -49,6 +49,8 @@ class LaundryUsageSection extends GetView<ReportGeneratorController> {
                 SfDataGrid(
                     key: laundryTableKey,
                     source: _laundryTransactionsSource,
+                    shrinkWrapRows: true,
+                    verticalScrollPhysics: NeverScrollableScrollPhysics(),
                     tableSummaryRows: [
                       GridTableSummaryRow(
                           showSummaryInRow: false,

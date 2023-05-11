@@ -47,6 +47,8 @@ class RoomServiceTransactionsSection extends GetView<ReportGeneratorController> 
                 SfDataGrid(
                     key: roomServiceTableKey,
                     source: _roomServiceSource,
+                    shrinkWrapRows: true,
+                    verticalScrollPhysics: NeverScrollableScrollPhysics(),
                     tableSummaryRows: [
                       GridTableSummaryRow(
                           showSummaryInRow: false,
