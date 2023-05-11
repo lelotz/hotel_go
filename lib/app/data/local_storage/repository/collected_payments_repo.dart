@@ -12,7 +12,7 @@ class CollectedPaymentsRepository extends SqlDatabase{
   SessionManager sessionManager = Get.find<SessionManager>();
 
   /// CollectedPayments CRUD
-  Future<int?> createCollectedPayment(Map<String,dynamic> payment)async{
+  Future<int> createCollectedPayment(Map<String,dynamic> payment)async{
     int results = -1;
     await SqlDatabase.instance.create(CollectedPaymentsTable.tableName, payment).then((value) async{
       results = value;
@@ -21,13 +21,13 @@ class CollectedPaymentsRepository extends SqlDatabase{
             id: const Uuid().v1(),
             sessionId: sessionManager.currentSession.value.id,
             transactionId: payment[CollectedPaymentsTable.roomTransactionId],
-            transactionType: payment[CollectedPaymentsTable.service]+LocalKeys.kPayment,
+            transactionType: payment[CollectedPaymentsTable.service],
             dateTime: DateTime.now().toIso8601String()
       ).toJson()).then((value) {results = value ?? -1;});
     });
     return results;
   }
-  Future<List<CollectPayment>?> getCollectedPaymentsByDate(String date)async{
+  Future<List<CollectPayment>> getCollectedPaymentsByDate(String date)async{
     List<CollectPayment> payments= [];
     await SqlDatabase.instance.read(
         tableName:CollectedPaymentsTable.tableName,
@@ -44,7 +44,7 @@ class CollectedPaymentsRepository extends SqlDatabase{
     return payments;
   }
 
-  Future<List<CollectPayment>?> getCollectedPaymentsById(String collectedPaymentId)async{
+  Future<List<CollectPayment>> getCollectedPaymentsById(String collectedPaymentId)async{
     List<CollectPayment> payments= [];
     await SqlDatabase.instance.read(
         tableName:CollectedPaymentsTable.tableName,

@@ -540,6 +540,8 @@ class ReportGeneratorController extends GetxController {
   Future<void> getRoomsSoldInCurrentSession() async {
 
     List<String> roomTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.room);
+    roomTransactionsIds.addAll(await getTransactionIdsByTransactionType(TransactionTypes.room+LocalKeys.kPayment));
+
     int debts = 0;
     int sold = 0;
     List<RoomTransaction> roomTransactions = await RoomTransactionRepository().getMultipleRoomTransactions(roomTransactionsIds);

@@ -197,7 +197,7 @@ class PaymentController extends GetxController {
           date: extractDate(DateTime.now()),
           time: extractTime(DateTime.now()),
           service: LocalKeys.kRoom,
-          payMethod: "CASH",
+          payMethod: payMethod.value,
           receiptNumber: const Uuid().v1(),
         ).toDb();
       });
