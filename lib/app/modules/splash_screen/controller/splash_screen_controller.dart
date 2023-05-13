@@ -79,7 +79,7 @@ class SplashScreenController extends GetxController{
   }
 
   Future<void> validateAppDirectory()async{
-    appDirectory.value = await fileManager.directoryPath.then((value) => value == null ? '' : value.path);
+    appDirectory.value = await fileManager.appDocumentsPath;
     isInitialized.value = true;
     if(appDirectory.value != '') appDirectoryFound.value = true;
     if(appDirectoryFound.value) {

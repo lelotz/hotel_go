@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/book_service/controller/book_service_controller.dart';
 import 'package:hotel_pms/app/modules/book_service/widgtes/booking_calender.dart';
-import 'package:hotel_pms/widgets/dialogs/dialod_builder.dart';
 import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import 'package:hotel_pms/widgets/mydividers.dart';
 import 'package:hotel_pms/widgets/text/big_text.dart';
@@ -11,12 +10,10 @@ import '../../../../widgets/app_bars/global_app_bar.dart';
 import '../../../../widgets/buttons/myElevatedButton.dart';
 import '../widgtes/book_conference_form.dart';
 import '../widgtes/book_room_form.dart';
-import 'book_service_form.dart';
+
 
 class BookServiceView extends GetView<BookServiceController> {
   BookServiceView({Key? key}) : super(key: key);
-
-  // final BookServiceController bookServiceController = Get.put(BookServiceController(),permanent: true);
 
   @override
   Widget build(BuildContext context) {

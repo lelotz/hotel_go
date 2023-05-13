@@ -40,6 +40,10 @@ class FileManager{
     return directory;
 
   }
+
+  Future<String> get appDocumentsPath async{
+    return await directoryPath.then((value) => value == null ? '' : value.path);
+  }
   Future<String> get executableDirectory async{
     try{
       return Directory.current.path + "\\data\\flutter_assets\\";

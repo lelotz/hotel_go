@@ -43,7 +43,9 @@ import '../../user_data/controller/user_data_controller.dart';
 class ReportGeneratorController extends GetxController {
   ReportGeneratorController();
   LocalLogger Log = LocalLogger.instance;
+  FileManager fileManager = FileManager();
   Map<String, dynamic>? reportConfigs;
+
 
   AuthController authController = Get.find<AuthController>();
   ReportSelectorController reportSelectorController = Get.find<ReportSelectorController>();
@@ -101,6 +103,7 @@ class ReportGeneratorController extends GetxController {
   TextEditingController totalDailyPaymentsCtr = TextEditingController();
 
   List<String> reportTypes = ['Daily', 'Weekly', 'Monthly', 'Custom'];
+  Map<String,Map<String,List<String>>> reportArtifacts = {};
   Rx<String> selectedReportType = Rx<String>('');
 
   Rx<bool> isExporting = false.obs;
@@ -299,13 +302,15 @@ class ReportGeneratorController extends GetxController {
   Future<void> processTableExports() async {
     setSummaryData();
     isExporting.value = true;
-    String filePath = await FileManager().generateFileName(
+    String appDocumentsPath = await fileManager.appDocumentsPath;
+    String filePath = await fileManager.generateFileName(
         userName: loggedInUser.value.fullName ?? 'system', category: 'Reports');
 
     ExcelWorkBook excelWorkBook = ExcelWorkBook(
         sheetProperties: reportExportInfo.value, excelFileName: filePath);
     Workbook workbook = await excelWorkBook.createReportSummaryTemplate(summaryData.value,summaryDataCount.value,await getReportEmployeeDetails());
     await excelWorkBook.createFileWithSheetsFromSfTable(filePath, workbook);
+    await fileManager.writeJsonFile(reportArtifacts, (appDocumentsPath + filePath+'.json'));
 
     isExporting.value = false;
     clearDataForNextReport();
@@ -512,6 +517,11 @@ class ReportGeneratorController extends GetxController {
 
     pettyCashTransactions.value = await InternalTransactionRepository()
         .getMultipleInternalTransactionByIds(pettyCashTransactionsIds);
+    if(pettyCashTransactions.value.isNotEmpty){
+      reportArtifacts.addAll({
+        LocalKeys.kPettyCash: {'InternalTransaction':pettyCashTransactionsIds}
+      });
+    }
   }
 
   Future<void> getRoomServiceTransactionsInCurrentSession() async {
@@ -520,6 +530,11 @@ class ReportGeneratorController extends GetxController {
             TransactionTypes.roomServiceTransaction);
     roomServiceTransactionsInCurrentSession.value =
     await OtherTransactionsRepository().getMultipleOtherTransaction(roomServiceTransactionsIds);
+    if(roomServiceTransactionsInCurrentSession.value.isNotEmpty){
+      reportArtifacts.addAll({
+        LocalKeys.kRoomService: {'OtherTransactions':roomServiceTransactionsIds}
+      });
+    }
   }
 
   Future<void> getHotelIssuesInCurrentSession() async {
@@ -545,14 +560,29 @@ class ReportGeneratorController extends GetxController {
     int debts = 0;
     int sold = 0;
     List<RoomTransaction> roomTransactions = await RoomTransactionRepository().getMultipleRoomTransactions(roomTransactionsIds);
+    List<String> roomsSoldIds = [];
+    List<String> roomsDebtsIds = [];
+
     for(RoomTransaction transaction in roomTransactions){
       if(transaction.sessionId == selectedSession.value.id){
         roomsSoldInCurrentSession.value.add(transaction);
+        roomsSoldIds.add(transaction.id!+':'+transaction.sessionId!);
         sold++;
       }else{
         roomsDebtsCollectedInCurrentSession.value.add(transaction);
+        roomsDebtsIds.add(transaction.id!+':'+transaction.sessionId!);
         debts++;
       }
+    }
+    if(roomsSoldInCurrentSession.value.isNotEmpty){
+      reportArtifacts.addAll({
+        LocalKeys.kRooms: {'RoomTransaction':roomsSoldIds}
+      });
+    }
+    if(roomsDebtsCollectedInCurrentSession.value.isNotEmpty){
+      reportArtifacts.addAll({
+        LocalKeys.kRooms + LocalKeys.kDebts: {'RoomTransaction':roomsDebtsIds}
+      });
     }
     logger.i('sold : $sold debts : $debts');
   }
