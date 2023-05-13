@@ -6,6 +6,7 @@ import 'package:hotel_pms/app/data/migration/session_id_in_room_transaction.dart
 import 'package:hotel_pms/app/modules/login_screen/views/auth_screen.dart';
 import 'package:hotel_pms/app/modules/user_data/controller/user_data_controller.dart';
 import 'package:hotel_pms/core/logs/logger_instance.dart';
+import 'package:hotel_pms/core/values/localization/config_keys.dart';
 import 'package:hotel_pms/core/values/localization/langs/sw.dart';
 import 'package:logger/logger.dart';
 
@@ -43,7 +44,7 @@ class SplashScreenController extends GetxController{
 
     appExecutablePath.value = await fileManager.executableDirectory;
 
-    await migrateDb();
+   // await migrateDb();
     super.onReady();
   }
 
@@ -56,24 +57,33 @@ class SplashScreenController extends GetxController{
   }
 
   Future<void> migrateDb()async{
-    if(configs.value['migration']['injectRoomSessionId'] == true){
-      currentStep.value = 'Injecting SessionIds';
+    if(configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectRoomTransactions] == true){
+      currentStep.value = 'Injecting Room Transactions SessionIds';
       isInjectingSessionIdToRoomTransactions.value = true;
       await SessionIdInjector.injectSessionIdInRoomTransactions();
-      configs.value['migration']['injectRoomSessionId'] = false;
+      configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectRoomTransactions] = false;
       isInjectingSessionIdToRoomTransactions.value = false;
       fileManager.writeJsonFile(configs.value, configFilePath);
 
     }
 
-    if(configs.value['migration']['injectOtherSessionId'] == true){
-      currentStep.value = 'Injecting SessionIds';
+    if(configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectOtherTransactions] == true){
+      currentStep.value = 'Injecting Other Transactions SessionIds';
       isInjectingSessionIdToRoomTransactions.value = true;
       await SessionIdInjector.injectSessionIdInOtherTransactions();
-      configs.value['migration']['injectOtherSessionId'] = false;
+      configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectOtherTransactions] = false;
       isInjectingSessionIdToRoomTransactions.value = false;
       fileManager.writeJsonFile(configs.value, configFilePath);
 
+    }
+
+    if(configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectPaymentTransactions]){
+      currentStep.value = 'Injecting Collected Payments SessionIds';
+      isInjectingSessionIdToRoomTransactions.value = true;
+      await SessionIdInjector.injectCollectedPayments();
+      isInjectingSessionIdToRoomTransactions.value = false;
+      configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectPaymentTransactions] = false;
+      fileManager.writeJsonFile(configs.value, configFilePath);
     }
 
   }

@@ -34,16 +34,35 @@ class CollectedPaymentsRepository extends SqlDatabase{
         whereArgs: [date],
         where:'${CollectedPaymentsTable.date} = ?'
     ).then((value) {
-      if(value != null && value.isNotEmpty){
-        for(Map<String,dynamic> element in value){
-          payments.add(CollectPayment.fromJson(element));
-        }
-      }
+      payments.addAll(CollectPayment().fromJsonList(value ?? []));
     });
 
     return payments;
   }
 
+  Future<List<CollectPayment>> getCollectedPaymentsByRoomTransactionId(String roomTransactionId)async{
+    List<CollectPayment> payments= [];
+    await SqlDatabase.instance.read(
+        tableName:CollectedPaymentsTable.tableName,
+        whereArgs: [roomTransactionId],
+        where:'${CollectedPaymentsTable.roomTransactionId} = ?'
+    ).then((value) {
+      payments.addAll(CollectPayment().fromJsonList(value ?? []));
+    });
+
+    return payments;
+  }
+  Future<List<CollectPayment>> getAllCollectedPayments()async{
+    List<CollectPayment> payments= [];
+    await SqlDatabase.instance.read(
+        tableName:CollectedPaymentsTable.tableName,
+        readAll: true
+    ).then((value) {
+      payments.addAll(CollectPayment().fromJsonList(value ?? []));
+    });
+
+    return payments;
+  }
   Future<List<CollectPayment>> getCollectedPaymentsById(String collectedPaymentId)async{
     List<CollectPayment> payments= [];
     await SqlDatabase.instance.read(
@@ -86,6 +105,29 @@ class CollectedPaymentsRepository extends SqlDatabase{
 
     return payments;
   }
+
+  Future<List<CollectPayment>> getCollectedPaymentsBySessionId(String sessionId)async{
+    List<CollectPayment> payments= [];
+
+
+    await SqlDatabase.instance.read(
+        tableName:CollectedPaymentsTable.tableName,
+        whereArgs: [sessionId],
+        where:'${CollectedPaymentsTable.sessionId}=?'
+    ).then((value) {
+      payments = CollectPayment().fromJsonList(value ?? []);
+    });
+
+    return payments;
+  }
+
+  Future<void> updateCollectedPayment(Map<String,dynamic> payment)async{
+    await SqlDatabase.instance.update(
+        tableName:CollectedPaymentsTable.tableName,
+        row: payment,
+        where: '${CollectedPaymentsTable.id}=?',
+        whereArgs: [payment[CollectedPaymentsTable.id]]);
+  }
 }
 
 /// Other Transactions Table
@@ -102,6 +144,8 @@ class CollectedPaymentsTable{
   static const String dateTime = "dateTime";
   static const String date = "date";
   static const String time ="time";
+  static const String sessionId ="sessionId";
+
   static const String service ="service";
   static const String payMethod = "payMethod";
   static const String receiptNumber = "receiptNumber";
@@ -123,6 +167,7 @@ class CollectedPaymentsTable{
     $id TEXT PRIMARY KEY,
     $clientId TEXT NOT NULL,
     $roomTransactionId TEXT ,
+    $sessionId TEXT,
     $employeeId TEXT NOT NULL )
   ''';
 }

@@ -1,1 +1,1 @@
-{"migration":{"injectRoomSessionId":false,"injectOtherSessionId":false}}
+{"migration":{"injectRoomSessionId":false,"injectOtherSessionId":false,"injectCollectedPaymentSessionId":false}}

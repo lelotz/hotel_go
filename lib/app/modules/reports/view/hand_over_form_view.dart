@@ -22,6 +22,7 @@ import '../widgets/session_dropdown_menu.dart';
 import 'handover_report_tables/conference_usage_table.dart';
 import 'handover_report_tables/hotel_issues_table.dart';
 import 'handover_report_tables/laundry_usage_table.dart';
+import 'handover_report_tables/room_debts_collected_cp.dart';
 import 'handover_report_tables/room_service_table.dart';
 import 'handover_report_tables/rooms_used_table.dart';
 

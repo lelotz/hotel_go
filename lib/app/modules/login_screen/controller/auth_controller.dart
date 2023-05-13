@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/local_storage/innit_data.dart';
@@ -12,10 +15,12 @@ import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/logs/logger_instance.dart';
+import '../../../../core/values/localization/config_keys.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/admin_user_repo.dart';
 import '../../../data/local_storage/repository/encrypted_data_repo.dart';
 import '../../../data/local_storage/repository/user_activity_repo.dart';
+import '../../../data/migration/session_id_in_room_transaction.dart';
 import '../../../routes/app_pages.dart';
 import '../../homepage_screen/views/homepage_view.dart';
 
@@ -39,25 +44,32 @@ class AuthController extends GetxController {
   Rx<SessionTracker> sessionTracker = Rx<SessionTracker>(SessionTracker());
   bool? isTest = false;
   Logger logger = AppLogger.instance.logger;
-
+  Rx<Map<String,dynamic>> configs = Rx<Map<String,dynamic>>({});
 
   List<String> routes = [];
+  String configFilePath = kDebugMode ?
+  Directory.current.path + '\\assets\\configs\\configs.json'
+      : Directory.current.path + "\\data\\flutter_assets\\assets\\configs\\configs.json";
+  FileManager fileManager = FileManager();
 
   AuthController({this.isTest});
 
-  // @override
-  // onInit()async{
-  //   super.onInit();
-  //   fullNameCtrl.text = 'Dereck Olomi';
-  //   adminUserPasswordCtrl.text = '00001WH';
-  //
-  // }
+  @override
+  onInit()async{
+    super.onInit();
+    await loadConfigs();
+
+  }
 
   @override
   dispose() {
     super.dispose();
     adminUserPasswordCtrl.dispose();
     fullNameCtrl.dispose();
+  }
+
+  loadConfigs()async{
+    configs.value = await fileManager.readJsonFile(configFilePath);
   }
 
   getAuthorizedRoutes() async {
@@ -107,6 +119,7 @@ class AuthController extends GetxController {
     if (isAuthenticated.value) {
       await sessionController.validateNewSession(adminUser.value.id!);
       sessionTracker.value = sessionController.currentSession.value;
+      await migrateDb();
     } else {
       logger.w({'failed to auth user': adminUser.value.toJson()});
     }
@@ -121,6 +134,38 @@ class AuthController extends GetxController {
   clearInputs() {
     adminUserPasswordCtrl.clear();
     fullNameCtrl.clear();
+  }
+
+  Future<void> migrateDb()async{
+    if(configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectRoomTransactions] == true){
+      //currentStep.value = 'Injecting Room Transactions SessionIds';
+      // isInjectingSessionIdToRoomTransactions.value = true;
+      await SessionIdInjector.injectSessionIdInRoomTransactions();
+      configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectRoomTransactions] = false;
+      //isInjectingSessionIdToRoomTransactions.value = false;
+      fileManager.writeJsonFile(configs.value, configFilePath);
+
+    }
+
+    if(configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectOtherTransactions] == true){
+      //currentStep.value = 'Injecting Other Transactions SessionIds';
+      //isInjectingSessionIdToRoomTransactions.value = true;
+      await SessionIdInjector.injectSessionIdInOtherTransactions();
+      configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectOtherTransactions] = false;
+      //isInjectingSessionIdToRoomTransactions.value = false;
+      fileManager.writeJsonFile(configs.value, configFilePath);
+
+    }
+
+    if(configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectPaymentTransactions]){
+      //currentStep.value = 'Injecting Collected Payments SessionIds';
+      //isInjectingSessionIdToRoomTransactions.value = true;
+      await SessionIdInjector.injectCollectedPayments();
+      //isInjectingSessionIdToRoomTransactions.value = false;
+      configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectPaymentTransactions] = false;
+      fileManager.writeJsonFile(configs.value, configFilePath);
+    }
+
   }
 
   Future<void> authenticateUser() async {

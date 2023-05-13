@@ -51,6 +51,7 @@ class CheckInFormController extends GetxController{
   Rx<RoomData> selectedRoomData = Rx<RoomData>(RoomData());
   Future<String> get employeeId async => Get.find<AuthController>().adminUser.value.id!;
   Future<String> get employeeIdName async => Get.find<AuthController>().adminUser.value.fullName!;
+  AuthController authController =Get.find<AuthController>();
 
   Rx<String> payMethod = Rx<String>('');
   Rx<String> payMethodStatus = Rx<String>('');
@@ -208,6 +209,8 @@ class CheckInFormController extends GetxController{
                     time: extractTime(DateTime.now()),
                     payMethod: payMethod.value,
                     receiptNumber: const Uuid().v1(),
+                    sessionId: authController.sessionController.currentSession.value.id,
+
                   );
                   await collectPayment.toDb().then((value) async{
                     await homepageController?.refreshSelectedRoom();

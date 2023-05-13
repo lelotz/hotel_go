@@ -35,6 +35,7 @@ class PaymentController extends GetxController {
           .value;
 
   Rx<AdminUser> loggedInUser = Get.find<AuthController>().adminUser;
+  AuthController authController = Get.find<AuthController>();
 
   ClientUser clientUser = ClientUser();
 
@@ -199,6 +200,7 @@ class PaymentController extends GetxController {
           service: LocalKeys.kRoom,
           payMethod: payMethod.value,
           receiptNumber: const Uuid().v1(),
+          sessionId: authController.sessionController.currentSession.value.id,
         ).toDb();
       });
     });
@@ -260,6 +262,8 @@ class PaymentController extends GetxController {
         service: TransactionTypes.roomServiceTransaction,
         payMethod: "CASH",
         receiptNumber: const Uuid().v1(),
+        sessionId: authController.sessionController.currentSession.value.id,
+
       ).toDb();
       Get.delete<PaymentController>();
     }
@@ -361,6 +365,7 @@ class PaymentController extends GetxController {
         service: TransactionTypes.laundryPayment,
         payMethod: 'CASH',
         receiptNumber: const Uuid().v1(),
+        sessionId: authController.sessionController.currentSession.value.id,
       ).toDb().then((value) {
         logger.wtf('collected ${laundryBalance.value}');
       });

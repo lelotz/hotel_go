@@ -21,6 +21,7 @@ class CollectPayment {
   String? service;
   String? payMethod;
   String? receiptNumber;
+  String? sessionId;
 
   CollectPayment(
       {this.id,
@@ -36,6 +37,7 @@ class CollectPayment {
         this.time,
         this.service,
         this.payMethod,
+        this.sessionId,
         this.receiptNumber});
 
   CollectPayment.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class CollectPayment {
     clientId = json['clientId'];
     roomNumber = json['roomNumber'];
     amountCollected = json['amountCollected'];
+    sessionId = json['sessionId'];
     date = json['date'];
     dateTime = json['dateTime'];
     time = json['time'];
@@ -79,6 +82,7 @@ class CollectPayment {
     data['service'] = service;
     data['payMethod'] = payMethod;
     data['receiptNumber'] = receiptNumber;
+    data['sessionId']=sessionId;
     return data;
   }
 

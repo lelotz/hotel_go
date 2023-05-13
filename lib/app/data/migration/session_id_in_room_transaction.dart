@@ -2,6 +2,7 @@
 
 import 'package:hotel_pms/app/data/local_storage/repository/other_transactions_repo.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
+import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:hotel_pms/core/logs/logger_instance.dart';
 import 'package:logger/logger.dart';
 
@@ -78,6 +79,37 @@ class SessionIdInjector{
 
     }
 
+  }
+
+  static int differenceInHours(DateTime a, DateTime b){
+    return b.difference(a).inHours;
+  }
+
+  static bool isBetween(DateTime a, DateTime b,DateTime given){
+    if(given.isAfter(a) && given.isBefore(b)){
+      return true;
+    }
+    return false;
+  }
+
+  static Future<void> injectCollectedPayments()async{
+    List<CollectPayment> collectedPayments = await CollectedPaymentsRepository().getAllCollectedPayments();
+    List<SessionTracker> sessions = await SessionManagementRepository().getAllSessionTrackers();
+    /// cp date time is between session.s and session end
+    for(CollectPayment payment in collectedPayments){
+      for(SessionTracker session in sessions){
+        DateTime paymentDate = DateTime.parse(payment.dateTime!);
+        DateTime sessionStartDate = DateTime.parse(session.dateCreated!);
+        DateTime sessionEndDate = DateTime.parse(session.dateEnded ?? session.dateCreated!);
+
+        if(differenceInHours(sessionStartDate, sessionEndDate) < 24 &&
+            isBetween(sessionStartDate,sessionEndDate,paymentDate)
+        ){
+            payment.sessionId = session.id;
+            await CollectedPaymentsRepository().updateCollectedPayment(payment.toJson());
+        }
+      }
+    }
   }
 
   fun({required String sessionId})async{
