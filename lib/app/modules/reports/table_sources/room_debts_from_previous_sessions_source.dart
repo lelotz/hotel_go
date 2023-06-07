@@ -65,8 +65,8 @@ class RoomsDebtsSource extends DataGridSource {
   Future<AdminUser> getEmployeeById(String id) async {
     AdminUser adminUser = AdminUser();
     await AdminUserRepository().getAdminUserById(id).then((value) {
-      if (value != null && value.isNotEmpty) {
-        adminUser = AdminUser.fromJson(value.first);
+      if (value.id != null) {
+        adminUser = value;
       }
     });
 

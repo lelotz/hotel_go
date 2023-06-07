@@ -133,9 +133,7 @@ class GuestDashboardController extends GetxController{
 
   setSelectedHouseKeeperModel()async{
     await AdminUserRepository().getAdminUserByName(selectedHouseKeeperName.value).then((value) {
-      if(value.isNotEmpty){
-        selectedHouseKeeper.value = value[0];
-      }
+      selectedHouseKeeper.value = value!;
     });
   }
 

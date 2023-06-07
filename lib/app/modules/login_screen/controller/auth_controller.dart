@@ -9,6 +9,7 @@ import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/app/modules/login_screen/views/auth_screen.dart';
+import 'package:hotel_pms/core/services/data_validation.dart';
 import 'package:hotel_pms/core/session_management/session_manager.dart';
 import 'package:hotel_pms/core/utils/useful_math.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
@@ -19,6 +20,7 @@ import '../../../../core/values/localization/config_keys.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/admin_user_repo.dart';
 import '../../../data/local_storage/repository/encrypted_data_repo.dart';
+import '../../../data/local_storage/repository/session_management_repo.dart';
 import '../../../data/local_storage/repository/user_activity_repo.dart';
 import '../../../data/migration/session_id_in_room_transaction.dart';
 import '../../../routes/app_pages.dart';
@@ -58,6 +60,9 @@ class AuthController extends GetxController {
   onInit()async{
     super.onInit();
     await loadConfigs();
+    if(await restoreUserSession()){
+      Get.to(()=>HomePageView());
+    }
 
   }
 
@@ -98,9 +103,8 @@ class AuthController extends GetxController {
     await AdminUserRepository()
         .getAdminUserByName(fullNameCtrl.text)
         .then((value)async{
-      if (value.isNotEmpty) {
-        adminUser.value = value[0];
-
+      if (value?.id!=null) {
+        adminUser.value = value!;
       }
     });
     if (adminUser.value.id == null) {
@@ -111,12 +115,114 @@ class AuthController extends GetxController {
     return true;
   }
 
+  dynamic validateUserName(String userName){
+    dynamic isNotEmpty = DataValidation.isNotEmpty(userName);
+    if( isNotEmpty != null){
+      fullNameCtrl.clear();
+      isAuthenticated.value = false;
+
+      return isNotEmpty;
+    };
+     AdminUserRepository()
+        .getAdminUserByName(userName)
+        .then((value){
+      if (value?.id!=null) {
+        adminUser.value = value!;
+        logger.i('user_object_at_name_validation ${adminUser.value.toJson()}');
+       // return null;
+      }
+    });
+    if (adminUser.value.id == null) {
+      // authResult.value = 'Umekosea jina au password';
+      fullNameCtrl.clear();
+      isAuthenticated.value = false;
+      return 'Umekosea Jina';
+      //return false;
+    }
+
+    return null;
+  }
+
+  dynamic validatePassword(String password){
+    dynamic isNotEmpty = DataValidation.isNotEmpty(password);
+    if( isNotEmpty != null){
+      adminUserPasswordCtrl.clear();
+      isAuthenticated.value = false;
+
+      return isNotEmpty;
+    };
+    EncryptedDataRepository()
+        .getEncryptedDataByUserId(adminUser.value.id??'')
+        .then((value)  {
+      if (
+      value.length == 1 &&
+          value.first.userId == adminUser.value.id && password == value.first.data) {
+        isAuthenticated.value = true;
+        authResult.value = LocalKeys.kSuccess;
+        //clearInputs();
+        return null;
+      } else if (value.isEmpty) {
+        authResult.value = LocalKeys.kInvalidCredentials;
+        isAuthenticated.value = false;
+        adminUserPasswordCtrl.clear();
+        return "Umekosea Password";
+      }
+    });
+
+    // var n = createLoginAttemptActivity(adminUser.value, isAuthenticated.value).then((value) => null);
+    // clearInputs();
+    return null;
+  }
+
+
+
+  Future<bool> restoreUserSession()async{
+    SessionTracker? userSession = await SessionManagementRepository().getLatestOpenSession();
+    if(userSession==null){
+      return false;
+    }
+    adminUser.value = await AdminUserRepository().getAdminUserById(userSession.employeeId!);
+    fullNameCtrl.text = adminUser.value.fullName!;
+
+    await EncryptedDataRepository()
+        .getEncryptedDataByUserId(adminUser.value.id??'')
+        .then((value)  {
+      if (
+      value.length == 1 &&
+          value.first.userId == adminUser.value.id) {
+        isAuthenticated.value = true;
+        authResult.value = LocalKeys.kSuccess;
+      } else if (value.isEmpty) {
+        authResult.value = LocalKeys.kInvalidCredentials;
+        isAuthenticated.value = false;
+        adminUserPasswordCtrl.clear();
+      }
+    });
+
+    await sessionController.setCurrentSession(fromExistingSession: userSession);;
+
+
+    return isAuthenticated.value ? true : false;
+
+  }
+
+  void resetLoginAttempt(){
+        clearInputs();
+
+  }
+
   Future<bool> loginUser() async {
     isLoading.value = true;
 
-    await authenticateUser();
+    // await authenticateUser();
+
+    adminUser.value = (await AdminUserRepository().getAdminUserByName(fullNameCtrl.text))!;
+    logger.i('user_object_at_login ${adminUser.value.toJson()}');
+
+
 
     if (isAuthenticated.value) {
+      await createLoginAttemptActivity(adminUser.value, isAuthenticated.value);
       await sessionController.validateNewSession(adminUser.value.id!);
       sessionTracker.value = sessionController.currentSession.value;
       await migrateDb();
@@ -174,7 +280,7 @@ class AuthController extends GetxController {
         .then((value) async {
       if (
           value.length == 1 &&
-          value.first.userId == adminUser.value.id) {
+          value.first.userId == adminUser.value.id && adminUserPasswordCtrl.text == value.first.data) {
         isAuthenticated.value = true;
         authResult.value = LocalKeys.kSuccess;
       } else if (value.isEmpty) {
@@ -182,7 +288,6 @@ class AuthController extends GetxController {
       }
     });
 
-    await createLoginAttemptActivity(adminUser.value, isAuthenticated.value);
   }
 
   Future<void> logOutUser() async {
@@ -212,9 +317,9 @@ class AuthController extends GetxController {
       await AdminUserRepository()
           .getAdminUserById(sessionController.currentSession.value.employeeId!)
           .then((value) {
-        if (value != null && value.isNotEmpty) {
-          adminUser(AdminUser.fromJson(value[0]));
-          adminUser.value = AdminUser.fromJson(value[0]);
+        if (value.id!=null) {
+          //adminUser(AdminUser.fromJson(value[0]));
+          adminUser.value = value;
           adminUser.refresh();
         }
       });

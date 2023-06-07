@@ -297,7 +297,7 @@ class CheckInFormController extends GetxController{
     await Get.find<AuthController>().updateAdminUser();
     AdminUser aU = Get.find<AuthController>().adminUser.value;
     await AdminUserRepository().getAdminUserById(await employeeId).then((value) {
-      aU = AdminUser().fromJsonList(value ?? [])[0];
+      aU = value;
     });
 
     //logger.i({'updateAdminUserFromAuth': aU.appId});

@@ -48,7 +48,7 @@ class GuestPackageRepository extends SqlDatabase {
             employeeFullName: await AdminUserRepository()
                 .getAdminUserById(guestPackage.storedEmployeeId!)
                 .then((value) =>
-                    AdminUser().fromJsonList(value ?? []).first.fullName),
+                    value.firstName),
             unit: guestPackage.unit,
             dateTime: guestPackage.dateStored)
         .toJson());
@@ -71,7 +71,7 @@ class GuestPackageRepository extends SqlDatabase {
             employeeFullName: await AdminUserRepository()
                 .getAdminUserById(guestPackage.returnedEmployeeId!)
                 .then((value) =>
-                    AdminUser().fromJsonList(value ?? []).first.fullName),
+                    value.fullName),
             unit: guestPackage.unit,
             dateTime: guestPackage.dateStored)
         .toJson());

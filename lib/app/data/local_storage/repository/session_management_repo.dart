@@ -2,6 +2,7 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
+import '../../../../core/values/app_constants.dart';
 import '../../models_n/session_activity_model.dart';
 
 
@@ -73,6 +74,31 @@ class SessionManagementRepository  extends SqlDatabase{
         foundSessions.addAll(SessionTracker().fromJsonList(value));
       }
     });
+    return foundSessions;
+  }
+
+  Future<SessionTracker?> getLatestOpenSession()async{
+    List<SessionTracker>? foundSessions = await getOpenSessions();
+    String fallbackDateTime = DateTime.now().toIso8601String();
+    if(foundSessions.isNotEmpty){
+      foundSessions.sort((a,b)=> DateTime.parse(b.dateCreated ?? fallbackDateTime).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateCreated ?? fallbackDateTime).millisecondsSinceEpoch));
+      return foundSessions.first;
+    }
+    return null;
+
+  }
+  Future<List<SessionTracker>> getOpenSessions()async{
+    List<SessionTracker> foundSessions = [];
+    await read(
+        tableName: SessionTrackerTable.tableName,
+        where: '${SessionTrackerTable.sessionStatus}=?',
+        whereArgs: [SessionStatusTypes.instance.currentSession]
+    ).then((value) {
+      if(value !=null && value.isNotEmpty){
+        foundSessions.addAll(SessionTracker().fromJsonList(value));
+      }
+    });
+
     return foundSessions;
   }
 

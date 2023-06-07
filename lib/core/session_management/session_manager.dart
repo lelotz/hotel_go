@@ -28,12 +28,31 @@ class SessionManager extends GetxController {
 
   SessionManager({this.isTest = false});
 
+  // /// Creates a new session if
+  // /// 1. A session older than 8 hours and created on the same day exists
+  // /// 2. Current Session is empty
+  // validateNewSession(String userId) async {
+  //   currentUserId.value = userId;
+  //
+  //   /// Search for existing sessions
+  //   await getRougeSessions(userId);
+  //
+  //   if (rogueSessions.value.length > 0) {
+  //     buildDialog(Get.context!, '', ConfirmCurrentSession(),);
+  //     logger.i('Confirming current Session');
+  //   } else {
+  //     await setCurrentSession(userId: userId);
+  //   }
+  // }
+
+
   /// Creates a new session if
   /// 1. A session older than 8 hours and created on the same day exists
   /// 2. Current Session is empty
   validateNewSession(String userId) async {
-    currentUserId.value = userId;
 
+    currentUserId.value = userId;
+    await setCurrentSession(userId: userId);
     /// Search for existing sessions
     await getRougeSessions(userId);
 
@@ -44,6 +63,17 @@ class SessionManager extends GetxController {
       await setCurrentSession(userId: userId);
     }
   }
+
+  /// Search for the newest rougue session
+  /// Use session to login
+  /// Display Restoration/Welcome back message
+
+  restoreSession()async{
+    return await SessionManagementRepository().getLatestOpenSession();
+
+  }
+
+
 
   linkRogueSessionIdsToEmployeeNames()async{
     for(SessionTracker session in rogueSessions.value){
@@ -170,7 +200,7 @@ class SessionManager extends GetxController {
         SessionStatusTypes.instance.expiredSession;
     await SessionManagementRepository()
         .updateSessionTracker(currentSession.value.toJson());
-    //logger.i({'updatedSessionAtLogOff':currentSession.value.toJson()});
+    logger.i({'updatedSessionAtLogOff':currentSession.value.toJson()});
   }
 
   recordSessionTransaction(String transactionId, String transactionType) async {

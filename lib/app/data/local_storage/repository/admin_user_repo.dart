@@ -22,24 +22,24 @@ class AdminUserRepository{
   }
 
   Future<String> getAdminUserNameById(String id)async{
-    List<Map<String, dynamic>>? response = await getAdminUserById(id);
+    AdminUser adminUser = await getAdminUserById(id);
 
-    if(response!=null && response.isNotEmpty){
-      return AdminUser.fromJson(response.first).fullName!;
+    if(adminUser.firstName!=null){
+      return adminUser.fullName!;
 
     }
 
     return 'Not Found';
   }
 
-  Future<List<AdminUser>> getAdminUserByName(String name)async{
+  Future<AdminUser?> getAdminUserByName(String name)async{
     List<Map<String, dynamic>>? response = await db.read(
         tableName: AdminUsersTable.tableName,
         where: '${AdminUsersTable.fullName} = ?',
         whereArgs: [name]
     );
 
-    return AdminUser().fromJsonList(response ?? []);
+    return response == null || response.isEmpty ? AdminUser(): AdminUser().fromJsonList(response)[0] ;
   }
 
   Future<List<AdminUser>> getAllAdminUsers()async{
@@ -50,13 +50,18 @@ class AdminUserRepository{
 
     return AdminUser().fromJsonList(response ?? []);
   }
-  Future<List<Map<String, dynamic>>?> getAdminUserById(String id)async{
-    List<Map<String, dynamic>>? response = await db.read(
+  Future<AdminUser> getAdminUserById(String id)async{
+    AdminUser adminUser = AdminUser();
+    await db.read(
         tableName: AdminUsersTable.tableName,
         where: '${AdminUsersTable.id} = ?',
         whereArgs: [id]
-    );
-    return response;
+    ).then((value) {
+      if(value!=null){
+        adminUser = AdminUser().fromJsonList(value).first;
+      }
+    });
+    return adminUser;
   }
 
   Future<List<Map<String, dynamic>>?> getAdminUserByPosition(String position)async{

@@ -84,20 +84,23 @@ class LandingPage extends StatelessWidget {
                           height: const Size.fromHeight(50).height,
                         ),
                         TextFieldInput(
+                          //key: signInFormKey,
                             textEditingController: authController.fullNameCtrl,
                             hintText: LocalKeys.kFullName.tr,
                             textInputType: TextInputType.text,
-                            validation: DataValidation.isAlphabeticOnly,
+                            validation: authController.validateUserName,
                             title: "Name"),
                         SizedBox(
                           height: const Size.fromHeight(12).height,
                         ),
                         TextFieldInput(
+                          //key: signInFormKey,
                             textEditingController:
                                 authController.adminUserPasswordCtrl,
                             hintText: LocalKeys.kEmployeeId.tr,
                             textInputType: TextInputType.visiblePassword,
-                            validation: DataValidation.isNotEmpty,
+                            validation: authController.validatePassword,
+
                             title: "Password"),
                         SizedBox(
                           height: const Size.fromHeight(12).height,
@@ -114,25 +117,24 @@ class LandingPage extends StatelessWidget {
                     children: [
                       ContainerTextButton(
                           onClick: () async {
-                            if (signInFormKey.currentState!.validate() &&
-                                await authController.validateLoginAttempt()) {
+                            if (signInFormKey.currentState!.validate()) {
                               await authController.loginUser();
                             }
                           },
                           text: LocalKeys.kLogin.tr,
                           backgroundColor: ColorsManager.darkGrey,
                           textColor: ColorsManager.darkGrey),
-                      Obx(() => authController.authResult.value != ''
-                          ? Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: SmallText(
-                                  text: authController.authResult.value,
-                                  color: authController.authResult.value == LocalKeys.kSuccess ? ColorsManager.success : ColorsManager.error,
-                                ),
-                              ),
-                            )
-                          : const SizedBox())
+                      // Obx(() => authController.authResult.value != ''
+                      //     ? Card(
+                      //         child: Padding(
+                      //           padding: const EdgeInsets.all(8),
+                      //           child: SmallText(
+                      //             text: authController.authResult.value,
+                      //             color: authController.authResult.value == LocalKeys.kSuccess ? ColorsManager.success : ColorsManager.error,
+                      //           ),
+                      //         ),
+                      //       )
+                      //     : const SizedBox())
                     ],
                   ),
                 ),
