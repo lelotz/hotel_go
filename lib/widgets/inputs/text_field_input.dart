@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
@@ -21,9 +22,8 @@ class TextFieldInput extends StatefulWidget {
   final double inputFieldHeight;
   final double borderRadius;
   final MainAxisAlignment mainAxisAlignment;
-
   final int maxLines;
-  Function? onChanged;
+  final Function? onChanged;
 
    TextFieldInput({ Key? key,
     required this.textEditingController,
@@ -72,13 +72,12 @@ class _TextFieldInputState extends State<TextFieldInput> {
       },
       maxLines: widget.maxLines,
       controller: widget.textEditingController,
-      onChanged: (value){
-          setState(() {
-            if(widget.onChanged != null){
-              if(value != ""){widget.onChanged!();}
-            }
-          });
-      },
+      initialValue: null,
+      onChanged: (value)async{
+            if(widget.onChanged!=null){
+              await widget.onChanged!(value);
+              print(widget.textEditingController.text.isEmpty ? 'Empty' : widget.textEditingController.text);
+              }},
       decoration: InputDecoration(
         icon: widget.useIcon ? AppIcon(icon: widget.icon,iconSize: AppSize.size24,): null,
         border: inputBorder,

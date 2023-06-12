@@ -1,5 +1,4 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/widgets/text/big_text.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';

@@ -8,7 +8,6 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Column, Row;
 
 // Local import
 import '../../../widgets/loading_animation/loading_animation.dart';
-import '../../../widgets/text/big_text.dart';
 import 'helper/save_file_mobile.dart'
 if (dart.library.html) 'helper/save_file_web.dart' as helper;
 

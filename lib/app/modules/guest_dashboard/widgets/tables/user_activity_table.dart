@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/core/resourses/color_manager.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../core/utils/date_formatter.dart';
 import '../../../../../widgets/text/big_text.dart';

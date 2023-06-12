@@ -1,6 +1,5 @@
 import 'package:hotel_pms/app/data/models_n/internl_transaction_model.dart';
 import 'package:hotel_pms/app/data/models_n/other_transactions_model.dart';
-import 'package:hotel_pms/app/data/models_n/petty_cash_model.dart';
 import 'package:hotel_pms/app/data/models_n/service_booking_model.dart';
 
 import '../../../app/data/models_n/room_transaction.dart';

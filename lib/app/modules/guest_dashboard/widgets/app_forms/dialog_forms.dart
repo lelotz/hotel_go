@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/widgets/mydividers.dart';
 
 import '../../../../../core/resourses/size_manager.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/text/big_text.dart';
-import '../cards/room_and_guest_card.dart';
 import 'collect_payment_form.dart';
 import 'laundry_form.dart';
 import 'package_storage_form.dart';

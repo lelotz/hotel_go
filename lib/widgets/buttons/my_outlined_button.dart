@@ -1,6 +1,5 @@
 
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../core/resourses/color_manager.dart';
 import '../../core/resourses/size_manager.dart';

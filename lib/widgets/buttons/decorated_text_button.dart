@@ -4,8 +4,8 @@ import '../text/big_text.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 
 
-class DecoratedTextButton extends StatefulWidget {
 
+class DecoratedTextButton extends StatefulWidget {
   String buttonLabel;
   Color textColor;
   Color backgroundColor;
@@ -17,7 +17,6 @@ class DecoratedTextButton extends StatefulWidget {
   double topMargin;
   double bottomMargin;
   VoidCallback onPressed;
-
 
   DecoratedTextButton({
     Key? key,
@@ -32,9 +31,6 @@ class DecoratedTextButton extends StatefulWidget {
     this.leftMargin = 0,
     this.rightMargin = 0,
     this.buttonWidth = AppSize.size150,
-
-
-
   }) : super(key: key);
 
   @override
@@ -44,11 +40,9 @@ class DecoratedTextButton extends StatefulWidget {
 class _IconTextButtonState extends State<DecoratedTextButton> {
   bool isTapped = false;
 
-  void onPressed(){
+  void onPressed() {
     setState(() {
       isTapped = !isTapped;
-
-
     });
   }
 
@@ -56,21 +50,26 @@ class _IconTextButtonState extends State<DecoratedTextButton> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: widget.onPressed,
-      borderRadius:  BorderRadius.circular(AppBorderRadius.radius16),
+      borderRadius: BorderRadius.circular(AppBorderRadius.radius16),
       hoverColor: ColorsManager.primary,
       child: Container(
-        margin: EdgeInsets.only(bottom: widget.bottomMargin,top: widget.topMargin,left: widget.topMargin, right: widget.rightMargin),
-        decoration:BoxDecoration(
+        margin: EdgeInsets.only(
+            bottom: widget.bottomMargin,
+            top: widget.topMargin,
+            left: widget.topMargin,
+            right: widget.rightMargin),
+        decoration: BoxDecoration(
           color: widget.backgroundColor,
-          borderRadius:  const BorderRadius.only(bottomLeft: Radius.circular(AppBorderRadius.radius16),bottomRight: Radius.circular(AppBorderRadius.radius16)),
+          borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(AppBorderRadius.radius16),
+              bottomRight: Radius.circular(AppBorderRadius.radius16)),
         ),
         height: const Size.fromHeight(30).height,
         width: Size.fromWidth(widget.buttonWidth).width,
         child: Center(
-              child: BigText(text: widget.buttonLabel,color: widget.textColor),
-          ),
+          child: BigText(text: widget.buttonLabel, color: widget.textColor),
         ),
-      );
-
+      ),
+    );
   }
 }

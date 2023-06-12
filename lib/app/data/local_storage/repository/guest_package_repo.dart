@@ -1,7 +1,6 @@
 import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/user_activity_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
-import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/guest_package_model.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:uuid/uuid.dart';

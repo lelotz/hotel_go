@@ -116,8 +116,7 @@ class CheckInView extends GetView<CheckInFormController> {
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.only(left: 10),
-                                            child: controller.checkInDate.value == null ?
-                                            const SmallText(text: "Select Check-In Date") : BigText(text: extractDate(controller.checkInDate.value)),
+                                            child: BigText(text: extractDate(controller.checkInDate.value)),
                                           ),
                                           SmallText(text: LocalKeys.kCheckIn.tr),
                                           InkWell(

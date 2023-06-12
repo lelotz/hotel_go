@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/room_transaction.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
@@ -338,8 +337,7 @@ class GuestDashboardController extends GetxController{
     List<UserActivity> sortedActivity = [];
     DateTime now = DateTime.now();
     DateTime yesterday = DateTime.now().add(Duration(days: -1));
-    DateTime tommorow = DateTime.now().add(Duration(days: 1));
-
+    
     now.millisecondsSinceEpoch.compareTo(yesterday.millisecondsSinceEpoch);
 
 

@@ -1,6 +1,4 @@
 import 'package:hotel_pms/app/data/local_storage/repository/user_activity_repo.dart';
-import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
-import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/values/localization/local_keys.dart';

@@ -5,19 +5,18 @@ import 'package:hotel_pms/core/values/app_constants.dart';
 
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
-import 'package:get/get.dart';
 
 
 class GuestActionsDropdown extends StatefulWidget {
-  String initialItem;
-  String selectedValue;
-  bool enabled;
-  String disabledHint;
-  List<String> menuItems;
-  Function callback;
-  double borderRadius;
-  int currentIndex;
-  String header;
+  final String initialItem;
+  final String selectedValue;
+  final bool enabled;
+  final String disabledHint;
+  final List<String> menuItems;
+  final Function callback;
+  final double borderRadius;
+  final int currentIndex;
+  final String header;
 
 
   GuestActionsDropdown(

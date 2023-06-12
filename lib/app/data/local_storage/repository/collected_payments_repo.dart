@@ -3,7 +3,6 @@ import 'package:hotel_pms/app/data/local_storage/repository/session_management_r
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/session_activity_model.dart';
 import 'package:hotel_pms/core/session_management/session_manager.dart';
-import '../../../../core/values/localization/local_keys.dart';
 import '../../models_n/collect_payment_model.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';

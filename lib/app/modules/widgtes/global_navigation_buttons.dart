@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/modules/login_screen/controller/auth_controller.dart';
 import 'package:hotel_pms/app/modules/reports/view/report_selector.dart';
 import 'package:hotel_pms/app/modules/user_management/views/user_management_view.dart';
-import 'package:hotel_pms/core/session_management/session_manager.dart';
-import 'package:hotel_pms/widgets/dropdown_menu/ai_dropdown.dart';
 import '../../../core/resourses/color_manager.dart';
 import '../../../core/resourses/size_manager.dart';
 import '../../../core/values/app_constants.dart';
 import '../../../core/values/localization/local_keys.dart';
+import '../../../widgets/dialogs/dialod_builder.dart';
 import '../../../widgets/text/big_text.dart';
 import '../../../widgets/text/small_text.dart';
 import '../book_service/view/book_service_view.dart';
+import '../login_screen/views/confirm_current_session_popup.dart';
 import '../sales_module/view/sales_view.dart';
 import 'form_selector_pop_up.dart';
 
@@ -42,6 +41,16 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            ElevatedButton(
+                style:style,
+                onPressed: (){buildDialog(
+                    Get.overlayContext!, "",
+                    ConfirmCurrentSession(),
+                    height: 300,width: 800
+                );},
+                child:  SmallText(text: "Confirm Session",color: ColorsManager.grey1,)),
+            SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
+
             ElevatedButton(
                 style:style,
                 onPressed: (){Get.to(transition: Transition.noTransition,duration: const Duration(milliseconds: 500), ()=> SalesView());},

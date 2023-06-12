@@ -195,7 +195,7 @@ class SalesController extends GetxController {
     await CollectedPaymentsRepository()
         .getCollectedPaymentsByDate(extractDate(DateTime.now()))
         .then((value) {
-      if (value != null && value.isNotEmpty) {
+      if (value.isNotEmpty) {
         collectedPayments.value.addAll(value);
         selectedFilters.value.add(extractDate(DateTime.now()));
         updateUI();

@@ -4,16 +4,14 @@ import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:hotel_pms/app/modules/reports/controller/handover_form_controller.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
-import 'package:hotel_pms/widgets/dropdown_menu/custom_dropdown_menu.dart';
 import 'package:hotel_pms/widgets/loading_animation/loading_animation.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
-import '../../../../core/utils/date_formatter.dart';
 import '../../../../widgets/text/big_text.dart';
 
 class SessionsDropdown extends GetView<ReportGeneratorController> {
   SessionsDropdown({Key? key,required this.selectedSession}) : super(key: key);
 
-  Rx<SessionTracker> selectedSession;
+  final Rx<SessionTracker> selectedSession;
 
   @override
   Widget build(BuildContext context) {

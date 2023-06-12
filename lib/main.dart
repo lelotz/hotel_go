@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:hotel_pms/app/modules/login_screen/bindings/auth_bindings.dart';
 import 'package:hotel_pms/app/modules/splash_screen/bindings/splash_screen_binding.dart';
 import 'package:hotel_pms/core/resourses/theme_manager.dart';
 import 'package:responsive_framework/responsive_framework.dart';

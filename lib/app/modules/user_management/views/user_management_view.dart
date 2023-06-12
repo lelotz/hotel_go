@@ -13,7 +13,6 @@ import 'package:hotel_pms/widgets/text/big_text.dart';
 import '../../../../widgets/buttons/my_outlined_button.dart';
 import '../../../../widgets/dialogs/dialod_builder.dart';
 import '../../../../widgets/text/small_text.dart';
-import '../../../../widgets/text/title_subtitle.dart';
 
 class UserManagementView extends GetView<UserManagementController> {
   const UserManagementView({Key? key}) : super(key: key);
@@ -21,7 +20,6 @@ class UserManagementView extends GetView<UserManagementController> {
   @override
   Widget build(BuildContext context) {
     double currentWidth = MediaQuery.of(context).size.width;
-    double currentHeight = MediaQuery.of(context).size.height;
     return GetBuilder<UserManagementController>(
       init: UserManagementController(),
         builder: (controller)=>Scaffold(

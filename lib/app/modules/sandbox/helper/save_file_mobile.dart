@@ -1,10 +1,7 @@
 import 'dart:io';
 
 //import 'package:open_file/open_file.dart' as open_file;
-import 'package:path_provider/path_provider.dart' as path_provider;
 // ignore: depend_on_referenced_packages
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
-as path_provider_interface;
 const String reportsPath = "C:\\Users\\Dereck\\Documents\\Hotels_Go\\Reports\\";
 ///To save the Excel file in the Mobile and Desktop platforms.
 Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {

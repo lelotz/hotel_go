@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/widgets/icons/app_icon.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import '../../../../../core/values/assets.dart';
-import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/text/big_text.dart';
 import 'package:get/get.dart';
 
 import '../../controller/package_form_controller.dart';
-import '../../controller/guest_dashboard_controller.dart';
 
 
 class DisplayStoredItems extends GetView<PackageFormController> {

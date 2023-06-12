@@ -1,5 +1,4 @@
 
-import 'package:hotel_pms/app/data/local_storage/repository/admin_user_repo.dart';
 import 'package:hotel_pms/app/modules/login_screen/views/confirm_current_session_popup.dart';
 import 'package:hotel_pms/app/modules/user_data/controller/user_data_controller.dart';
 
@@ -68,10 +67,7 @@ class SessionManager extends GetxController {
   /// Use session to login
   /// Display Restoration/Welcome back message
 
-  restoreSession()async{
-    return await SessionManagementRepository().getLatestOpenSession();
 
-  }
 
 
 
@@ -86,12 +82,12 @@ class SessionManager extends GetxController {
       {SessionTracker? fromExistingSession, String? userId}) async {
     if (fromExistingSession != null && fromExistingSession.id != null) {
       await createSession(existingSession: fromExistingSession.toJson(), isNewSession: false);
-      rogueSessions.value.remove(fromExistingSession);
-      await updateRogueSessions(rogueSessions.value, fromExistingSession.employeeId!);
+      //rogueSessions.value.remove(fromExistingSession);
+      //await updateRogueSessions(rogueSessions.value, fromExistingSession.employeeId!);
 
     } else if(userId!=null){
       await createSession(userId: userId);
-      await updateRogueSessions(rogueSessions.value, userId);
+      // await updateRogueSessions(rogueSessions.value, userId);
 
     }
 

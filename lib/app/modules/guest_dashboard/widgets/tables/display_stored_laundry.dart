@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:hotel_pms/widgets/icons/app_icon.dart';
 import 'package:hotel_pms/widgets/images/display_image.dart';
 import 'package:hotel_pms/widgets/text/small_text.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';

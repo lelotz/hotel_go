@@ -1,7 +1,6 @@
 
 
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/utils/string_handlers.dart';
@@ -24,12 +23,9 @@ bool isDateDifferenceLessOrEqualTo(DateTime firstDate,DateTime secondDate, int d
 }
 
 String extractDate(DateTime? date,{String? dateFromString}){
-  if(dateFromString!=null){
-    date = DateTime.parse(dateFromString);
-  }
-  final String onlyDate = "${date!.day}-${date.month}-${date.year}";
-
-  return onlyDate;
+  DateTime workingDate = date ?? DateTime.parse(dateFromString ?? DateTime.now().toIso8601String());
+  if(date==null && dateFromString==null) return '-';
+  return "${workingDate.day}-${workingDate.month}-${workingDate.year}";
 }
 String extractTime(DateTime time){
   String minute = time.minute <= 0 ? '0${time.minute}' : time.minute.toString();
@@ -91,8 +87,8 @@ String getMonthName(int month){
 }
 
 class CheckOutDateBox extends StatefulWidget {
-  DateTime? selectedDate;
-  TextEditingController liveNights;
+  final DateTime? selectedDate;
+  final TextEditingController liveNights;
 
 
   CheckOutDateBox({Key? key, required this.selectedDate,required this.liveNights}) : super(key: key);

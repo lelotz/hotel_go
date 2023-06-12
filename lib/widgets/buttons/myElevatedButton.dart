@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/resourses/color_manager.dart';
-import '../../core/values/localization/local_keys.dart';
 import '../text/small_text.dart';
 
 class MyElevatedButton extends StatefulWidget {

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
@@ -635,11 +633,11 @@ class ReportGeneratorController extends GetxController {
           .getSessionActivityByTransactionTypeAndSessionId(
               transactionType,
               selectedSession.value.id ??
-                  authController.sessionTracker.value.id ??
+                  authController.sessionController.currentSession.value.id ??
                   '');
 
       if(activity.toSet().length > 0){
-        logger.i('fetched ${activity.toSet().length} of ${transactionType} from session ${selectedSession.value.id ?? 'selected session was null used current session${authController.sessionTracker.value.id ?? 'auth controller empty'}'}');
+        logger.i('fetched ${activity.toSet().length} of ${transactionType} from session ${selectedSession.value.id ?? 'selected session was null used current session${authController.sessionController.currentSession.value.id ?? 'auth controller empty'}'}');
 
       }
     } else {

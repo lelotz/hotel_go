@@ -1,10 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/widgets/buttons/myElevatedButton.dart';
 
 import '../../../core/resourses/color_manager.dart';
-import '../../../core/values/localization/local_keys.dart';
-import '../../../widgets/buttons/my_outlined_button.dart';
 import '../../../widgets/text/small_text.dart';
 import '../login_screen/controller/auth_controller.dart';
 import 'package:get/get.dart';

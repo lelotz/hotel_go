@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' ;
 
 class ColorsManager {
   static const Color primary = Color(0xFF2a3035);
@@ -16,7 +16,7 @@ class ColorsManager {
   static const Color success = Color(0xFF39d078);
   static const Color red = Color(0xFFFF0000);
   static const Color black = Color(0xFF000019);
-  static const LinearGradient simpleGradiants = LinearGradient(
+  static const LinearGradient simpleGradients = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
@@ -25,7 +25,7 @@ class ColorsManager {
     ],
     stops: [0.3, 0.7],
   );
-  static const LinearGradient whiteGradiants = LinearGradient(
+  static const LinearGradient whiteGradients = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [

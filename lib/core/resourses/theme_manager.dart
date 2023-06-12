@@ -56,7 +56,7 @@ ThemeData getApplicationTheme() {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: ColorsManager.primary,
+          backgroundColor: ColorsManager.primary,
           textStyle: getRegularTextStyle(
             color: ColorsManager.white,
           ),
@@ -66,16 +66,16 @@ ThemeData getApplicationTheme() {
         ),
       ),
       textTheme: TextTheme(
-          headline1: getMediumTextStyle(
+          displayLarge: getMediumTextStyle(
               color: ColorsManager.darkGrey, fontSize: AppSize.size18),
-          subtitle1: getMediumTextStyle(
+          titleMedium: getMediumTextStyle(
               color: ColorsManager.darkGrey, fontSize: AppSize.size16),
-          subtitle2: getMediumTextStyle(
+          titleSmall: getMediumTextStyle(
               color: ColorsManager.darkGrey, fontSize: AppSize.size14),
-          caption: getRegularTextStyle(
+          bodySmall: getRegularTextStyle(
             color: ColorsManager.grey1,
           ),
-          bodyText1: getRegularTextStyle(color: ColorsManager.grey)),
+          bodyLarge: getRegularTextStyle(color: ColorsManager.grey)),
       inputDecorationTheme: InputDecorationTheme(
           //border
           border: UnderlineInputBorder(

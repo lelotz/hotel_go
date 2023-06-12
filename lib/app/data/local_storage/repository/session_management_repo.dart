@@ -1,5 +1,4 @@
 
-import 'package:get_storage/get_storage.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import '../../../../core/values/app_constants.dart';
@@ -80,13 +79,27 @@ class SessionManagementRepository  extends SqlDatabase{
   Future<SessionTracker?> getLatestOpenSession()async{
     List<SessionTracker>? foundSessions = await getOpenSessions();
     String fallbackDateTime = DateTime.now().toIso8601String();
+    SessionTracker latestSession;
     if(foundSessions.isNotEmpty){
       foundSessions.sort((a,b)=> DateTime.parse(b.dateCreated ?? fallbackDateTime).millisecondsSinceEpoch.compareTo(DateTime.parse(a.dateCreated ?? fallbackDateTime).millisecondsSinceEpoch));
-      return foundSessions.first;
+      latestSession = foundSessions.first;
+      foundSessions.remove(latestSession);
+      closeOpenSessions(foundSessions);
+      return latestSession;
     }
     return null;
-
   }
+
+  closeOpenSessions(List<SessionTracker> sessions)async{
+    for (SessionTracker session in sessions) {
+      if (session.sessionStatus == SessionStatusTypes.instance.currentSession) {
+        session.dateEnded = DateTime.now().toIso8601String();
+        session.sessionStatus = SessionStatusTypes.instance.expiredSession;
+        await SessionManagementRepository().updateSessionTracker(session.toJson());
+      }
+    }
+  }
+
   Future<List<SessionTracker>> getOpenSessions()async{
     List<SessionTracker> foundSessions = [];
     await read(

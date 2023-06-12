@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/migration/session_id_in_room_transaction.dart';
-import 'package:hotel_pms/app/modules/login_screen/views/auth_screen.dart';
+import 'package:hotel_pms/app/modules/login_screen/views/auth_screen_alpha.dart';
 import 'package:hotel_pms/app/modules/user_data/controller/user_data_controller.dart';
 import 'package:hotel_pms/core/logs/logger_instance.dart';
 import 'package:hotel_pms/core/values/localization/config_keys.dart';
@@ -93,7 +93,8 @@ class SplashScreenController extends GetxController{
     isInitialized.value = true;
     if(appDirectory.value != '') appDirectoryFound.value = true;
     if(appDirectoryFound.value) {
-      Get.to(() => LandingPage());
+      // Get.to(() => LandingPage());
+      Get.to(() => LoginScreen());
     }else{
       currentStep.value = 'Error getting appDirectory ${appDirectory.value}';
     }

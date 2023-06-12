@@ -6,7 +6,6 @@ import 'package:hotel_pms/core/resourses/size_manager.dart';
 import 'package:hotel_pms/core/session_management/session_manager.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
-import 'package:hotel_pms/core/values/localization/localization_controller.dart';
 import 'package:hotel_pms/widgets/mydividers.dart';
 import '../../../../core/resourses/color_manager.dart';
 import 'package:get/get.dart';
@@ -29,7 +28,7 @@ class HomePageView extends GetView<HomepageController> {
       ),
   );
 
-  AuthController authController = Get.put(AuthController(),permanent: true);
+  final AuthController authController = Get.put(AuthController(),permanent: true);
   //HomepageController homepageController = Get.put(HomepageController(),permanent: true);
 
   @override

@@ -1,11 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
-import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
 
-import '../../../../core/values/localization/local_keys.dart';
 import '../../../data/local_storage/repository/admin_user_repo.dart';
 
 class UserManagementController extends GetxController{

@@ -24,6 +24,9 @@ class Messages extends Translations {
 
 class AppMessages{
   static const String numericOnly = "Value must be numeric";
+  static const String sessionRestorationMessage = "The system has restored your session. "
+                                                  "If this is not your account you should LOG-OUT";
+  static const String welcomeBack = "Welcome back, ";
   static const String alphabeticOnly = "Value must be alphabetic";
   static const String nonNegative = "Value must be positive";
   static const String isNotEmpty = "Value cannot be empty";

@@ -13,6 +13,9 @@ Map<String, String> sw = {
   LocalKeys.kSelectBillType : "Chagua aina ya bili",
   AppMessages.cannotCollectZero : "Huwezi pokea 0 Tsh",
   AppMessages.confirmSession : "Kuna shift yako ya leo ambayo haijaisha.\nChangua chini kuanza shift mpya au kuendelea na shift ya leo",
+  AppMessages.sessionRestorationMessage : "System imekurejesha baada ya kuzimika na kuwaka tena. "
+      "Kama account sio yako LOGOUT",
+  AppMessages.welcomeBack : "Karibu tena ,",
 
   /// Login
   LocalKeys.kLogin : 'Ingia',

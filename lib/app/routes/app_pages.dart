@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/guest_dashboard/widgets/app_forms/room_service_form.dart';
-import 'package:hotel_pms/app/modules/login_screen/views/auth_screen.dart';
+import 'package:hotel_pms/app/modules/login_screen/views/auth_screen_alpha.dart';
 import 'package:hotel_pms/app/modules/splash_screen/bindings/splash_screen_binding.dart';
 import '../modules/guest_dashboard/bindings/laundry_form_bindings.dart';
 import '../modules/guest_dashboard/bindings/package_form_bindings.dart';
@@ -37,7 +37,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.LOGIN_SCREEN,
-      page: () => LandingPage(),
+      page: () => LoginScreen(),
       binding: AuthBinding()
 
     ),

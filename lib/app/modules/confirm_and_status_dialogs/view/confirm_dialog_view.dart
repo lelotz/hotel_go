@@ -1,11 +1,9 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/modules/confirm_and_status_dialogs/widget/build_confirm_body.dart';
-import 'package:hotel_pms/app/modules/guest_dashboard/widgets/app_forms/dialog_forms.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/widgets/buttons/card_button.dart';
 import 'package:hotel_pms/widgets/forms/form_header.dart';
-import 'package:hotel_pms/widgets/text/small_text.dart';
 
 class ConfirmDialog extends StatelessWidget {
   ConfirmDialog({Key? key,required this.separator,required this.onConfirmed,required this.confirmText,this.confirmTitle='Confirm'}) : super(key: key);

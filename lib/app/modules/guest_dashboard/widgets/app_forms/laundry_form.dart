@@ -9,14 +9,12 @@ import '../../../../../core/resourses/color_manager.dart';
 import '../../../../../core/values/assets.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/buttons/decorated_text_button.dart';
-import '../../../../../widgets/buttons/my_outlined_button.dart';
 import '../../../../../widgets/inputs/text_field_input.dart';
 import '../../../../../widgets/mydividers.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import '../../controller/laundry_form_controller.dart';
 import '../tables/display_stored_laundry.dart';
-import 'dialog_forms.dart';
 
 class LaundryForm extends GetView<LaundryFormController> {
   LaundryForm({Key? key}) : super(key: key);

@@ -6,7 +6,6 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/date_formatter.dart';
 import '../../../../widgets/text/big_text.dart';
 import '../../../../widgets/text/small_text.dart';
 

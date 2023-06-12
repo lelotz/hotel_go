@@ -21,6 +21,7 @@ class OtherTransactionsRepository extends SqlDatabase{
             transactionType: row[OtherTransactionsTable.paymentNotes],
             dateTime: DateTime.now().toIso8601String()
           ).toJson());
+      return null;
     });
     return rowNumber;
   }

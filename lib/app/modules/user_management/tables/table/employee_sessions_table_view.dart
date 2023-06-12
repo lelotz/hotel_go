@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/user_management/controller/user_profile_controller.dart';
-import 'package:hotel_pms/app/modules/user_management/tables/sources/employee_activity_table_source.dart';
 import 'package:hotel_pms/app/modules/user_management/tables/sources/employee_session_table_source.dart';
 import 'package:hotel_pms/app/modules/user_management/tables/table/table_constants.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import '../../../reports/view/hand_over_form_view.dart';

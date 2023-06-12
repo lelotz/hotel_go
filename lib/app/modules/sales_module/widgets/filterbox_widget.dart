@@ -17,7 +17,7 @@ class FiltersBox extends GetView<SalesController> {
   FiltersBox({Key? key}) : super(key: key);
 
   final categorySearchFormKey = GlobalKey<FormState>();
-  ExpandableController expandableController = ExpandableController();
+  final ExpandableController expandableController = ExpandableController();
 
   @override
   Widget build(BuildContext context) {

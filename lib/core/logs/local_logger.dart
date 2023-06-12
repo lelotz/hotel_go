@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter_logs/flutter_logs.dart';
-import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../utils/date_formatter.dart';
@@ -52,8 +50,6 @@ class LocalLogger {
     File file = File(filePath);
     try{
       file = await file.writeAsBytes(bytes, flush: true,mode: append ? FileMode.append : FileMode.write );
-    }on PathNotFoundException catch(e) {
-
     }catch (otherError){
 
     }
@@ -74,6 +70,8 @@ class LocalLogger {
         append: fileExists ? true : false);
   }
 
+  /// The map data can have any keys
+  /// data[]
   exportLog({required Map<String,dynamic> data,required String error})async{
     String filePath = await getCurrentFilePath();
     File currentLogFile = await getNewFile(filePath);

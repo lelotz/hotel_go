@@ -1,7 +1,5 @@
-import 'package:hotel_pms/app/data/local_storage/repository/session_management_repo.dart';
 import 'package:hotel_pms/app/data/local_storage/sqlite_db_helper.dart';
 import 'package:hotel_pms/app/data/models_n/internl_transaction_model.dart';
-import 'package:hotel_pms/app/data/models_n/session_activity_model.dart';
 
 class InternalTransactionRepository extends SqlDatabase{
   InternalTransactionRepository();

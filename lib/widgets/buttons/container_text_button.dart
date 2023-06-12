@@ -4,11 +4,11 @@ import '../../core/resourses/size_manager.dart';
 import '../text/small_text.dart';
 
 class ContainerTextButton extends StatefulWidget {
-  String text;
-  double textSize;
-  double paddingValue;
-  Color textColor;
-  Color backgroundColor;
+  final String text;
+  final double textSize;
+  final double paddingValue;
+  final Color textColor;
+  final Color backgroundColor;
   bool useBorder;
   bool isClickable;
   Color borderColor;

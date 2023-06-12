@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -8,12 +7,14 @@ import 'package:hotel_pms/app/data/local_storage/innit_data.dart';
 import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
-import 'package:hotel_pms/app/modules/login_screen/views/auth_screen.dart';
-import 'package:hotel_pms/core/services/data_validation.dart';
+import 'package:hotel_pms/app/modules/login_screen/views/auth_screen_alpha.dart';
+import 'package:hotel_pms/core/logs/local_logger.dart';
 import 'package:hotel_pms/core/session_management/session_manager.dart';
 import 'package:hotel_pms/core/utils/useful_math.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
+import 'package:hotel_pms/widgets/dialogs/dialod_builder.dart';
 import 'package:logger/logger.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/logs/logger_instance.dart';
 import '../../../../core/values/localization/config_keys.dart';
@@ -25,6 +26,9 @@ import '../../../data/local_storage/repository/user_activity_repo.dart';
 import '../../../data/migration/session_id_in_room_transaction.dart';
 import '../../../routes/app_pages.dart';
 import '../../homepage_screen/views/homepage_view.dart';
+import '../validators/password_validator.dart';
+import '../validators/user_name_validator.dart';
+import '../views/confirm_current_session_popup.dart';
 
 class AuthController extends GetxController {
   SessionManager sessionController =
@@ -46,6 +50,7 @@ class AuthController extends GetxController {
   Rx<SessionTracker> sessionTracker = Rx<SessionTracker>(SessionTracker());
   bool? isTest = false;
   Logger logger = AppLogger.instance.logger;
+  LocalLogger localLogger = LocalLogger.instance;
   Rx<Map<String,dynamic>> configs = Rx<Map<String,dynamic>>({});
 
   List<String> routes = [];
@@ -62,6 +67,11 @@ class AuthController extends GetxController {
     await loadConfigs();
     if(await restoreUserSession()){
       Get.to(()=>HomePageView());
+      buildDialog(
+          Get.overlayContext!, "",
+          ConfirmCurrentSession(),
+          height: 300,width: 800
+      );
     }
 
   }
@@ -115,63 +125,54 @@ class AuthController extends GetxController {
     return true;
   }
 
-  dynamic validateUserName(String userName){
-    dynamic isNotEmpty = DataValidation.isNotEmpty(userName);
-    if( isNotEmpty != null){
-      fullNameCtrl.clear();
-      isAuthenticated.value = false;
+  String? trackValidation(String? input){
+    return isAuthenticated.value ? null : 'Umekosea Jina au Password';
+  }
 
-      return isNotEmpty;
-    };
-     AdminUserRepository()
+  FormGroup getLoginForm (){
+    return fb.group(<String,Object>{
+      'username':FormControl<String>(
+          validators: [Validators.required,],
+          asyncValidators: [UserNameAsyncValidator(validateUserName)]
+      ),
+      'password':FormControl<String>(
+          validators: [Validators.required],
+        asyncValidators: [PasswordAsyncValidator(validatePassword)]
+      )
+
+    });
+  }
+
+
+  Future<bool?> validateUserName(String userName)async{
+    bool userNameExists = false;
+     await AdminUserRepository()
         .getAdminUserByName(userName)
         .then((value){
       if (value?.id!=null) {
         adminUser.value = value!;
-        logger.i('user_object_at_name_validation ${adminUser.value.toJson()}');
-       // return null;
+        userNameExists = true;
       }
     });
-    if (adminUser.value.id == null) {
-      // authResult.value = 'Umekosea jina au password';
-      fullNameCtrl.clear();
-      isAuthenticated.value = false;
-      return 'Umekosea Jina';
-      //return false;
-    }
-
-    return null;
+     logger.i('user_object_at_name_validation ${adminUser.value.toJson()} userExists : ${userNameExists}');
+     return userNameExists;
   }
 
-  dynamic validatePassword(String password){
-    dynamic isNotEmpty = DataValidation.isNotEmpty(password);
-    if( isNotEmpty != null){
-      adminUserPasswordCtrl.clear();
-      isAuthenticated.value = false;
-
-      return isNotEmpty;
-    };
-    EncryptedDataRepository()
+  Future<bool> validatePassword(String password)async{
+    bool passwordIsValid = false;
+    await EncryptedDataRepository()
         .getEncryptedDataByUserId(adminUser.value.id??'')
         .then((value)  {
-      if (
-      value.length == 1 &&
+      if (value.length == 1 &&
           value.first.userId == adminUser.value.id && password == value.first.data) {
+        passwordIsValid = true;
         isAuthenticated.value = true;
-        authResult.value = LocalKeys.kSuccess;
-        //clearInputs();
-        return null;
       } else if (value.isEmpty) {
         authResult.value = LocalKeys.kInvalidCredentials;
-        isAuthenticated.value = false;
-        adminUserPasswordCtrl.clear();
-        return "Umekosea Password";
+        passwordIsValid = false;
       }
     });
-
-    // var n = createLoginAttemptActivity(adminUser.value, isAuthenticated.value).then((value) => null);
-    // clearInputs();
-    return null;
+    return passwordIsValid;
   }
 
 
@@ -196,6 +197,11 @@ class AuthController extends GetxController {
         authResult.value = LocalKeys.kInvalidCredentials;
         isAuthenticated.value = false;
         adminUserPasswordCtrl.clear();
+        localLogger.exportLog(data: {
+          'description': 'Could match restored sessionUserId with the UserId encrypted data',
+          'session': userSession.toJson(),'user':adminUser.value.toJson()
+        }, error: "Auto-Login-Error");
+
       }
     });
 
@@ -213,26 +219,19 @@ class AuthController extends GetxController {
 
   Future<bool> loginUser() async {
     isLoading.value = true;
-
-    // await authenticateUser();
-
-    adminUser.value = (await AdminUserRepository().getAdminUserByName(fullNameCtrl.text))!;
     logger.i('user_object_at_login ${adminUser.value.toJson()}');
-
-
 
     if (isAuthenticated.value) {
       await createLoginAttemptActivity(adminUser.value, isAuthenticated.value);
-      await sessionController.validateNewSession(adminUser.value.id!);
+      await sessionController.createSession(userId:adminUser.value.id!);
       sessionTracker.value = sessionController.currentSession.value;
       await migrateDb();
+      Get.to(()=>HomePageView());
     } else {
       logger.w({'failed to auth user': adminUser.value.toJson()});
     }
 
     isLoading.value = false;
-    clearInputs();
-    authResult.value = '';
 
     return isAuthenticated.value;
   }
@@ -292,12 +291,11 @@ class AuthController extends GetxController {
 
   Future<void> logOutUser() async {
     hasInitiatedLogout.value = true;
-    int? activityStatus = -1;
-
+    
     /// Set the log-off date
     await sessionController.updateSessionTracker();
 
-    activityStatus = await createLogOutUserActivity();
+    await createLogOutUserActivity();
 
     adminUser.value = AdminUser();
     isLoggedOut.value = true;
@@ -308,7 +306,7 @@ class AuthController extends GetxController {
       displayLogOutError.value = true;
       isLoggedOut.value = true;
     }
-    if (isTest == false) Get.to(() => LandingPage());
+    if (isTest == false) Get.to(() => LoginScreen());
   }
 
   Future<void> updateAdminUser() async {

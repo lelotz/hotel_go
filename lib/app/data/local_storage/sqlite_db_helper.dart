@@ -4,7 +4,6 @@ import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/local_storage/table_keys.dart';
 import 'package:hotel_pms/core/logs/local_logger.dart';
 import 'package:logger/logger.dart';
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../../../core/logs/logger_instance.dart';

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hotel_pms/app/modules/homepage_screen/views/homepage_view.dart';
-import 'package:hotel_pms/app/modules/login_screen/views/auth_screen.dart';
+import 'package:hotel_pms/app/modules/login_screen/views/auth_screen_alpha.dart';
 import 'package:hotel_pms/app/modules/widgtes/admin_card_popup_actions.dart';
 import 'package:hotel_pms/core/values/app_constants.dart';
-import '../../app/modules/homepage_screen/controller/homepage_controller.dart';
 import '../../app/modules/login_screen/controller/auth_controller.dart';
 import '../../core/resourses/color_manager.dart';
 import '../../core/resourses/size_manager.dart';
-import '../../core/values/localization/local_keys.dart';
 import '../../core/values/localization/localization_controller.dart';
 import '../buttons/my_outlined_button.dart';
 import '../cards/admin_user_card.dart';
@@ -33,7 +30,7 @@ PreferredSizeWidget buildGlobalAppBar(BuildContext context,
       ),
       onPressed:  () {
         if (appBarTitle == "Whitemark Hotels" && authController.adminUser.value.position == AppConstants.userRoles[1] ) {
-          Get.to(() => LandingPage());
+          Get.to(() => LoginScreen());
         } else {
           if(onBackButton!=null){
             onBackButton();

@@ -35,6 +35,10 @@ Map<String,dynamic> minAndMaxIntInList(List<int> intList){
 
 }
 
+int spread(int min,max){
+  return Random().nextInt(max);
+}
+
 int random(int min,int max){
   return min + Random().nextInt(max);
 }

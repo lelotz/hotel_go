@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/app/modules/check_in_screen/view/check_in_form_view.dart';
 import 'package:hotel_pms/app/modules/reports/controller/report_selector_controller.dart';
 import 'package:hotel_pms/app/modules/reports/view/handover_report_tables/petty_cash_table.dart';
-import 'package:hotel_pms/app/modules/reports/view/handover_report_tables/room_debts_collected.dart';
 import 'package:hotel_pms/core/resourses/color_manager.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
 import 'package:hotel_pms/widgets/app_bars/global_app_bar.dart';
@@ -206,11 +205,7 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                                 Obx(
                                       () => Padding(
                                     padding: const EdgeInsets.only(left: 10),
-                                    child:
-                                    controller.reportStartDate.value == null
-                                        ? const SmallText(
-                                        text: "Select Start Date")
-                                        : BigText(
+                                    child: BigText(
                                         text: extractDate(controller
                                             .reportStartDate.value)),
                                   ),
@@ -255,9 +250,7 @@ class ReportConfigurationForm extends GetView<ReportGeneratorController> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(left: 10),
-                                  child: controller.reportEndDate.value == null
-                                      ? const SmallText(text: "Select End Date")
-                                      : BigText(
+                                  child: BigText(
                                       text: extractDate(
                                           controller.reportEndDate.value)),
                                 ),
