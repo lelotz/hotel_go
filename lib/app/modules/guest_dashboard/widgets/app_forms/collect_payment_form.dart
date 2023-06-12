@@ -3,9 +3,11 @@ import 'package:get/get.dart';
 import 'package:hotel_pms/core/resourses/size_manager.dart';
 import 'package:hotel_pms/widgets/forms/form_header.dart';
 import '../../../../../core/resourses/color_manager.dart';
+import '../../../../../core/services/data_validation.dart';
 import '../../../../../core/values/app_constants.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/dropdown_menu/custom_dropdown_menu.dart';
+import '../../../../../widgets/inputs/text_field_input.dart';
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import '../../controller/payment_form_controller.dart';
@@ -87,11 +89,11 @@ class CollectPaymentForm extends GetView<PaymentController> {
                     ],
                   ),
                 SizedBox(height: const Size.fromHeight(20).height,),
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Expanded(
@@ -119,15 +121,12 @@ class CollectPaymentForm extends GetView<PaymentController> {
 
                         ],
                       ),
-                    ),
-                    Card(
-                      child: Padding(
-                          padding: const EdgeInsets.all(11),
-                          child: Obx(() => BigText(text: controller.collectedPaymentInput.value,))
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                 TextFieldInput(
+                        key: paymentForm,validation: DataValidation.isNumeric,
+                          textEditingController: controller.collectedPaymentInput, hintText: 'Weka kiasi'),
 
 
 
