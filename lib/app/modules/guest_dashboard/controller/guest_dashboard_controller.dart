@@ -139,8 +139,8 @@ class GuestDashboardController extends GetxController{
   Future<void> extendGuestStay(DateTime? newCheckOutDate)async{
     RoomTransaction? roomTransaction;
     await RoomTransactionRepository().getRoomTransaction(selectedRoom.value.currentTransactionId!).then((value) {
-      if(value != null){
-        roomTransaction = RoomTransaction().fromJsonList(value).first;
+      if(value.id != null){
+        roomTransaction = value;
       }
     });
 
@@ -265,8 +265,8 @@ class GuestDashboardController extends GetxController{
 
   Future<void> getRoomTransactionId()async{
     await RoomTransactionRepository().getRoomTransaction(selectedRoom.value.currentTransactionId!).then((response) {
-      if(response!.isNotEmpty){
-        paymentDataController.roomTransaction.value = RoomTransaction.fromJson(response[0]);
+      if(response.id != null){
+        paymentDataController.roomTransaction.value = response;
 
         //showSnackBar("Fetched RoomTransaction", Get.context!);
       }else{

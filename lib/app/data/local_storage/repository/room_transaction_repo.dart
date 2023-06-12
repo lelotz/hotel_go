@@ -34,12 +34,18 @@ class RoomTransactionRepository extends SqlDatabase {
   }
 
   /// READ RoomTransaction by id
-  Future<List<Map<String, dynamic>>?> getRoomTransaction(
+  Future<RoomTransaction> getRoomTransaction(
       String roomTransactionId) async {
-    return await read(
+    RoomTransaction roomTransaction = RoomTransaction();
+     await read(
         tableName: RoomTransactionsTable.tableName,
         where: '${RoomTransactionsTable.id} = ?',
-        whereArgs: [roomTransactionId]);
+        whereArgs: [roomTransactionId]).then((value) {
+          if(value!=null && value.isNotEmpty){
+            roomTransaction = RoomTransaction.fromJson(value.first);
+          }
+     });
+    return roomTransaction;
   }
 
   /// READ RoomTransaction by id

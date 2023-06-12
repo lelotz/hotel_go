@@ -119,8 +119,8 @@ class PaymentController extends GetxController {
     /// Use [selectedRoom] to get the current [roomTransaction]
     await RoomTransactionRepository().getRoomTransaction(
         selectedRoom.currentTransactionId!).then((value) async {
-      if (value != null && value.isNotEmpty) {
-        await ClientUserRepository().getClientUser(value[0]['clientId'])
+      if (value.id!=null) {
+        await ClientUserRepository().getClientUser(value.clientId!)
             .then((value) {
           if (value != null && value.isNotEmpty) {
             metaData.value.addAll(

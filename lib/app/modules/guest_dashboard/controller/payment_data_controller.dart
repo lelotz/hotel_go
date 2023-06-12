@@ -17,8 +17,8 @@ class PaymentDataController extends GetxController{
 
   Future<void> getCurrentRoomTransaction()async{
     await RoomTransactionRepository().getRoomTransaction(selectedRoom.currentTransactionId!).then((value) {
-      if(value != null && value.isNotEmpty){
-        roomTransaction.value = RoomTransaction.fromJson(value[0]);
+      if(value.id != null){
+        roomTransaction.value = value;
         roomTransaction.refresh();
 
       }
