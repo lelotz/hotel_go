@@ -166,7 +166,7 @@ class CollectedPaymentsTable{
     $id TEXT PRIMARY KEY,
     $clientId TEXT NOT NULL,
     $roomTransactionId TEXT ,
-    $sessionId TEXT,
+    $sessionId TEXT NOT NULL,
     $employeeId TEXT NOT NULL )
   ''';
 }
