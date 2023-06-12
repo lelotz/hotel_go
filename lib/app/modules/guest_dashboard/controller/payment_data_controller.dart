@@ -20,7 +20,6 @@ class PaymentDataController extends GetxController{
       if(value.id != null){
         roomTransaction.value = value;
         roomTransaction.refresh();
-
       }
     });
   }

@@ -12,6 +12,7 @@ import 'package:hotel_pms/core/utils/string_handlers.dart';
 import 'package:hotel_pms/core/values/localization/local_keys.dart';
 import 'package:logger/logger.dart';
 import '../../../../core/logs/logger_instance.dart';
+import '../../../../core/services/calulators/stay_calculator.dart';
 import '../../../../core/values/localization/messages.dart';
 import '../../../data/local_storage/repository/other_transactions_repo.dart';
 import '../../../data/local_storage/repository/room_transaction_repo.dart';
@@ -29,10 +30,7 @@ import 'package:hotel_pms/core/values/app_constants.dart';
 class PaymentController extends GetxController {
   Logger logger = AppLogger.instance.logger;
   RoomData get selectedRoom =>
-      Get
-          .find<HomepageController>()
-          .selectedRoomData
-          .value;
+      Get.find<HomepageController>().selectedRoomData.value;
 
   Rx<AdminUser> loggedInUser = Get.find<AuthController>().adminUser;
   AuthController authController = Get.find<AuthController>();
@@ -40,19 +38,19 @@ class PaymentController extends GetxController {
   ClientUser clientUser = ClientUser();
 
   PaymentDataController payDataController = Get.find<PaymentDataController>();
-  GuestDashboardController guestDashboardController = Get.find<GuestDashboardController>();
+  GuestDashboardController guestDashboardController =
+      Get.find<GuestDashboardController>();
 
-  List<OtherTransactions> laundryTransactions = [];
-  List<OtherTransactions> roomServiceTransactions = [];
 
-  Rx<Map<String, List<OtherTransactions>>> sessionTransactions = Rx<
-      Map<String, List<OtherTransactions>>>({});
+  Rx<List<OtherTransactions>> laundryTransactions = Rx<List<OtherTransactions>>([]);
+  Rx<List<OtherTransactions>> roomServiceTransactions = Rx<List<OtherTransactions>>([]);
 
+  Rx<Map<String, List<OtherTransactions>>> sessionTransactions =
+      Rx<Map<String, List<OtherTransactions>>>({});
 
   Rx<String> payMethod = Rx<String>('');
   Rx<String> payMethodStatus = Rx<String>('');
   Rx<Map<String, dynamic>> metaData = Rx<Map<String, dynamic>>({});
-
 
   Rx<int> roomCost = Rx<int>(0);
   Rx<int> roomBalance = Rx<int>(0);
@@ -69,68 +67,68 @@ class PaymentController extends GetxController {
 
   Map<String, dynamic> allocatedPayments = {};
 
-   TextEditingController collectedPaymentInput = TextEditingController();
+  TextEditingController collectedPaymentInput = TextEditingController();
 
   Rx<String> selectedBill = Rx<String>(LocalKeys.kSelectBillType.tr);
 
   Rx<String> selectedPayMethod = Rx<String>('');
 
+  StayCalculator get stayCalculator => StayCalculator(
+      roomData: selectedRoom,
+      roomTransactionId: selectedRoom.currentTransactionId!);
+
   @override
   Future<void> onInit() async {
     await getMetaData();
     await calculateAllFees();
-    collectedPaymentInput.text = LocalKeys.kSelectBillType.tr;
     super.onInit();
   }
 
-  assignGrandTotalValues() {
+  assignPaymentDetailsViewValues() {
     grandTotal.value = payDataController.roomTransaction.value.grandTotal!;
-    grandTotalAmountPaid.value = payDataController.roomTransaction.value.amountPaid!;
-    grandTotalOutstandingBalance.value = payDataController.roomTransaction.value.outstandingBalance!;
+    grandTotalAmountPaid.value =
+        payDataController.roomTransaction.value.amountPaid!;
+    grandTotalOutstandingBalance.value =
+        payDataController.roomTransaction.value.outstandingBalance!;
     payDataController.getCurrentRoomTransaction();
   }
 
-  /// Update [RoomTransaction] with data form [CollectPaymentForm]
-  /// Upload updated [RoomTransaction] to Db
-  /// Assign to new data with [assignGrandTotalValues]
+  /// Updates UI
+  /// Refreshes [roomTransaction] in [PaymentDataController]
+  /// Assign to new view data with [assignPaymentDetailsViewValues]
   Future<void> updateGrandTotal() async {
-    payDataController.roomTransaction.value.amountPaid =
-        payDataController.roomTransaction.value.amountPaid! +
-            stringToInt(collectedPaymentInput.text);
-
-    payDataController.roomTransaction.value.outstandingBalance =
-        payDataController.roomTransaction.value.grandTotal! -
-            payDataController.roomTransaction.value.amountPaid!;
-
-    await RoomTransactionRepository().updateRoomTransaction(
-        payDataController.roomTransaction.value.toJson()).then((value) async {
-      await updateUI();
-      await payDataController.getCurrentRoomTransaction();
-      assignGrandTotalValues();
-    });
+    await payDataController.getCurrentRoomTransaction();
+    await assignPaymentDetailsViewValues();
+    await updateUI();
   }
 
   getMetaData() async {
-    metaData.value.addAll({LocalKeys.kLoggedInUser: loggedInUser,});
+    metaData.value.addAll({
+      LocalKeys.kLoggedInUser: loggedInUser,
+    });
     metaData.value.addAll({LocalKeys.kSelectedRoom: selectedRoom});
-    metaData.value.addAll({LocalKeys.kRoomTransaction: payDataController.roomTransaction});
-
+    metaData.value.addAll(
+        {LocalKeys.kRoomTransaction: payDataController.roomTransaction});
 
     /// Use [selectedRoom] to get the current [roomTransaction]
-    await RoomTransactionRepository().getRoomTransaction(
-        selectedRoom.currentTransactionId!).then((value) async {
-      if (value.id!=null) {
-        await ClientUserRepository().getClientUser(value.clientId!)
+    await RoomTransactionRepository()
+        .getRoomTransaction(selectedRoom.currentTransactionId!)
+        .then((value) async {
+      if (value.id != null) {
+        await ClientUserRepository()
+            .getClientUser(value.clientId!)
             .then((value) {
           if (value != null && value.isNotEmpty) {
-            metaData.value.addAll(
-                {LocalKeys.kClientUser: value[0]['clientId']});
+            metaData.value
+                .addAll({LocalKeys.kClientUser: value[0]['clientId']});
           }
         });
       }
     });
-    await ClientUserRepository().getClientUser(payDataController.roomTransaction.value.clientId!).then((value) {
-      if(value!= null && value.isNotEmpty){
+    await ClientUserRepository()
+        .getClientUser(payDataController.roomTransaction.value.clientId!)
+        .then((value) {
+      if (value != null && value.isNotEmpty) {
         clientUser = ClientUser.fromJson(value[0]);
       }
     });
@@ -138,58 +136,51 @@ class PaymentController extends GetxController {
 
   Future<void> updateUI() async {}
 
-  calculateAllFees({bool? isLaundryForm=false}) async {
+  calculateAllFees({bool? isLaundryForm = false}) async {
     await assignRoomCost();
     //print('room_cost ${roomCost.value}');
 
     await calculateLaundryCost();
-    logger.v('laundry ${laundryCost.value} items: ${sessionTransactions.value[LocalKeys.kLaundry.toUpperCase()]?.length}');
+    logger.v(
+        'laundry ${laundryCost.value} items: ${sessionTransactions.value[LocalKeys.kLaundry.toUpperCase()]?.length}');
 
     await calculateRoomServiceCost();
-    logger.v('room_service ${roomServiceCost.value} items: ${sessionTransactions.value[LocalKeys.kRoomService.toUpperCase()]?.length}');
+    logger.v(
+        'room_service ${roomServiceCost.value} items: ${sessionTransactions.value[LocalKeys.kRoomService.toUpperCase()]?.length}');
 
-
-    await assignGrandTotalValues();
+    await assignPaymentDetailsViewValues();
     logger.v('grand_total ${grandTotal.value}');
   }
 
   /// Calculate roomCost
-  Future<void> assignRoomCost() async{
+  Future<void> assignRoomCost() async {
     await payDataController.onInit();
     roomCost.value = payDataController.roomTransaction.value.roomCost!;
-    roomBalance.value = payDataController.roomTransaction.value.roomOutstandingBalance!;
+    roomBalance.value =
+        payDataController.roomTransaction.value.roomOutstandingBalance!;
   }
 
-
   Future<void> updateRoomFees() async {
-    collectedPaymentInput.text = roomBalance.value.toString();
     RoomTransaction roomTransaction = payDataController.roomTransaction.value;
+    payDataController.roomTransaction.value =
+        await stayCalculator.insertRoomPaymentInRoomTransaction(
+            stringToInt(collectedPaymentInput.text), roomTransaction);
 
-    /// Add the input new payment to the current [RoomTransaction] Object
-    /// This updates the roomAmountPaid value of the [RoomTransaction] Object
-    roomTransaction.roomAmountPaid = roomTransaction.roomAmountPaid! +
-        stringToInt(collectedPaymentInput.text);
-    roomTransaction.roomOutstandingBalance =
-        roomTransaction.roomCost! - roomTransaction.roomAmountPaid!;
+    await updateUI();
+    await assignRoomCost();
 
-    roomTransaction.amountPaid = roomTransaction.amountPaid! +
-        stringToInt(collectedPaymentInput.text);
-    roomTransaction.outstandingBalance = roomTransaction.outstandingBalance! -
-        stringToInt(collectedPaymentInput.text);
-
-    payDataController.roomTransaction.value = roomTransaction;
-
-    await RoomTransactionRepository().updateRoomTransaction(
-        roomTransaction.toJson()).then((value) async {
+    await RoomTransactionRepository()
+        .updateRoomTransaction(roomTransaction.toJson())
+        .then((value) async {
       logger.v('UPDATED ROOM: ${roomTransaction.toJson()}');
       await updateUI().then((value) async {
         await assignRoomCost();
-        assignGrandTotalValues();
+        assignPaymentDetailsViewValues();
         await CollectPayment(
           id: const Uuid().v1(),
           clientId: payDataController.roomTransaction.value.clientId,
           clientName: clientUser.fullName,
-          employeeId:loggedInUser.value.id,
+          employeeId: loggedInUser.value.id,
           employeeName: loggedInUser.value.fullName,
           roomTransactionId: payDataController.roomTransaction.value.id,
           roomNumber: selectedRoom.roomNumber,
@@ -207,44 +198,39 @@ class PaymentController extends GetxController {
   }
 
   /// Calculate roomServiceCost
-  calculateRoomServiceCost()async{
+  calculateRoomServiceCost() async {
     roomServiceCost.value = 0;
     roomServiceBalance.value = 0;
     sessionTransactions.value.clear();
-    roomServiceTransactions.clear();
-    await  OtherTransactionsRepository().getOtherTransaction(payDataController.roomTransaction.value.id!).then((value) {
-      if(value != null && value.isNotEmpty){
-        for(Map<String,dynamic> element in value){
-          OtherTransactions roomServiceTransaction = OtherTransactions.fromJson(element);
-          if(roomServiceTransaction.paymentNotes == TransactionTypes.roomServiceTransaction){
+    roomServiceTransactions.value.clear();
+    await OtherTransactionsRepository()
+        .getOtherTransaction(payDataController.roomTransaction.value.id!)
+        .then((value) {
+      if (value != null && value.isNotEmpty) {
+        for (Map<String, dynamic> element in value) {
+          OtherTransactions roomServiceTransaction =
+              OtherTransactions.fromJson(element);
+          if (roomServiceTransaction.paymentNotes ==
+              TransactionTypes.roomServiceTransaction) {
             roomServiceCost.value += roomServiceTransaction.grandTotal!;
-            roomServiceBalance.value += roomServiceTransaction.outstandingBalance!;
-            roomServiceTransactions.add(roomServiceTransaction);
+            roomServiceBalance.value +=
+                roomServiceTransaction.outstandingBalance!;
+            roomServiceTransactions.value.add(roomServiceTransaction);
           }
         }
-        sessionTransactions.value.addAll({LocalKeys.kRoomService.toUpperCase():roomServiceTransactions});
+        sessionTransactions.value.addAll(
+            {LocalKeys.kRoomService.toUpperCase(): roomServiceTransactions.value});
       }
     });
   }
 
-
   /// Update RoomService Fees with data form [CollectPaymentForm]
-  updateRoomServiceFees() async {
-    //await calculateRoomServiceCost();
+ updateRoomServiceFees() async {
     if(sessionTransactions.value.keys.contains(LocalKeys.kRoomService.toUpperCase())){
-
-      int paymentInput = roomServiceBalance.value;
-      int currentRoomServiceTransactionCost = 0;
-      collectedPaymentInput.text = roomServiceBalance.value.toString();
-      for(OtherTransactions roomServiceTransaction in sessionTransactions.value[LocalKeys.kRoomService.toUpperCase()]!){
-        if(roomServiceTransaction.outstandingBalance! > 0){
-          currentRoomServiceTransactionCost = paymentInput - (paymentInput - roomServiceTransaction.grandTotal!);
-          roomServiceTransaction.amountPaid = currentRoomServiceTransactionCost;
-          roomServiceTransaction.outstandingBalance = roomServiceTransaction.grandTotal! - roomServiceTransaction.amountPaid!;
-          paymentInput = paymentInput - currentRoomServiceTransactionCost;
-          await  OtherTransactionsRepository().updateOtherTransaction(roomServiceTransaction.toJson(),);
-        }
-      }
+      int paymentInput = stringToInt(collectedPaymentInput.text);
+      await stayCalculator.insertPaymentsInOtherTransactions(
+          payment: paymentInput,
+          transactions: sessionTransactions.value[LocalKeys.kRoomService.toUpperCase()]!);
       /// Updates [RoomTransaction]
       await updateGrandTotal();
       await CollectPayment(
@@ -260,14 +246,13 @@ class PaymentController extends GetxController {
         date: extractDate(DateTime.now()),
         time: extractTime(DateTime.now()),
         service: TransactionTypes.roomServiceTransaction,
-        payMethod: "CASH",
+        payMethod: payMethod.value,
         receiptNumber: const Uuid().v1(),
         sessionId: authController.sessionController.currentSession.value.id,
 
       ).toDb();
       Get.delete<PaymentController>();
     }
-
   }
 
   /// Calculate laundryCost
@@ -275,80 +260,104 @@ class PaymentController extends GetxController {
     laundryCost.value = 0;
     laundryBalance.value = 0;
     sessionTransactions.value.clear();
-    await  OtherTransactionsRepository().getOtherTransaction(payDataController.roomTransaction.value.id!).then((value) {
+    await OtherTransactionsRepository()
+        .getOtherTransaction(payDataController.roomTransaction.value.id!)
+        .then((value) {
       if (value != null && value.isNotEmpty) {
         for (Map<String, dynamic> element in value) {
-          OtherTransactions laundryTransaction = OtherTransactions.fromJson(element);
+          OtherTransactions laundryTransaction =
+              OtherTransactions.fromJson(element);
           if (laundryTransaction.paymentNotes == AppConstants.laundryLabel) {
             laundryCost.value += laundryTransaction.grandTotal!;
             laundryBalance.value += laundryTransaction.outstandingBalance!;
-            laundryTransactions.add(laundryTransaction);
-
+            laundryTransactions.value.add(laundryTransaction);
           }
         }
-        sessionTransactions.value.addAll({AppConstants.laundryLabel: laundryTransactions});
-        logger.v('${sessionTransactions.value[AppConstants.laundryLabel]?.length ?? -1}');
-      }else{
+        sessionTransactions.value
+            .addAll({AppConstants.laundryLabel: laundryTransactions.value});
+        logger.v(
+            '${sessionTransactions.value[AppConstants.laundryLabel]?.length ?? -1}');
+      } else {
         logger.w('No laundry to calculate');
       }
     });
   }
-  setPayMethod(String method){
+
+  setPayMethod(String method) {
     payMethod.value = method;
     payMethod.refresh();
   }
+
   bool validateInputs(){
-    logger.i('validationg inputs');
+    bool paymentAmountIsValid = validatePaymentAmount();
+    bool billTypeIsSelected = selectedBill.isNotEmpty;
+    bool paymentIsGreaterThanZero = stringToInt(collectedPaymentInput.text) > 0;
+    bool payMethodIsSelected = validatePayMethod();
     if(collectedPaymentInput.text==LocalKeys.kSelectBillType) {
       payMethodStatus.value = '${payMethodStatus.value}\n - ${AppMessages.cannotCollectZero}';
       return false;
     }
-    if( selectedBill.isNotEmpty &&
-        stringToInt(collectedPaymentInput.text) > 0 &&
-        validatePayMethod()
+    if(paymentAmountIsValid == false) payMethodStatus.value = 'Huwezi pokea malipo makubwa kuliko deni';
+
+    if( billTypeIsSelected &&
+        paymentIsGreaterThanZero &&
+        payMethodIsSelected &&
+        paymentAmountIsValid
       ) return true;
 
-    if(selectedBill== '') payMethodStatus.value = ' - . ${payMethodStatus.value}\n - . ${LocalKeys.kSelectBillType.tr} ${AppMessages.isNotEmpty}';
+    if(selectedBill.value == '') payMethodStatus.value = ' - . ${payMethodStatus.value}\n - . ${LocalKeys.kSelectBillType.tr} ${AppMessages.isNotEmpty}';
 
     return false;
   }
 
-  bool validatePayMethod(){
+  bool validatePaymentAmount(){
+    switch (selectedBill.value) {
+      case LocalKeys.kRoom:
+        if(stringToInt(collectedPaymentInput.text) > roomBalance.value){
+          return false;
+        };
+        break;
+      case LocalKeys.kLaundry :
+        if(stringToInt(collectedPaymentInput.text) >  laundryBalance.value){
+          return false;
+        };
 
+        break;
+      case LocalKeys.kRoomService :
+        if(stringToInt(collectedPaymentInput.text) > roomServiceBalance.value){
+          return false;
+        };
+        break;
+      case LocalKeys.kAll :
+        if(stringToInt(collectedPaymentInput.text) > grandTotalOutstandingBalance.value){
+          return false;
+        };
+        break;
+      default : return false;
+    }
+    return true;
+  }
 
-    if(payMethod.value == ''){
+  bool validatePayMethod() {
+    if (payMethod.value == '') {
       payMethodStatus.value = 'Pay Method ${AppMessages.isNotEmpty}';
       // bookingInitiated.value = false;
       return false;
-    }else{
+    } else {
       payMethodStatus.value = '';
     }
 
     return true;
   }
 
-
-
-
   /// Update Laundry Fees with data form [CollectPaymentForm]
   updateLaundryFees({bool payingAllBills = false}) async {
-
       await calculateLaundryCost();
-      int paymentInput = laundryBalance.value;
-      int currentLaundryTransactionCost = 0;
-      collectedPaymentInput.text = laundryBalance.value.toString();
+      int paymentInput = stringToInt(collectedPaymentInput.text);
       if(sessionTransactions.value[AppConstants.laundryLabel]==null || sessionTransactions.value[AppConstants.laundryLabel]!.isEmpty) logger.w('no laundry sessions');
-      for (OtherTransactions laundryTransaction in sessionTransactions.value[AppConstants.laundryLabel] ?? []) {
-        if (laundryTransaction.outstandingBalance! > 0) {
-          currentLaundryTransactionCost = paymentInput - (paymentInput - laundryTransaction.grandTotal!);
-          laundryTransaction.amountPaid = currentLaundryTransactionCost;
-          laundryTransaction.outstandingBalance = laundryTransaction.grandTotal! - laundryTransaction.amountPaid!;
-          paymentInput = paymentInput - currentLaundryTransactionCost;
-
-          await OtherTransactionsRepository().updateOtherTransaction(laundryTransaction.toJson());
-        }
-      }
-
+      stayCalculator.insertPaymentsInOtherTransactions(
+          payment: paymentInput,
+          transactions: sessionTransactions.value[AppConstants.laundryLabel] ?? []);
 
       await CollectPayment(
         id: const Uuid().v1(),
@@ -363,20 +372,16 @@ class PaymentController extends GetxController {
         date: extractDate(DateTime.now()),
         time: extractTime(DateTime.now()),
         service: TransactionTypes.laundryPayment,
-        payMethod: 'CASH',
+        payMethod: payMethod.value,
         receiptNumber: const Uuid().v1(),
         sessionId: authController.sessionController.currentSession.value.id,
-      ).toDb().then((value) {
-        logger.wtf('collected ${laundryBalance.value}');
-      });
+      ).toDb();
       /// Updates [RoomTransaction]
       await updateGrandTotal();
 
-
-
   }
 
-  Future<void> payAllBills()async{
+  Future<void> payAllBills() async {
     await updateRoomFees();
     await updateLaundryFees();
     await updateRoomServiceFees();
@@ -388,13 +393,13 @@ class PaymentController extends GetxController {
       case LocalKeys.kRoom:
         collectedPaymentInput.text = roomBalance.value.toString();
         break;
-      case LocalKeys.kLaundry :
+      case LocalKeys.kLaundry:
         collectedPaymentInput.text = laundryBalance.value.toString();
         break;
-      case LocalKeys.kRoomService :
+      case LocalKeys.kRoomService:
         collectedPaymentInput.text = roomServiceBalance.value.toString();
         break;
-      case LocalKeys.kAll :
+      case LocalKeys.kAll:
         collectedPaymentInput.text =
             grandTotalOutstandingBalance.value.toString();
         break;
@@ -406,22 +411,19 @@ class PaymentController extends GetxController {
       case LocalKeys.kRoom:
         await updateRoomFees();
         break;
-      case LocalKeys.kLaundry :
+      case LocalKeys.kLaundry:
         await updateLaundryFees();
         break;
-      case LocalKeys.kRoomService :
+      case LocalKeys.kRoomService:
         await updateRoomServiceFees();
         break;
-      case LocalKeys.kAll :
+      case LocalKeys.kAll:
         await payAllBills();
         break;
-
     }
     await guestDashboardController.getUserActivity();
     guestDashboardController.update();
     Navigator.of(Get.overlayContext!).pop();
     Get.delete<PaymentController>();
   }
-
-
 }
