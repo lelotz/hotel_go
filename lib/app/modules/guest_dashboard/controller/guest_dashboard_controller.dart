@@ -260,15 +260,8 @@ class GuestDashboardController extends GetxController{
   }
 
   Future<void> getRoomTransactionId()async{
-    await RoomTransactionRepository().getRoomTransaction(selectedRoom.value.currentTransactionId!).then((response) {
-      if(response.id != null){
-        paymentDataController.roomTransaction.value = response;
-
-        //showSnackBar("Fetched RoomTransaction", Get.context!);
-      }else{
-        // showSnackBar("FAILED TO FETCH RoomTransaction", Get.context!);
-      }
-    });
+    paymentDataController.roomTransaction.value = await RoomTransactionRepository().
+    getRoomTransaction(selectedRoom.value.currentTransactionId!);
   }
 
   Future<void> getClientUser()async{
