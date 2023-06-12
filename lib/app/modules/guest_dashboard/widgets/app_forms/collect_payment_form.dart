@@ -127,9 +127,6 @@ class CollectPaymentForm extends GetView<PaymentController> {
                  TextFieldInput(
                         key: paymentForm,validation: DataValidation.isNumeric,
                           textEditingController: controller.collectedPaymentInput, hintText: 'Weka kiasi'),
-
-
-
               ],
             ),
 

@@ -43,7 +43,7 @@ Widget fetchDialogWidget({required String dialogName}){
 }
 
 
-void actionsDialogForms({required BuildContext context, required String formName,double height = 500})async
+void actionsDialogForms({required BuildContext context, required String formName,double height = 500,double width=550})async
 {
   await showDialog(
       context: context,
@@ -52,7 +52,7 @@ void actionsDialogForms({required BuildContext context, required String formName
           elevation: 10,
           child:  Container(
               height:  Size.fromHeight(height).height,
-              width: const Size.fromWidth(550).width,
+              width:Size.fromWidth(width).width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppBorderRadius.radius16),
               ),
