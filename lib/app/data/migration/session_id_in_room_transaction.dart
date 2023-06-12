@@ -112,12 +112,4 @@ class SessionIdInjector{
     }
   }
 
-  fun({required String sessionId})async{
-    List<SessionActivity> roomSessionActivity = await SessionManagementRepository().getSessionActivityByTransactionTypeAndExcludeSessionId(LocalKeys.kRoom, sessionId);
-    List<RoomTransaction> roomTransactions = await RoomTransactionRepository().getMultipleRoomTransactions(getSessionActivityIds(roomSessionActivity));
-    List<CollectPayment> collectedPayments = await CollectedPaymentsRepository().getMultipleCollectedPaymentsByIds(getRoomTransactionIds(roomTransactions), LocalKeys.kRoom);
-
-
-  }
-
 }
