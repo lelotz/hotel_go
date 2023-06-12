@@ -193,7 +193,9 @@ class GuestDashboardController extends GetxController{
   }
 
   openDashboardForm(String formName){
-    actionsDialogForms(context:Get.context!, formName:formName,height: formName == LocalKeys.kCollectPayment ? 450 : 680);
+    actionsDialogForms(context:Get.context!, formName:formName,
+        height: formName == LocalKeys.kCollectPayment ? 575 : 900);
+        // width: formName == LocalKeys.kCollectPayment ? 900 : 550,);
   }
 
   Future<void> checkOutGuest()async{
