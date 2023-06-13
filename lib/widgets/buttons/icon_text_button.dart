@@ -12,7 +12,7 @@ class IconTextButton extends StatefulWidget {
   final Color iconColor;
   final Color textColor;
   final Color backgroundColor;
-  double iconSize;
+  final double iconSize;
   final bool useDivider;
   final double buttonHeight;
   final double buttonWidth;
@@ -42,17 +42,7 @@ class IconTextButton extends StatefulWidget {
 class _IconTextButtonState extends State<IconTextButton> {
   bool isTapped = false;
 
-  void onPressed(){
-    setState(() {
-
-      if(!isTapped){
-        widget.iconSize -= 5;
-      }
-      isTapped = !isTapped;
-
-
-    });
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +67,7 @@ class _IconTextButtonState extends State<IconTextButton> {
                 AppIcon(
                   icon: widget.icon,
                   iconColor: widget.iconColor,
-                  iconSize: isTapped ? widget.iconSize += 5 : widget.iconSize,
+                  iconSize: widget.iconSize,
                   backgroungColor: widget.backgroundColor,
                   size: 30,
                 ),

@@ -43,16 +43,6 @@ Widget buildGlobalNavigationButtons(BuildContext context,{String title = LocalKe
           children: [
             ElevatedButton(
                 style:style,
-                onPressed: (){buildDialog(
-                    Get.overlayContext!, "",
-                    ConfirmCurrentSession(),
-                    height: 300,width: 800
-                );},
-                child:  SmallText(text: "Confirm Session",color: ColorsManager.grey1,)),
-            SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
-
-            ElevatedButton(
-                style:style,
                 onPressed: (){Get.to(transition: Transition.noTransition,duration: const Duration(milliseconds: 500), ()=> SalesView());},
                 child:  SmallText(text: LocalKeys.kSales.tr,color: ColorsManager.grey1,)),
             SizedBox(width: const Size.fromWidth(AppSize.size4).width,),
