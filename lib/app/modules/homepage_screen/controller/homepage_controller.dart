@@ -14,7 +14,6 @@ class HomepageController extends GetxController{
 
   @override
   Future<void> onInit()async {
-    // TODO: implement onInit
     await loadRoomData();
 
 

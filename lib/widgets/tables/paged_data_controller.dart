@@ -19,7 +19,7 @@ class PettyCashTableSource extends DataTableSource{
   @override
   DataRow? getRow(int index) {
 
-    // TODO: implement getRow
+    
     return  DataRow(
         cells: pettyCashTransactions.isEmpty || isEmpty ?  [paddedDataCell(text: BigText(text: onEmptySource[index],size: 16,)),] :
         [
@@ -34,15 +34,14 @@ class PettyCashTableSource extends DataTableSource{
   }
 
   @override
-  // TODO: implement isRowCountApproximate
   bool get isRowCountApproximate => false;
 
   @override
-  // TODO: implement rowCount
+ 
   int get rowCount => pettyCashTransactions.isEmpty || isEmpty ? onEmptySource.length : pettyCashTransactions.length;
 
   @override
-  // TODO: implement selectedRowCount
+ 
   int get selectedRowCount => 0;
   
 }

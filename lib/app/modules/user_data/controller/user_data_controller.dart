@@ -19,7 +19,7 @@ class UserData extends GetxController{
     setUserData();
   }
 
-  setUserData()async{
+  setUserData(){
     userData.value.clear();
     for(AdminUser user in users.value){
       userData.value.addAll({user.id!: user.fullName});

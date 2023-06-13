@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 class SwitchButton extends StatefulWidget {
-  Function onSwitch;
+  final Function onSwitch;
   SwitchButton({required this.onSwitch,super.key});
 
   @override

@@ -5,7 +5,7 @@ import '../text/big_text.dart';
 import '../text/small_text.dart';
 import 'package:get/get.dart';
 class GeneralDropdownMenu extends StatefulWidget {
-  String initialItem;
+  final String initialItem;
   String selectedValue;
   bool enabled;
   bool userBorder;
@@ -103,6 +103,7 @@ class _GeneralDropdownMenuState extends State<GeneralDropdownMenu> {
         borderRadius: BorderRadius.circular(widget.borderRadius),
         icon: const Icon(Icons.keyboard_arrow_down),
 
+
         items: widget.menuItems.map((String menuItem){
           return  DropdownMenuItem(
 
@@ -111,11 +112,15 @@ class _GeneralDropdownMenuState extends State<GeneralDropdownMenu> {
                 widget.currentItem = menuItem.toString();
               });
             },
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
             value:menuItem,
+            // child: Padding(
+            //   padding: const EdgeInsets.only(left: 8),
+            //   child: Center(child: BigText(text: menuItem.tr.toString())),
+            // ),
             child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Center(child: BigText(text: menuItem.tr.toString())),
+              padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 4),
+              child: BigText(text: menuItem.tr.toString()),
             ),
           );
         }).toList(),

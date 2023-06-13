@@ -9,13 +9,13 @@ class ContainerTextButton extends StatefulWidget {
   final double paddingValue;
   final Color textColor;
   final Color backgroundColor;
-  bool useBorder;
-  bool isClickable;
-  Color borderColor;
-  VoidCallback onClick;
-  bool hasIcon;
-  IconData icon;
-  double? buttonWidth;
+  final bool useBorder;
+  final bool isClickable;
+  final Color borderColor;
+  final VoidCallback onClick;
+  final bool hasIcon;
+  final IconData icon;
+  final double? buttonWidth;
   ContainerTextButton({
     Key? key,
     this.textColor = ColorsManager.lightGrey,

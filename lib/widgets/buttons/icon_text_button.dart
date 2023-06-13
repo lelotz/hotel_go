@@ -7,16 +7,16 @@ import '../text/small_text.dart';
 
 class IconTextButton extends StatefulWidget {
 
-  String buttonLabel;
-  IconData icon;
-  Color iconColor;
-  Color textColor;
-  Color backgroundColor;
+  final  String buttonLabel;
+  final IconData icon;
+  final Color iconColor;
+  final Color textColor;
+  final Color backgroundColor;
   double iconSize;
-  bool useDivider;
-  double buttonHeight;
-  double buttonWidth;
-  Function onPressed;
+  final bool useDivider;
+  final double buttonHeight;
+  final double buttonWidth;
+  final Function onPressed;
 
 
   IconTextButton({

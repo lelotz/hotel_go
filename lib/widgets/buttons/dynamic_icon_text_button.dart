@@ -6,13 +6,13 @@ import '../text/small_text.dart';
 
 
 class DynamicIconTextButton extends StatefulWidget {
-  String text;
-  IconData icon;
-  double iconSize;
-  double textSize;
-  Color iconColor;
-  Color textColor;
-  VoidCallback callback;
+  final String text;
+  final IconData icon;
+  final double iconSize;
+  final double textSize;
+  final Color iconColor;
+  final Color textColor;
+  final VoidCallback callback;
 
   DynamicIconTextButton({
     Key? key,

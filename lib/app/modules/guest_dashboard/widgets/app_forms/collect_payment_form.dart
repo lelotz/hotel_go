@@ -121,12 +121,17 @@ class CollectPaymentForm extends GetView<PaymentController> {
 
                         ],
                       ),
+                      SizedBox(height: const Size.fromHeight(20).height,),
+                      Form(
+                        key: paymentForm,
+                        child: TextFieldInput(
+                          validation: DataValidation.isNumeric,
+                            textEditingController: controller.collectedPaymentInput, hintText: 'Weka kiasi'),
+                      ),
                     ],
                   ),
                 ),
-                 TextFieldInput(
-                        key: paymentForm,validation: DataValidation.isNumeric,
-                          textEditingController: controller.collectedPaymentInput, hintText: 'Weka kiasi'),
+                 
               ],
             ),
 
@@ -157,7 +162,7 @@ class CollectPaymentForm extends GetView<PaymentController> {
                         color: ColorsManager.primaryAccent,
                         child: InkWell(
                           onTap: ()async {
-                            if (controller.validateInputs()) {
+                            if (paymentForm.currentState!.validate() && controller.validateInputs()) {
                               await controller.payBill();
                             }
                           },
@@ -165,7 +170,6 @@ class CollectPaymentForm extends GetView<PaymentController> {
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
                                 children: [
-
                                   SmallText(text: LocalKeys.kCollectPayment.tr,color: ColorsManager.white,),
                                 ]
                             ),

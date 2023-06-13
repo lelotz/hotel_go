@@ -6,10 +6,10 @@ import '../text/small_text.dart';
 
 
 class DashboardCard extends StatefulWidget {
-  String title;
-  String subtitle;
-  Color backgroundColor;
-  Function onTap;
+  final String title;
+  final String subtitle;
+  final Color backgroundColor;
+  final Function onTap;
 
    DashboardCard({
     Key? key,
@@ -29,11 +29,6 @@ class _DashboardCardState extends State<DashboardCard> {
 
   @override
   Widget build(BuildContext context) {
-
-    double currentScreenWidth = MediaQuery.of(context).size.width;
-    double currentScreenHeight = MediaQuery.of(context).size.height;
-
-
 
     return InkWell(
       onTap: widget.onTap(),

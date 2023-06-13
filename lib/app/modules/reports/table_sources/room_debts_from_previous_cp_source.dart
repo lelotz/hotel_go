@@ -93,6 +93,8 @@ class RoomsDebtsSourceCp extends DataGridSource {
 
       return DataGridRow(cells: [
         DataGridCell<String>(columnName: RoomsDebtsColumnNamesCp.employee, value: userData.userData.value[dataGridRow.employeeId] ??dataGridRow.employeeId ),
+        DataGridCell<String>(columnName: RoomsDebtsColumnNamesCp.date, value: dataGridRow.date ),
+        DataGridCell<String>(columnName: RoomsDebtsColumnNamesCp.time, value: dataGridRow.time ),
         DataGridCell<int>(columnName: RoomsDebtsColumnNamesCp.roomNumber, value: dataGridRow.roomNumber),
         DataGridCell<int>(columnName: RoomsDebtsColumnNamesCp.paid, value: dataGridRow.amountCollected),
         DataGridCell<String>(columnName: RoomsDebtsColumnNamesCp.id, value: dataGridRow.sessionId ),
@@ -110,7 +112,8 @@ class RoomsDebtsColumnNamesCp{
   static const String employee = '${leading}employee';
   static const String roomNumber = 'room';
   static const String checkInDate = '${leading}check_in_date';
-
+  static const String date = '${leading}date';
+  static const String time = '${leading}time';
   static const String value = '${leading}value';
   static const String paid = '${leading}paid';
   static const String id = '${leading}session_id';

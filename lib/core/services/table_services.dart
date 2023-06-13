@@ -1,6 +1,8 @@
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 // External package imports
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -199,6 +201,7 @@ class ExcelWorkBook{
   }
 
   Future<Workbook> createReportSummaryTemplate(Map<String,dynamic> excelData,Map<String,dynamic> excelDataCount,Map<String,dynamic> employeeDetails)async{
+    //int summaryEntriesCount = excelData.length;
     logger.i(excelData);
     Workbook workbook = Workbook();
 
@@ -214,14 +217,17 @@ class ExcelWorkBook{
     wholeDocumentRange.cellStyle.fontSize = 11;
 
     Range footerRange = sheet.getRangeByName('C1:L8');
+    //int lastRow = excelData.length+3;
     Range summaryTableRange = sheet.getRangeByName('C15:L34');
     //Range summaryTableRange = getRangeByName('C15:L$lastRow', sheet);
     Range summaryTableHeaderRange = sheet.getRangeByName('C15:L16');
     Range summaryTableColumnsRange = sheet.getRangeByName('C17:L17');
     Range summaryTableBodyRange = sheet.getRangeByName('C18:L34');
     Range summaryTableItemRange = sheet.getRangeByName('D18:D34');
+    //Range summaryTableCountRange = sheet.getRangeByName('C18:C34');
     Range summaryTableUnitRange = sheet.getRangeByName('J18:J34');
     Range summaryTableValueRange = sheet.getRangeByName('L18:L34');
+    //Range employeeDetailsRange = sheet.getRangeByName('C10:F13');
 
 
 
@@ -436,6 +442,7 @@ class ExcelWorkBook{
 
 class ExportTableData {
   ExportTableData();
+  LocalLogger Log = LocalLogger.instance;
 
   Future<Directory?> get storageDirectory async {
     return await FileManager().directoryPath;
@@ -452,13 +459,21 @@ class ExportTableData {
       {required GlobalKey<SfDataGridState> key,
       required String filePath,
       String fileCategory = 'Reports',bool launchFile=true}) async {
-    final Workbook workbook = key.currentState!.exportToExcelWorkbook();
-    workbook.worksheets.add();
+    try{
+      if(key.currentState!=null){
+        final Workbook workbook = key.currentState!.exportToExcelWorkbook();
+        workbook.worksheets.add();
+        final List<int> bytes = workbook.saveAsStream();
+        workbook.dispose();
 
-    final List<int> bytes = workbook.saveAsStream();
-    workbook.dispose();
+        await saveAndLaunchFile(bytes, '$filePath.xlsx',launchFile: launchFile);
+      }
+    }catch(e){
+      Log.exportLog(data: {'title':'error exporting data to excell'}, error: e.toString());
+    }
 
-    await saveAndLaunchFile(bytes, '$filePath.xlsx',launchFile: launchFile);
+
+
   }
 
   Future<void> exportDataGridToPdf(

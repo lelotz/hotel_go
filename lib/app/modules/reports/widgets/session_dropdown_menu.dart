@@ -31,7 +31,7 @@ class SessionsDropdown extends GetView<ReportGeneratorController> {
                       borderRadius: BorderRadius.circular(AppSize.size4)
                   ),
                   height: Size.fromHeight(60).height,
-                  width: Size.fromWidth(260).width,
+                  width: Size.fromWidth(270).width,
                   child: DropdownButton(
                     value: selectedSession.value,
                     isDense: true,
@@ -43,10 +43,12 @@ class SessionsDropdown extends GetView<ReportGeneratorController> {
                     items: controller.existingSessions.value.map((SessionTracker? session) {
                       return DropdownMenuItem(
                         child: SizedBox(
-                          width: Size.fromWidth(220).width,
+                          width: Size.fromWidth(240).width,
                           child: ListTile(
-                            minLeadingWidth: 8,
-
+                            //minVerticalPadding: 8,
+                            isThreeLine: true,
+                            dense: true,
+                            contentPadding: EdgeInsets.only(bottom: 8,left: 5),
 
                             title: BigText(text:session == null ? 'Loading': controller.userData.userData.value[session.employeeId]),
                             subtitle: SmallText(text:session == null ? 'Loading':controller.getSessionTimeRange(session)),

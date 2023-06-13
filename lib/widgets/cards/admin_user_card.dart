@@ -9,10 +9,10 @@ import '../text/small_text.dart';
 import 'package:get/get.dart';
 
 class AdminUserCard extends GetView<AuthController> {
-  String title;
-  Color? borderColor;
-  Color? titleColor;
-  Color? subtitleColor;
+  final String title;
+  final Color? borderColor;
+  final Color? titleColor;
+  final Color? subtitleColor;
 
 
   AdminUserCard({Key? key,

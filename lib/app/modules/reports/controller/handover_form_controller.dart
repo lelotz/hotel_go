@@ -32,7 +32,9 @@ import '../../../../core/services/table_services.dart';
 import '../../../../core/values/localization/local_keys.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:get/get.dart';
+import '../../../data/local_storage/repository/room_data_repository.dart';
 import '../../../data/models_n/internl_transaction_model.dart';
+import '../../../data/models_n/room_data_model.dart';
 import '../table_sources/conference_usage_source.dart';
 import '../table_sources/rooms_used_table_source.dart';
 import '../../user_data/controller/user_data_controller.dart';
@@ -119,6 +121,15 @@ class ReportGeneratorController extends GetxController {
   Rx<DateTime> reportStartDate = Rx<DateTime>(DateTime.now());
   Rx<DateTime> reportEndDate =
       Rx<DateTime>(DateTime.now().add(const Duration(days: -1)));
+
+  
+  Rx<List<CollectPayment>> roomsSoldCollectedInCurrentSessionCp = Rx<List<CollectPayment>>([]);
+  Rx<List<CollectPayment>> paginatedRoomsSoldCollectedInCurrentSessionCp = Rx<List<CollectPayment>>([]);
+
+  Rx<List<RoomTransaction>> roomsCurrentlyOccupied =
+  Rx<List<RoomTransaction>>([]);
+  Rx<List<RoomTransaction>> paginatedRoomCurrentlyOccupied =
+  Rx<List<RoomTransaction>>([]);
 
   Rx<List<SessionTracker>> existingSessions = Rx<List<SessionTracker>>([]);
   Rx<SessionTracker> selectedSession = Rx<SessionTracker>(SessionTracker());
@@ -215,6 +226,7 @@ class ReportGeneratorController extends GetxController {
     await getRoomsSoldInCurrentSession();
     /// await getRoomsCollectedPaymentsFromPreviousSessions();
     await getConferenceActivityInCurrentSession();
+    await getRoomsCurrentlyOccupied();
     await getLaundryTransactionsCurrentSession();
     await getRoomServiceTransactionsInCurrentSession();
     await getHotelIssuesInCurrentSession();
@@ -264,6 +276,7 @@ class ReportGeneratorController extends GetxController {
   Future<void> submitReport(Map<String, GlobalKey<SfDataGridState>> reportData) async {
     queTableKey(reportData[LocalKeys.kRooms], LocalKeys.kRooms);
     queTableKey(reportData[LocalKeys.kRooms+LocalKeys.kDebts], LocalKeys.kRooms+LocalKeys.kDebts);
+    queTableKey(reportData[LocalKeys.kRooms+LocalKeys.kOccupied],LocalKeys.kRooms+LocalKeys.kOccupied);
     queTableKey(reportData[LocalKeys.kConference], LocalKeys.kConference);
     queTableKey(reportData[LocalKeys.kRoomService], LocalKeys.kRoomService);
     queTableKey(reportData[LocalKeys.kLaundry], LocalKeys.kLaundry);
@@ -577,8 +590,21 @@ class ReportGeneratorController extends GetxController {
   //   }
   // }
 
-  Future<void> getRoomsSoldInCurrentSession() async {
+    Future<void> getRoomsCurrentlyOccupied()async{
+    roomsCurrentlyOccupied.value.clear();
+    List<RoomData> roomsData = await RoomDataRepository().getAllRoomData();
+    for(RoomData data in roomsData){
+      if(data.currentTransactionId!= null && data.currentTransactionId!=''){
+        roomsCurrentlyOccupied.value.add(await RoomTransactionRepository().getRoomTransaction(data.currentTransactionId!));
+      }
+    }
 
+  }
+
+  Future<void> getRoomsSoldInCurrentSession() async {
+    roomsSoldCollectedInCurrentSessionCp.value.clear();
+    roomsDebtsCollectedInCurrentSessionCp.value.clear();
+    roomsDebtsCollectedInCurrentSession.value.clear();
     List<String> roomTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.room);
     roomTransactionsIds.addAll(await getTransactionIdsByTransactionType(TransactionTypes.room+LocalKeys.kPayment));
 
@@ -594,6 +620,7 @@ class ReportGeneratorController extends GetxController {
       if(transaction.sessionId == selectedSession.value.id){
         roomsSoldInCurrentSession.value.add(transaction);
         roomsSoldIds.add(transaction.id!+':'+transaction.sessionId!);
+        roomsSoldCollectedInCurrentSessionCp.value.addAll(await CollectedPaymentsRepository().getCollectedPaymentsByRoomTransactionId(transaction.id!));
         sold++;
       }else{
         roomsDebtsCollectedInCurrentSessionCp.value.addAll(await CollectedPaymentsRepository().getCollectedPaymentsByRoomTransactionId(transaction.id!));
@@ -602,6 +629,8 @@ class ReportGeneratorController extends GetxController {
         debts++;
       }
     }
+        roomsSoldCollectedInCurrentSessionCp.value.removeWhere((payment)=> payment.service != LocalKeys.kRoom);
+
     if(roomsSoldInCurrentSession.value.isNotEmpty){
       reportArtifacts.addAll({
         LocalKeys.kRooms: {'RoomTransaction':roomsSoldIds}

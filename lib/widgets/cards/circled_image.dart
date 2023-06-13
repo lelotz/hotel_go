@@ -5,8 +5,8 @@ import 'package:hotel_pms/core/resourses/size_manager.dart';
 
 
 class CircledImage extends StatelessWidget {
-  double radius;
-  String networkImageUrl;
+  final double radius;
+  final String networkImageUrl;
 
   CircledImage({
     Key? key,

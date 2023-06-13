@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import '../../../../../core/values/localization/local_keys.dart';
 import '../../../../../widgets/dialogs/dialod_builder.dart';
+
 import '../../../../../widgets/text/big_text.dart';
 import '../../../../../widgets/text/small_text.dart';
 import '../../controller/handover_form_controller.dart';
@@ -80,6 +81,26 @@ class RoomsDebtsSection extends GetView<ReportGeneratorController> {
                             alignment: Alignment.center,
                             child: SmallText(
                                 text: LocalKeys.kEmployee.tr
+                                    .toUpperCase()))),
+                    GridColumn(
+                        columnWidthMode:
+                        ColumnWidthMode.fitByCellValue,
+                        columnName: RoomsDebtsColumnNamesCp.date,
+                        label: Container(
+                            padding: const EdgeInsets.all(8.0),
+                            alignment: Alignment.center,
+                            child: SmallText(
+                                text: LocalKeys.kDate.tr
+                                    .toUpperCase()))),
+                    GridColumn(
+                        columnWidthMode:
+                        ColumnWidthMode.fitByCellValue,
+                        columnName: RoomsDebtsColumnNamesCp.time,
+                        label: Container(
+                            padding: const EdgeInsets.all(8.0),
+                            alignment: Alignment.center,
+                            child: SmallText(
+                                text: LocalKeys.kTime.tr
                                     .toUpperCase()))),
                     GridColumn(
                         columnWidthMode: ColumnWidthMode.fitByColumnName,

@@ -6,17 +6,17 @@ import 'package:hotel_pms/core/resourses/color_manager.dart';
 
 
 class DecoratedTextButton extends StatefulWidget {
-  String buttonLabel;
-  Color textColor;
-  Color backgroundColor;
-  bool useDivider;
-  double buttonWidth;
-  double paddingValue;
-  double leftMargin;
-  double rightMargin;
-  double topMargin;
-  double bottomMargin;
-  VoidCallback onPressed;
+  final String buttonLabel;
+  final Color textColor;
+  final Color backgroundColor;
+  final bool useDivider;
+  final double buttonWidth;
+  final double paddingValue;
+  final double leftMargin;
+  final double rightMargin;
+  final double topMargin;
+  final double bottomMargin;
+  final VoidCallback onPressed;
 
   DecoratedTextButton({
     Key? key,

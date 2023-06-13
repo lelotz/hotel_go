@@ -8,7 +8,7 @@ import '../icons/app_icon.dart';
 
 
 class TextFieldInput extends StatefulWidget {
-  TextEditingController textEditingController;
+  final TextEditingController textEditingController;
   final bool isPass;
   final bool useBorder;
   final bool useIcon;

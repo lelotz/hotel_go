@@ -24,6 +24,10 @@ import 'handover_report_tables/laundry_usage_table.dart';
 import 'handover_report_tables/room_debts_collected_cp.dart';
 import 'handover_report_tables/room_service_table.dart';
 import 'handover_report_tables/rooms_used_table.dart';
+import 'package:hotel_pms/app/modules/reports/view/handover_report_tables/rooms_occupied_table.dart';
+import 'handover_report_tables/rooms_sold_collected_payment_in_session_table.dart';
+
+
 
 class HandoverReport extends GetView<ReportGeneratorController> {
   HandoverReport({Key? key, required this.reportConfigs}) : super(key: key);
@@ -41,6 +45,7 @@ class HandoverReport extends GetView<ReportGeneratorController> {
   final GlobalKey<SfDataGridState> roomsTableKey = GlobalKey<SfDataGridState>();
   final GlobalKey<SfDataGridState> roomsDebtsTableKey = GlobalKey<SfDataGridState>();
   final GlobalKey<SfDataGridState> pettyCashTableKey = GlobalKey<SfDataGridState>();
+  final GlobalKey<SfDataGridState> roomsOccupiedTableKey = GlobalKey<SfDataGridState>();
 
 
 
@@ -74,6 +79,7 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                                     await controller.submitReport({
                                       LocalKeys.kRooms: roomsTableKey,
                                       LocalKeys.kConference: conferenceTableKey,
+                                      LocalKeys.kRooms+LocalKeys.kOccupied:roomsOccupiedTableKey,
                                       LocalKeys.kRoomService: roomServiceTableKey,
                                       LocalKeys.kLaundry: laundryTableKey,
                                       LocalKeys.kHotelIssues: hotelIssuesTableKey,
@@ -85,7 +91,9 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                         ],
                       ),
                       const ReportConfigurationForm(),
-                      RoomsUsedSection(roomsTableKey: roomsTableKey,),
+                      RoomsOccupiedSection(roomsTableKey: roomsOccupiedTableKey),
+                      // RoomsUsedSection(roomsTableKey: roomsTableKey,),
+                      RoomsSoldPaymentsSection(tableKey:roomsTableKey,),
                       RoomsDebtsSection(roomsDebtTableKey: roomsDebtsTableKey),
                       ConferenceUsageSection(conferenceTableKey: conferenceTableKey,),
                       LaundryUsageSection(laundryTableKey: laundryTableKey,),
@@ -99,6 +107,7 @@ class HandoverReport extends GetView<ReportGeneratorController> {
                             onTap: () async {
                               await controller.submitReport({
                                 LocalKeys.kRooms: roomsTableKey,
+                                LocalKeys.kRooms+LocalKeys.kOccupied:roomsOccupiedTableKey,
                                 LocalKeys.kConference: conferenceTableKey,
                                 LocalKeys.kRoomService: roomServiceTableKey,
                                 LocalKeys.kLaundry: laundryTableKey,

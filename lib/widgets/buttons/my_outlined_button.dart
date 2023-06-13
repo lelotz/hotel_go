@@ -6,17 +6,17 @@ import '../../core/resourses/size_manager.dart';
 import '../text/small_text.dart';
 
 class MyOutlinedButton extends StatefulWidget {
-  Function onClick;
-  String text;
-  double width;
-  double height;
-  double padding;
-  double borderRadius;
-  Color textColor;
-  Color backgroundColor;
-  Color borderColor;
+  final Function onClick;
+  final String text;
+  final double width;
+  final double height;
+  final double padding;
+  final double borderRadius;
+  final Color textColor;
+  final Color backgroundColor;
+  final Color borderColor;
   Color currentTextColor;
-  bool autoSize;
+  final bool autoSize;
   MyOutlinedButton({Key? key,
     required this.text,
     required this.onClick,

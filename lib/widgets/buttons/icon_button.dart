@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 class AppIconButton extends StatefulWidget {
 
-  IconData icon;
-  Color iconColor;
-  double iconSize;
-  Color backgroundColor;
-  Function onPressed;
+  final IconData icon;
+  final Color iconColor;
+  final double iconSize;
+  final Color backgroundColor;
+  final Function onPressed;
   // bool pressed;
 
 

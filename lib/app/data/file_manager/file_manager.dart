@@ -143,8 +143,6 @@ class FileManager{
 
   Future<Map<String, dynamic>> readJsonFile(String filePath) async {
     String? fileContent;
-
-    String appDirectory = await getAppStorageDirectory();
     // Creating a file
     File file = File(filePath);
 
