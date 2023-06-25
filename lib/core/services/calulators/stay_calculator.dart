@@ -48,7 +48,6 @@ class StayCalculator {
 
   Future<RoomTransaction> updateStayCostByCheckOutDate(String checkOutDate,RoomTransaction roomTransaction)async{
     roomTransaction.checkOutDate = resetTimeInDateTime(DateTime.parse(checkOutDate),toGivenHM: true,hour: 10,minute: 0);
-
     int daysStayed = getDaysStayed(roomTransaction,newCheckOutDate: roomTransaction.checkOutDate);
     roomTransaction.nights = daysStayed;
     int newCost = calculateRoomCostByRoomNumberAndDays(roomTransaction.roomNumber!, daysStayed);
@@ -57,14 +56,12 @@ class StayCalculator {
     roomTransaction.grandTotal = roomTransaction.grandTotal! + amountAdded;
     roomTransaction.roomOutstandingBalance = roomTransaction.roomCost! - roomTransaction.roomAmountPaid!;
     roomTransaction.outstandingBalance = roomTransaction.grandTotal! - roomTransaction.amountPaid!;
-
     await RoomTransactionRepository().updateRoomTransaction
       (
         roomTransaction.toJson(), createUserActivity: true,
         updateDetails: 'Badilisha Check-Out Day',
         unit: 'Tarehe',
       );
-
     return roomTransaction;
   }
 

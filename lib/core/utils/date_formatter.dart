@@ -27,18 +27,19 @@ String extractDate(DateTime? date,{String? dateFromString}){
   if(date==null && dateFromString==null) return '-';
   return "${workingDate.day}-${workingDate.month}-${workingDate.year}";
 }
-String extractTime(DateTime time){
+String extractTime(DateTime time,{bool is_file_name = false}){
   String minute = time.minute <= 0 ? '0${time.minute}' : time.minute.toString();
-  return "${time.hour}:$minute";
+  return is_file_name? "${time.hour}_${minute}_${time.second}_${time.millisecond}_${time.microsecond}"
+        :"${time.hour}:$minute";
 }
 
 String resetTimeInDateTime(DateTime date,{bool toEndOfDay = false,bool toGivenHM =false,int hour =10,int minute=0}){
   if(toEndOfDay){
-    return '${DateTime(date.year, date.month, date.day, 23, 59, 59, 0, 0).toIso8601String()}';
+    return DateTime(date.year, date.month, date.day, 23, 59, 59, 0, 0).toIso8601String();
   }else if(toGivenHM){
-    return '${DateTime(date.year, date.month, date.day, hour, minute, 0, 0, 0).toIso8601String()}';
+    return DateTime(date.year, date.month, date.day, hour, minute, 0, 0, 0).toIso8601String();
   }
-  return '${DateTime(date.year, date.month, date.day, 0, 0, 0, 0, 0).toIso8601String()}';
+  return DateTime(date.year, date.month, date.day, 0, 0, 0, 0, 0).toIso8601String();
 }
 
 Widget selectDate(BuildContext context,DateTime? selectedDate,Function(DateTime? selectedDate) showDatePicker){

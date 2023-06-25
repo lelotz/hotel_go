@@ -21,6 +21,4 @@ class ConferenceCalculator{
     return packagePrice * days;
   }
 
-
-
 }

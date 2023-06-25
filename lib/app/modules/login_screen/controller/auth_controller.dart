@@ -8,6 +8,7 @@ import 'package:hotel_pms/app/data/models_n/admin_user_model.dart';
 import 'package:hotel_pms/app/data/models_n/session_tracker.dart';
 import 'package:hotel_pms/app/data/models_n/user_activity_model.dart';
 import 'package:hotel_pms/app/modules/login_screen/views/auth_screen_alpha.dart';
+import 'package:hotel_pms/configs/Configs.dart';
 import 'package:hotel_pms/core/logs/local_logger.dart';
 import 'package:hotel_pms/core/session_management/session_manager.dart';
 import 'package:hotel_pms/core/utils/useful_math.dart';
@@ -33,6 +34,7 @@ import '../views/confirm_current_session_popup.dart';
 class AuthController extends GetxController {
   SessionManager sessionController =
       Get.put(SessionManager(isTest: false), permanent: true);
+  Configs configsController = Get.put(Configs());
   TextEditingController adminUserPasswordCtrl = TextEditingController();
   TextEditingController fullNameCtrl = TextEditingController();
   Rx<AdminUser> adminUser = Rx<AdminUser>(AdminUser());
@@ -54,9 +56,7 @@ class AuthController extends GetxController {
   Rx<Map<String,dynamic>> configs = Rx<Map<String,dynamic>>({});
 
   List<String> routes = [];
-  String configFilePath = kDebugMode ?
-  Directory.current.path + '\\assets\\configs\\configs.json'
-      : Directory.current.path + "\\data\\flutter_assets\\assets\\configs\\configs.json";
+
   FileManager fileManager = FileManager();
 
   AuthController({this.isTest});
@@ -84,7 +84,8 @@ class AuthController extends GetxController {
   }
 
   loadConfigs()async{
-    configs.value = await fileManager.readJsonFile(configFilePath);
+    await configsController.onReady();
+    configs.value = configsController.configs.value;
   }
 
   getAuthorizedRoutes() async {
@@ -225,7 +226,7 @@ class AuthController extends GetxController {
       await createLoginAttemptActivity(adminUser.value, isAuthenticated.value);
       await sessionController.createSession(userId:adminUser.value.id!);
       sessionTracker.value = sessionController.currentSession.value;
-      await migrateDb();
+
       Get.to(()=>HomePageView());
     } else {
       logger.w({'failed to auth user': adminUser.value.toJson()});
@@ -241,37 +242,7 @@ class AuthController extends GetxController {
     fullNameCtrl.clear();
   }
 
-  Future<void> migrateDb()async{
-    if(configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectRoomTransactions] == true){
-      //currentStep.value = 'Injecting Room Transactions SessionIds';
-      // isInjectingSessionIdToRoomTransactions.value = true;
-      await SessionIdInjector.injectSessionIdInRoomTransactions();
-      configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectRoomTransactions] = false;
-      //isInjectingSessionIdToRoomTransactions.value = false;
-      fileManager.writeJsonFile(configs.value, configFilePath);
 
-    }
-
-    if(configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectOtherTransactions] == true){
-      //currentStep.value = 'Injecting Other Transactions SessionIds';
-      //isInjectingSessionIdToRoomTransactions.value = true;
-      await SessionIdInjector.injectSessionIdInOtherTransactions();
-      configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectOtherTransactions] = false;
-      //isInjectingSessionIdToRoomTransactions.value = false;
-      fileManager.writeJsonFile(configs.value, configFilePath);
-
-    }
-
-    if(configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectPaymentTransactions]){
-      //currentStep.value = 'Injecting Collected Payments SessionIds';
-      //isInjectingSessionIdToRoomTransactions.value = true;
-      await SessionIdInjector.injectCollectedPayments();
-      //isInjectingSessionIdToRoomTransactions.value = false;
-      configs.value[ConfigKeys.cMigration][ConfigKeys.cInjectPaymentTransactions] = false;
-      fileManager.writeJsonFile(configs.value, configFilePath);
-    }
-
-  }
 
   Future<void> authenticateUser() async {
     await EncryptedDataRepository()

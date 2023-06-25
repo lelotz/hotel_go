@@ -1,1 +1,6 @@
-{"migration":{"injectRoomSessionId":false,"injectOtherSessionId":false,"injectCollectedPaymentSessionId":false}}
+{
+  "migration":{"injectRoomSessionId":false,"injectOtherSessionId":false,"injectCollectedPaymentSessionId":false},
+  "log": {
+    "print": false
+  }
+}

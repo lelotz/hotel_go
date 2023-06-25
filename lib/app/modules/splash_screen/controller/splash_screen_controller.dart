@@ -10,6 +10,8 @@ import 'package:hotel_pms/core/values/localization/config_keys.dart';
 import 'package:hotel_pms/core/values/localization/langs/sw.dart';
 import 'package:logger/logger.dart';
 
+import '../../../../configs/Configs.dart';
+
 class SplashScreenController extends GetxController{
   // kDebugMode ? Assets.kLogo : await fileManager.executableDirectory + Assets.kLogo
   String configFilePath = kDebugMode ?
@@ -26,6 +28,7 @@ class SplashScreenController extends GetxController{
   Rx<String> appExecutablePath = Rx<String>('');
   Rx<String> currentStep = Rx<String>('');
   Logger logger = AppLogger.instance.logger;
+  Configs configsController = Get.put(Configs(),permanent: true);
 
 
 
@@ -35,7 +38,7 @@ class SplashScreenController extends GetxController{
     logger.i(configFilePath);
     // currentStep.value = 'Getting userData';
     // await loadLocalizationData();
-    await loadConfigs();
+    // await loadConfigs();
     currentStep.value = 'Getting userData';
     await userData.onInit();
     currentStep.value = 'Validating App Directories';

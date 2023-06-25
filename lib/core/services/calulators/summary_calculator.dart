@@ -6,7 +6,6 @@ import '../../../app/data/models_n/room_transaction.dart';
 import '../../utils/string_handlers.dart';
 
 class SummaryCalculator{
-
   static int calculateRoomDebts(List<RoomTransaction> roomTransactions){
     int result = 0;
     for(RoomTransaction transaction in roomTransactions){
@@ -81,6 +80,5 @@ class SummaryCalculator{
     }
     return result;
   }
-
 
 }
