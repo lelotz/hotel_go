@@ -120,6 +120,24 @@ class CollectedPaymentsRepository extends SqlDatabase{
     return payments;
   }
 
+  Future<List<CollectPayment>> getCollectedPaymentsBySessionIdAndService(String sessionId,String service)async{
+    List<CollectPayment> payments= [];
+
+    await SqlDatabase.instance.read(
+      rawQuery: '''
+                SELECT *
+                FROM ${CollectedPaymentsTable.tableName}
+                WHERE ${CollectedPaymentsTable.sessionId}=? AND ${CollectedPaymentsTable.service}=? 
+                '''
+          ,
+      whereArgs: [sessionId,service]
+    ).then((value) {
+      payments = CollectPayment().fromJsonList(value ?? []);
+    });
+
+    return payments;
+  }
+
   Future<void> updateCollectedPayment(Map<String,dynamic> payment)async{
     await SqlDatabase.instance.update(
         tableName:CollectedPaymentsTable.tableName,

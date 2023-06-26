@@ -132,7 +132,6 @@ class SqlDatabase{
                           await db?.query(tableName!,where: where,whereArgs: whereArgs,orderBy: orderBy)
                 : await db?.rawQuery(rawQuery,whereArgs);
 
-
     }catch(e){
       Map<String,dynamic> errorInfo = {'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
       logger.e(errorInfo,e.toString());

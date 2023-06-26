@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:hotel_pms/app/data/file_manager/file_manager.dart';
 import 'package:hotel_pms/app/data/local_storage/repository/collected_payments_repo.dart';
@@ -147,11 +149,9 @@ class ReportGeneratorController extends GetxController {
   Rx<String> conferenceSummaryValue = "".obs;
   Rx<String> conferenceAdvanceSummaryValue = "".obs;
   Rx<String> laundryCounterSummaryValue = ''.obs;
- // Rx<String> laundrySummaryValue = "".obs;
   Rx<String> laundrySummaryValue = "".obs;
 
   Rx<String> pettyCashSummaryValue = "".obs;
-  // Rx<String> roomServiceSummaryValue = "".obs;
   Logger logger = AppLogger.instance.logger;
   UserData userData = Get.find<UserData>();
 
@@ -224,11 +224,11 @@ class ReportGeneratorController extends GetxController {
     isExporting.value = false;
     clearTableData();
     await getRoomsSoldInCurrentSession();
-    /// await getRoomsCollectedPaymentsFromPreviousSessions();
     await getConferenceActivityInCurrentSession();
     await getRoomsCurrentlyOccupied();
     await getLaundryTransactionsCurrentSession();
     await getRoomServiceTransactionsInCurrentSession();
+    await getCollectedRoomDebts();
     await getHotelIssuesInCurrentSession();
     await getPettyCashTransactions();
     updateSummaryValues();
@@ -566,39 +566,79 @@ class ReportGeneratorController extends GetxController {
     conferenceActivityCurrentSession.value = await ServiceBookingRepository()
         .getMultipleServiceBookingsById(conferenceTransactionsIds);
   }
+  /// Collected payments that
+  /// 1. Were collected in this session
+  /// 2. Contain roomTransactionsIds from rooms not sold today
+  /// getRooms soldIn This session
+  ///
+  Future<void> getCollectedRoomDebts()async{
+    roomsDebtsCollectedInCurrentSessionCp.value.clear();
 
-  // Future<void> getRoomsCollectedPaymentsFromPreviousSessions()async{
-  //   roomsDebtsCollectedInCurrentSessionCp.value.clear();
-  //   /// getRooms soldIn This session
-  //   // List<String> roomTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.room);
-  //   // roomTransactionsIds.addAll(await getTransactionIdsByTransactionType(TransactionTypes.room+LocalKeys.kPayment));
-  //   //
-  //   // List<String> roomsDebtsIds = [];
-  //   //
-  //   // for(RoomTransaction transaction in roomTransactions){
-  //   //   roomsDebtsIds.addIf(transaction.sessionId != selectedSession.value.id,transaction.id!);
-  //   // }
-  //   List<CollectPayment> payments = await CollectedPaymentsRepository().getCollectedPaymentsBySessionId(selectedSession.value.id!);
-  //
-  //   for(RoomTransaction roomTransaction in roomsSoldInCurrentSession.value){
-  //     for(CollectPayment payment in payments){
-  //       if(roomTransaction.sessionId != payment.sessionId  && roomTransaction.id == payment.roomTransactionId){
-  //         roomsDebtsCollectedInCurrentSessionCp.value.add(payment);
-  //       }
-  //     }
-  //
-  //   }
-  // }
+    /// 1. Getting room payments collected in current session including debts
+    List<CollectPayment> payments = await CollectedPaymentsRepository().getCollectedPaymentsBySessionIdAndService(selectedSession.value.id!,LocalKeys.kRoom);
+    logger.i('Room payment in this session ${payments.length}');
+    logger.i(List.generate(payments.length, (index) => payments[index].toJson()));
+    // logger.i({'payments':Map.fromIterable(payments,
+    //     //key: (item)=> payments[item].roomNumber,
+    //   value: (item)=>payments[item].toJson()
+    // )});
 
+    /// 2. Parse roomTransactionIds from [payments] above
+    List<String> sessionRoomPayments = List<String>.
+                                       generate(payments.length,
+                                       (index) => payments[index].roomTransactionId ?? '');
+
+    Map<String,String> paymentAndRoomIdMap = {};
+
+    for(CollectPayment payment in payments){
+      if(payment.id !=null && payment.roomTransactionId != null)
+        {
+          paymentAndRoomIdMap.addAll({payment.id!:payment.roomTransactionId!});
+        }
+    }
+
+    logger.i('RoomTransactionIds from sessions payments ${sessionRoomPayments.length}');
+
+    /// 3. Remove duplicates from sessionRoomPayments
+    sessionRoomPayments = Set.of(sessionRoomPayments).toList();
+    logger.i('RoomTransactionIds from sessions payments after removing duplicates ${sessionRoomPayments.length}');
+
+    /** 4. Parsing roomTransactionIds from [CollectPayment] rooms sold in session */
+    List<String?> roomsSoldCurrentSession = List<String?>.
+                                            generate(roomsSoldCollectedInCurrentSessionCp.value.length,
+                                            (index) => roomsSoldCollectedInCurrentSessionCp.value[index].roomTransactionId);
+    logger.i('RoomTransactionIds of rooms sold today ${sessionRoomPayments.length}');
+
+    /// 5. Remove roomTransactionIds from room sold in current session
+    sessionRoomPayments.removeWhere((element) => roomsSoldCurrentSession.contains(element));
+    logger.i('RoomTransactionIds from sessions payments of rooms not sold in session ${sessionRoomPayments.length}');
+
+    paymentAndRoomIdMap.forEach((key, value) async{
+      if(sessionRoomPayments.contains(value)){
+        CollectPayment paymentList = (await CollectedPaymentsRepository().getCollectedPaymentsById(key))[0];
+        roomsDebtsCollectedInCurrentSessionCp.value.
+            addIf(roomsDebtsCollectedInCurrentSessionCp.value.contains(paymentList)==false, paymentList);
+      }
+    });
+
+    /// 6.
+    // for(String debtPayment in sessionRoomPayments){
+    //   roomsDebtsCollectedInCurrentSessionCp.value.
+    //   addAll(await CollectedPaymentsRepository().getCollectedPaymentsById(debtPayment));
+    // }
+    logger.i('Room debts collected ${roomsDebtsCollectedInCurrentSessionCp.value.length}');
+
+  }
     Future<void> getRoomsCurrentlyOccupied()async{
     roomsCurrentlyOccupied.value.clear();
     List<RoomData> roomsData = await RoomDataRepository().getAllRoomData();
     for(RoomData data in roomsData){
       if(data.currentTransactionId!= null && data.currentTransactionId!=''){
-        roomsCurrentlyOccupied.value.add(await RoomTransactionRepository().getRoomTransaction(data.currentTransactionId!));
+        roomsCurrentlyOccupied.value
+            .add(await RoomTransactionRepository()
+            .getRoomTransaction(data.currentTransactionId!));
       }
     }
-
   }
 
   Future<void> getRoomsSoldInCurrentSession() async {
@@ -606,11 +646,13 @@ class ReportGeneratorController extends GetxController {
     roomsDebtsCollectedInCurrentSessionCp.value.clear();
     roomsDebtsCollectedInCurrentSession.value.clear();
     List<String> roomTransactionsIds = await getTransactionIdsByTransactionType(TransactionTypes.room);
-    roomTransactionsIds.addAll(await getTransactionIdsByTransactionType(TransactionTypes.room+LocalKeys.kPayment));
+    roomTransactionsIds
+        .addAll(await getTransactionIdsByTransactionType(TransactionTypes.room+LocalKeys.kPayment));
 
     int debts = 0;
     int sold = 0;
-    List<RoomTransaction> roomTransactions = await RoomTransactionRepository().getMultipleRoomTransactions(roomTransactionsIds);
+    List<RoomTransaction> roomTransactions = await RoomTransactionRepository()
+        .getMultipleRoomTransactions(roomTransactionsIds);
     List<String> roomsSoldIds = [];
     List<String> roomsDebtsIds = [];
 
@@ -620,10 +662,14 @@ class ReportGeneratorController extends GetxController {
       if(transaction.sessionId == selectedSession.value.id){
         roomsSoldInCurrentSession.value.add(transaction);
         roomsSoldIds.add(transaction.id!+':'+transaction.sessionId!);
-        roomsSoldCollectedInCurrentSessionCp.value.addAll(await CollectedPaymentsRepository().getCollectedPaymentsByRoomTransactionId(transaction.id!));
+        roomsSoldCollectedInCurrentSessionCp.value.addAll(
+            await CollectedPaymentsRepository()
+                .getCollectedPaymentsByRoomTransactionId(transaction.id!));
         sold++;
       }else{
-        roomsDebtsCollectedInCurrentSessionCp.value.addAll(await CollectedPaymentsRepository().getCollectedPaymentsByRoomTransactionId(transaction.id!));
+        // roomsDebtsCollectedInCurrentSessionCp.value.addAll(
+        //     await CollectedPaymentsRepository()
+        //         .getCollectedPaymentsByRoomTransactionId(transaction.id!));
         roomsDebtsCollectedInCurrentSession.value.add(transaction);
         roomsDebtsIds.add(transaction.id!+':'+transaction.sessionId!);
         debts++;
@@ -729,7 +775,7 @@ class ReportGeneratorController extends GetxController {
     }
 
     existingSessionsView.refresh();
-    logger.i('sessions loaded ${existingSessions.value.length}');
+    // logger.i('sessions loaded ${existingSessions.value.length}');
     setSessionById(authController.sessionController.currentSession.value.id ?? '');
   }
 }

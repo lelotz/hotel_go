@@ -16,7 +16,13 @@ class AppLogger {
   }
 
   setConfigs(){
-    configs = Get.put(Configs()).configs.value;
+    if(configs.isEmpty) {
+      print('setting log configs');
+      configs = Get
+          .put(Configs())
+          .configs
+          .value;
+    }
     return configs;
   }
 
@@ -26,12 +32,15 @@ class AppLogger {
   }
 
   bool shouldPrint(){
+    setConfigs();
     if(configs.containsKey('log')){
       Map<String,dynamic> logConfigs = configs['log'];
-      if(logConfigs.containsKey('print') && logConfigs['print']){
-        return true;
+
+      if(logConfigs.containsKey('print')){
+        return logConfigs['print'];
       }
     }
+
     return false;
   }
 
