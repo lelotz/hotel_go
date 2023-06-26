@@ -93,19 +93,20 @@ class SqlDatabase{
   ///
   /// [row] Refers to a Map object to be inserted in the table. This Map
   /// needs to have keys that match the table [tableName]'s column Names.
-  Future<int> create(String tableName,Map<String,dynamic> row)async
+  Future<int> create(String tableName,Map<String,dynamic> row,{String? rawSql,List<Object?>? whereArgs})async
     {
     int rowNumber = -1;
     Database? db = await instance.database;
     try{
-      rowNumber = await db?.insert(tableName, row,conflictAlgorithm: ConflictAlgorithm.replace) ?? -1;
+      rowNumber = rawSql == null ?
+                  await db?.insert(tableName, row,conflictAlgorithm: ConflictAlgorithm.replace) ?? -1
+                : await db?.rawInsert(rawSql,whereArgs) ?? -1;
     }catch(e){
       logger.e({'title': 'WRITE DB','data':row,'tableName': tableName},e.toString());
     }
-
-
     return rowNumber;
   }
+
   /// Safely queries data in an sql table [tableName]
   ///
   /// This function returns a future list of Map<String,dynamic> objects
@@ -121,14 +122,16 @@ class SqlDatabase{
   /// [whereArgs] Refers to the values of query parameters
   Future<List<Map<String, dynamic>>?> read({
     String? tableName, String? where, List<Object?>? whereArgs,
-    bool readAll = false,String? orderBy})async
+    bool readAll = false,String? orderBy,String? rawQuery})async
     {
     List<Map<String,dynamic>>? result;
     Database? db = await instance.database;
 
     try{
-      result =  readAll ? await db?.query(tableName!):
-                          await db?.query(tableName!,where: where,whereArgs: whereArgs,orderBy: orderBy);
+      result =  rawQuery == null ?readAll ? await db?.query(tableName!):
+                          await db?.query(tableName!,where: where,whereArgs: whereArgs,orderBy: orderBy)
+                : await db?.rawQuery(rawQuery,whereArgs);
+
 
     }catch(e){
       Map<String,dynamic> errorInfo = {'title': 'READ DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
@@ -155,7 +158,6 @@ class SqlDatabase{
       logger.e(errorInfo,e.toString());
       await Log.exportSqlLog(data: errorInfo, error: e.toString());
     }
-    //await db?.close();
 
     return result;
   }
@@ -175,19 +177,18 @@ class SqlDatabase{
   /// [whereArgs] Refers to the values of query parameters
   Future<int?> update({
     required String tableName, required Map<String, Object?> row,
-    required String where,required List<Object?> whereArgs})async
+    required String where,required List<Object?> whereArgs,String? rawUpdate})async
     {
     int? result;
     Database? db = await instance.database;
     try{
-      result = await db?.update(tableName,row,where: where,whereArgs: whereArgs);
-      //logger.i({'title': 'UPDATE DB','where':where,'whereArgs':whereArgs,'date': row,'response':result});
+      result = rawUpdate == null ? await db?.update(tableName,row,where: where,whereArgs: whereArgs)
+                                 : await db?.rawUpdate(rawUpdate,whereArgs);
     }catch(e){
       Map<String,dynamic> errorInfo = {'title': 'UPDATE','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
       logger.e(errorInfo,e.toString());
       await Log.exportSqlLog(data: errorInfo, error: e.toString());
     }
-    //await db?.close();
 
     return result;
   }
@@ -203,13 +204,13 @@ class SqlDatabase{
   ///
   /// [whereArgs] Refers to the values of query parameters
   Future<int> delete({required String tableName,
-    String? where,List<Object?>? whereArgs,bool deleteAll = false})async
+    String? where,List<Object?>? whereArgs,bool deleteAll = false,String? rawDelete})async
     {
     int result =-1;
     Database? db = await instance.database;
     try{
-      result = deleteAll ? await db?.delete(tableName) ?? -1  : await db?.delete(tableName,where: where,whereArgs: whereArgs) ?? -1;
-      //logger.i({'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result});
+      result = rawDelete == null ? deleteAll ? await db?.delete(tableName) ?? -1  : await db?.delete(tableName,where: where,whereArgs: whereArgs) ?? -1
+                                 : await db?.rawDelete(rawDelete,whereArgs) ?? -1;
     }catch(e){
       Map<String,dynamic> errorInfo = {'title': 'DELETE DB','where':where,'whereArgs':whereArgs,'response':result,'tableName': tableName};
       logger.e(errorInfo,e.toString());
